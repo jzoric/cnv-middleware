@@ -1,0 +1,29 @@
+apiVersion : apps/v1
+kind: Deployment
+metadata:
+  name: vv-middleware-api 
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vv-middleware-api
+  template:
+    metadata:
+      labels:
+        app: vv-middleware-api 
+    spec:
+      containers:
+        - name: vv-middleware-api 
+          image: eu.gcr.io/PROJECT_ID/IMAGE:TAG
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8529
+          volumeMounts:
+            - name: production-env
+              mountPath: /app/env/PRODUCTION.env
+              subPath: PRODUCTION.env
+
+      volumes:
+        - name: production-env
+          configMap:
+            name: production-env

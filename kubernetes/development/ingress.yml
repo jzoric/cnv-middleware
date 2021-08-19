@@ -1,0 +1,20 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: vv-middleware-api
+  annotations:
+    nginx.org/websocket-services: vv-middleware-api
+spec:
+  tls: 
+    - secretName: admin-vv-tls
+      hosts:
+        - 34.118.17.82.nip.io
+  rules:
+    - host: 34.118.17.82.nip.io
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: vv-middleware-api
+              servicePort: 3000
+                

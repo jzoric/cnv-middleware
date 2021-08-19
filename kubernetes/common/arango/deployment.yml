@@ -1,0 +1,30 @@
+apiVersion : apps/v1
+kind: Deployment
+metadata:
+  name: arango 
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: arango
+  template:
+    metadata:
+      labels:
+        app: arango 
+    spec:
+      containers:
+        - name: arango 
+          image: arangodb:3.7.12
+          imagePullPolicy: IfNotPresent 
+          env:
+            - name: ARANGO_ROOT_PASSWORD
+              value: "secret"
+          ports:
+            - containerPort: 8529
+          volumeMounts:
+            - mountPath: "/var/lib/arangodb3"
+              name: arango-managed-disk
+      volumes:
+        - name: arango-managed-disk
+          persistentVolumeClaim:
+            claimName: arango-managed-disk-pvc
