@@ -80,7 +80,7 @@ jobs:
     # Deploy the Docker image to the GKE cluster
     - name: Deploy
       run: |-
-        kubectl -n $NAMESPACE apply -f kubernetes/common
+        kubectl -n $NAMESPACE apply -f kubernetes/common/
         cd kubernetes/development/
         kustomize edit set image eu.gcr.io/PROJECT_ID/IMAGE:TAG=eu.gcr.io/$PROJECT_ID/$IMAGE:$GITHUB_SHA
         kustomize build . | kubectl -n $NAMESPACE apply -f -
