@@ -5,7 +5,6 @@ metadata:
 spec:
   accessModes:
     - ReadWriteMany
-  storageClassName: admin-file
   resources:
     requests:
       storage: 10Gi
