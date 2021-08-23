@@ -6,7 +6,7 @@ data:
   PRODUCTION.env: |
     nodered-ws-connection=ws://nodered-websocket:8080
     root-redirect=/red/
-    cors=http://localhost,http://localhost:1234,http://localhost:7777,http://preview.jvm.com,https://www-e.tech.visualvest.de,http://127.0.0.1:1234,https://34.118.17.82.nip.io
+    cors=http://localhost,http://localhost:1234,http://localhost:7777,http://preview.jvm.com,https://www-e.tech.visualvest.de,http://127.0.0.1:1234,https://34.118.17.82.nip.io,http://conversation-vv.productdock.com
 
     # ARANGO_DB 
     ARANGO_HOST=http://arango:8529
