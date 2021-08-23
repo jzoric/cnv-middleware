@@ -8,7 +8,6 @@ spec:
   tls: 
     - secretName: admin-vv-tls
       hosts:
-        #- 34.118.17.82.nip.io
         - conversation-vv.productdock.com
   rules:
     - host: conversation-vv.productdock.com
