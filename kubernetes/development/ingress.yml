@@ -4,6 +4,7 @@ metadata:
   name: vv-middleware-api
   annotations:
     nginx.org/websocket-services: vv-middleware-api
+    cert-manager.io/cluster-issuer: letsencrypt-prod
 spec:
   tls: 
     - secretName: admin-vv-tls
