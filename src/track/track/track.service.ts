@@ -37,6 +37,10 @@ export class TrackService {
             )
         }
 
+        filters.push(
+            aql`LIMIT ${+(page * take )}, ${+take}`
+        )
+
         if(filterByClientOrigin == true || filterByClientOrigin === 'true') {
             filters.push(
                 aql`
@@ -54,13 +58,13 @@ export class TrackService {
             FOR ct in ${this.arangoService.collection}
             FILTER LENGTH(ct.interaction) > 0
             ${aql.join(filters)}
-            LIMIT ${+(page * take )}, ${+take}
             `;
-
+        console.log(query)
 
         return await this.arangoService.database.query(query)
             .then(res => res.all())
             .catch(e => {
+                this.logger.error(e)
                 throw new HttpException(e.response.body.errorMessage, e.code)
             })
     }
