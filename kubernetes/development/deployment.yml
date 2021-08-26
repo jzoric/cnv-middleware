@@ -17,7 +17,7 @@ spec:
           image: eu.gcr.io/PROJECT_ID/IMAGE:TAG
           imagePullPolicy: Always
           ports:
-            - containerPort: 8529
+            - containerPort: 3000
           volumeMounts:
             - name: production-env
               mountPath: /app/env/PRODUCTION.env
