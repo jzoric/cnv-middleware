@@ -1,18 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { ClientBroker } from './model/client.broker';
 import { ConfigService } from 'src/config/config/config.service';
-import { ArangoService } from 'src/persistence/arango/arango.service';
-import { SessionService } from '../session/session.service';
 import { TrackService } from 'src/track/track/track.service';
 
 @Injectable()
 export class ClientService {
-    private clients: ClientBroker[]; // TODO:: pre db services integration
+    private clients: ClientBroker[]; 
 
     constructor(
         private readonly configService: ConfigService,
-        private readonly arangoService: ArangoService,
-        private readonly sessionService: SessionService,
         private readonly trackService: TrackService
     ) {
         this.clients = [];
@@ -29,7 +25,6 @@ export class ClientService {
 
 
         const clientTrack = await this.trackService.getTrack(sid, tid);
-        console.log(clientTrack)
         try {
             this.clients.push(
                 new ClientBroker(

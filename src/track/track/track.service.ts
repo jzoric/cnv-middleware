@@ -53,8 +53,8 @@ export class TrackService {
         const query = aql`
             FOR ct in ${this.arangoService.collection}
             FILTER LENGTH(ct.interaction) > 0
-            LIMIT ${+(page * take )}, ${+take}
             ${aql.join(filters)}
+            LIMIT ${+(page * take )}, ${+take}
             `;
 
 

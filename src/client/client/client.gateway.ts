@@ -1,8 +1,7 @@
-import { Logger, Res, UseGuards } from '@nestjs/common';
+import { Logger } from '@nestjs/common';
 import { OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway } from '@nestjs/websockets';
 
 import { ClientService } from './client.service';
-import { ClientBroker } from './model/client.broker';
 
 @WebSocketGateway({  namespace: /^.*$/,
   transports: [

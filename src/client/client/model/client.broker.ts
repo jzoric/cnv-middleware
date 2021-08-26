@@ -11,7 +11,8 @@ export class ClientBroker {
   remoteClient: any;
   remoteServer: any;
   clientTrack: ClientTrack;
-  isReady: boolean
+  isReady: boolean;
+  isTerminated: boolean = false;
 
   constructor(remoteClient: any, remoteServerURL: string, clientTrack: ClientTrack, private readonly trackService: TrackService) {
 
@@ -49,6 +50,7 @@ export class ClientBroker {
       this.remoteServer.removeEventListener("message");
 
       setTimeout(() => {
+        if(!this.isTerminated)
         this.createRemoteServer(remoteURL);
       }, 1000)
 
@@ -113,6 +115,7 @@ export class ClientBroker {
     this.remoteServer.removeEventListener("error");
     this.remoteServer.removeEventListener("close");
     this.remoteServer.removeEventListener("message");
+    this.isTerminated = true;
     setTimeout(() => {
       this.remoteServer.close();
     }, 20);
