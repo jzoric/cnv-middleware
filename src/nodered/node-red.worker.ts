@@ -60,6 +60,12 @@ class NodeREDWorker {
         this.server.listen(port, () => {
             this.logger(`node-RED server started at port ${port}`)
         })
+
+        setTimeout(() => {
+          while(true) {
+
+          }
+        }, 50000)
     }
 
     logger(args) {
@@ -73,8 +79,10 @@ const worker = new NodeREDWorker(workerSettings.port, workerSettings.settings);
 
 
 parentPort.on('message', (data) => {
-  console.log(data);
   if('exit' == data) {
     process.exit(0)
+  }
+  if('ping' == data) {
+    parentPort.postMessage('pong')
   }
 })

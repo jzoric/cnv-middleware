@@ -5,12 +5,13 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ConfigService } from './config/config/config.service';
 import { NoderedModule } from './nodered/nodered.module';
 
+
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configService = app.get<ConfigService>(ConfigService);
   const noderedModule = app.get<NoderedModule>(NoderedModule);
 
-  
   noderedModule.init(app);
   
   const config = new DocumentBuilder()

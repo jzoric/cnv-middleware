@@ -2,7 +2,9 @@ import { INestApplication, Module } from '@nestjs/common';
 import { Runtime } from 'inspector';
 import { NoderedService } from './nodered.service';
 import { NodeRedWorkerSettings } from './nodered.settings.interface';
-import { NoderedController } from './nodered.controller';
+
+const os = require('os');
+const bcrypt = require('bcryptjs');
 
 
 var settings: NodeRedWorkerSettings = {
@@ -10,20 +12,28 @@ var settings: NodeRedWorkerSettings = {
   settings: {
     httpAdminRoot:"/red",
     httpNodeRoot: "/red-api",
-    userDir:"/home/lestevao/.nore-red/",
+    userDir: `${os.homedir()}/.nore-red/`,
     functionGlobalContext: { },    // enables global context
     disableEditor: false,
     editorTheme: {
       projects: {
         enabled: false
       }
-    }
+    },
+    adminAuth: {
+       type: "credentials",
+       users: [{
+           username: "admin",
+           password: bcrypt.hashSync('test'),
+           permissions: "*"
+       }]
+    },
   }
 };
 
 @Module({
   providers: [NoderedService],
-  controllers: [NoderedController]
+  controllers: []
 })
 export class NoderedModule {
   
