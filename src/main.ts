@@ -3,12 +3,16 @@ import { AppModule } from './app.module';
 import * as cookieParser from 'cookie-parser';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ConfigService } from './config/config/config.service';
-
-
+import { NoderedModule } from './nodered/nodered.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configService = app.get<ConfigService>(ConfigService);
+  const noderedModule = app.get<NoderedModule>(NoderedModule);
+
+  
+  noderedModule.init(app);
+  
   const config = new DocumentBuilder()
     .setTitle('Conversation midleware')
     .setDescription('API description')
@@ -32,7 +36,6 @@ async function bootstrap() {
     });
     
   }
-
 
   
   await app.listen(3000);

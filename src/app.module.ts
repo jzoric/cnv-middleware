@@ -9,6 +9,7 @@ import * as WebSocket from 'ws';
 import { ConfigService } from './config/config/config.service';
 import { SessionModule } from './client/session/session.module';
 import { TrackModule } from './track/track/track.module';
+import { NoderedModule } from './nodered/nodered.module';
 
 @Module({
   imports: [ClientModule,
@@ -24,7 +25,8 @@ import { TrackModule } from './track/track/track.module';
     }),
     ConfigModule,
     SessionModule,
-    TrackModule],
+    TrackModule,
+    NoderedModule],
   controllers: [AppController],
   providers: [AppService],
 })
