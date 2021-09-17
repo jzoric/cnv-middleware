@@ -12,7 +12,7 @@ var settings: NodeRedWorkerSettings = {
   settings: {
     httpAdminRoot:"/red",
     httpNodeRoot: "/red-api",
-    userDir: `${os.homedir()}/.nore-red/`,
+    userDir: `${os.homedir()}/.node-red/`,
     functionGlobalContext: { },    // enables global context
     disableEditor: false,
     editorTheme: {
@@ -24,10 +24,11 @@ var settings: NodeRedWorkerSettings = {
        type: "credentials",
        users: [{
            username: "admin",
-           password: bcrypt.hashSync('test'),
+           password: bcrypt.hashSync('secret'),
            permissions: "*"
        }]
     },
+    apiMaxLength: '1000Mb'
   }
 };
 

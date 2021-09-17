@@ -61,11 +61,6 @@ class NodeREDWorker {
             this.logger(`node-RED server started at port ${port}`)
         })
 
-        setTimeout(() => {
-          while(true) {
-
-          }
-        }, 50000)
     }
 
     logger(args) {
