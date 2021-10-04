@@ -6,13 +6,13 @@ import { TrackService } from 'src/track/track/track.service';
 @Injectable()
 export class ClientService {
     private clients: ClientBroker[]; 
-
+    private WSCONN;
     constructor(
         private readonly configService: ConfigService,
         private readonly trackService: TrackService
     ) {
         this.clients = [];
-
+        this.WSCONN = this.configService.get("NODERED_WS_CONNECTION") || 'ws://localhost:8080';
     }
 
     public getActiveClients(): ClientBroker[] {
@@ -29,7 +29,7 @@ export class ClientService {
             this.clients.push(
                 new ClientBroker(
                     client,
-                    `${this.configService.get("nodered-ws-connection")}${client.nsp.name}`,
+                    `${this.WSCONN}${client.nsp.name}`,
                     clientTrack,
                     this.trackService
                 )
