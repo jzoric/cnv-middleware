@@ -1,10 +1,12 @@
 import { INestApplication, Module } from '@nestjs/common';
-import { Runtime } from 'inspector';
+import { AuthModule } from 'src/auth/auth.module';
+import { AuthService } from 'src/auth/auth.service';
+import { ConfigModule } from 'src/config/config/config.module';
+import { ConfigService } from 'src/config/config/config.service';
 import { NoderedService } from './nodered.service';
 import { NodeRedWorkerSettings } from './nodered.settings.interface';
 
 const os = require('os');
-const bcrypt = require('bcryptjs');
 
 
 var settings: NodeRedWorkerSettings = {
@@ -20,29 +22,35 @@ var settings: NodeRedWorkerSettings = {
         enabled: false
       }
     },
-    adminAuth: {
-       type: "credentials",
-       users: [{
-           username: "admin",
-           password: bcrypt.hashSync('secret'),
-           permissions: "*"
-       }]
-    },
+    
     apiMaxLength: '1000Mb'
   }
 };
 
 @Module({
+  imports: [AuthModule, ConfigModule],
   providers: [NoderedService],
   controllers: []
 })
 export class NoderedModule {
-  
-  constructor(private readonly noderedService: NoderedService) {
-    
+  private USE_BUNDLED_NODERED = false;
+  constructor(private readonly noderedService: NoderedService, private readonly configService: ConfigService, private readonly authService: AuthService) {
+    this.USE_BUNDLED_NODERED = configService.get('USE_BUNDLED_NODERED') == 'true';
   }
 
   public init(app: INestApplication) {
-    this.noderedService.init(app, settings);
+    if(this.USE_BUNDLED_NODERED) {
+      if(this.authService.useAuth) {
+        settings.settings.adminAuth = {
+          type: "credentials",
+          users: [{
+              username: "admin",
+              password: this.authService.bcryptpassword,
+              permissions: "*"
+          }]
+       }
+      }
+      this.noderedService.init(app, settings);
+    }
   }
 }

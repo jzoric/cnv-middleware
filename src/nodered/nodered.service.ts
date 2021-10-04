@@ -31,6 +31,8 @@ export class NoderedService {
       this.nodeRedWorker.on('message', (msg) => {
         if('pong' == msg) {
           clearTimeout(this.healthcheckIntervalTimeout);
+        } else {
+          this.logger.debug(msg)
         }
       });
       this.nodeRedWorker.on('error', (msg) => this.logger.error(msg));

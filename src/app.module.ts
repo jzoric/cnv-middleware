@@ -9,6 +9,7 @@ import { ConfigService } from './config/config/config.service';
 import { SessionModule } from './client/session/session.module';
 import { TrackModule } from './track/track/track.module';
 import { NoderedModule } from './nodered/nodered.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [ClientModule,
@@ -25,7 +26,8 @@ import { NoderedModule } from './nodered/nodered.module';
     ConfigModule,
     SessionModule,
     TrackModule,
-    NoderedModule],
+    NoderedModule,
+    AuthModule],
   controllers: [AppController],
   providers: [AppService],
 })

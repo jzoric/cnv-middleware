@@ -1,5 +1,6 @@
-import { Controller, Get, Query } from '@nestjs/common';
-import { ApiTags, ApiResponse, ApiQuery } from '@nestjs/swagger';
+import { Controller, Get, Query, UseGuards } from '@nestjs/common';
+import { ApiTags, ApiResponse, ApiQuery, ApiBearerAuth } from '@nestjs/swagger';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { ClientTrack } from './model/client.track'
 import { TrackService } from './track.service';
 @ApiTags('api/v1/client')
@@ -9,7 +10,9 @@ export class TrackController {
     constructor(private readonly trackService: TrackService) {
 
     }
-
+    
+    @ApiBearerAuth()
+    @UseGuards(JwtAuthGuard)
     @Get("tracks")
     @ApiQuery({
         name: 'page',
@@ -60,7 +63,8 @@ export class TrackController {
 
     }
 
-
+    @ApiBearerAuth()
+    @UseGuards(JwtAuthGuard)
     @Get("track")
     @ApiQuery({
         name: 'sid',
@@ -87,6 +91,8 @@ export class TrackController {
 
     }
 
+    @ApiBearerAuth()
+    @UseGuards(JwtAuthGuard)
     @ApiResponse({
         status: 200,
         description: 'Number of sessions'
