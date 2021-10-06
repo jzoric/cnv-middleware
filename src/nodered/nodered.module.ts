@@ -39,6 +39,9 @@ export class NoderedModule {
   }
 
   public init(app: INestApplication) {
+    if(this.configService.get('NODERED_HOME_DIR')) {
+      settings.settings.userDir = this.configService.get('NODERED_HOME_DIR');
+    }
     if(this.USE_BUNDLED_NODERED) {
       if(this.authService.useAuth) {
         settings.settings.adminAuth = {
