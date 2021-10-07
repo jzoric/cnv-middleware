@@ -16,13 +16,7 @@ var settings: NodeRedWorkerSettings = {
     httpNodeRoot: "/red-api",
     userDir: `${os.homedir()}/.node-red/`,
     functionGlobalContext: { },    // enables global context
-    disableEditor: false,
-    editorTheme: {
-      projects: {
-        enabled: false
-      }
-    },
-    
+    disableEditor: false,    
     apiMaxLength: '1000Mb'
   }
 };
@@ -41,6 +35,13 @@ export class NoderedModule {
   public init(app: INestApplication) {
     if(this.configService.get('NODERED_HOME_DIR')) {
       settings.settings.userDir = this.configService.get('NODERED_HOME_DIR');
+    }
+    if(this.configService.get('NODERED_ENABLE_PROJECTS') == 'true') {
+      settings.settings.editorTheme = {
+        projects: {
+          enabled: true
+        }
+      }
     }
     if(this.USE_BUNDLED_NODERED) {
       if(this.authService.useAuth) {
