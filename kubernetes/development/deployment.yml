@@ -18,6 +18,7 @@ spec:
           imagePullPolicy: Always
           ports:
             - containerPort: 3000
+            - containerPort: 1880
           readinessProbe:
             tcpSocket:
               port: 3000

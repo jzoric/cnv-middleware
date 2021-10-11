@@ -9,5 +9,9 @@ spec:
     ports:
       - port: 3000
         protocol: TCP
+        name: api
+      - port: 1880
+        protocol: TCP
+        name: red
     selector:
       app: vv-middleware-api

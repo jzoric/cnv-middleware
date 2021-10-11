@@ -54,6 +54,12 @@ jobs:
         cluster_name: ${{ env.GKE_CLUSTER }}
         location: ${{ env.GKE_ZONE }}
         credentials: ${{ secrets.GKE_SA_KEY }}
+    # Get npm credentials
+    - name: GCP NPM auth
+      run: |-
+        npx google-artifactregistry-auth .npmrc
+        git config --global user.email "buildy_mc_build_bot@cloud.de"
+        git config --global user.name "Buildy Mc Build Bot"
 
     # Build the Docker image
     - name: Build
