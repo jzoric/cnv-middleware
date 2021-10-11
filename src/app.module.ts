@@ -5,10 +5,11 @@ import { ClientModule } from './client/client/client.module';
 import { ArangoModule } from './persistence/arango/arango.module';
 import { ConfigModule } from './config/config/config.module';
 
-import * as WebSocket from 'ws';
 import { ConfigService } from './config/config/config.service';
 import { SessionModule } from './client/session/session.module';
 import { TrackModule } from './track/track/track.module';
+import { NoderedModule } from './nodered/nodered.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [ClientModule,
@@ -24,7 +25,9 @@ import { TrackModule } from './track/track/track.module';
     }),
     ConfigModule,
     SessionModule,
-    TrackModule],
+    TrackModule,
+    NoderedModule,
+    AuthModule],
   controllers: [AppController],
   providers: [AppService],
 })

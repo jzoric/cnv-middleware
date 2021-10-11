@@ -1,18 +1,20 @@
-import { Controller, Get, Logger, Param, Query, Req, Res } from '@nestjs/common';
+import { applyDecorators, Controller, Get, Logger, Param, Query, Req, Res, UseGuards } from '@nestjs/common';
 import { SessionService } from './session.service';
 import { Request, Response } from 'express';
-import { ArangoService } from 'src/persistence/arango/arango.service';
 import { SESSION_COOKIE_NAME } from './session.constants';
 import { UserSession } from './model/usersession';
 import { TrackService } from 'src/track/track/track.service';
-import { ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @ApiTags('api/v1/session')
 @Controller('api/v1/session')
 export class SessionController {
     private readonly logger = new Logger(SessionController.name);
 
+  
     constructor(private readonly sessionService: SessionService, private readonly trackService: TrackService) {
+        
     }
 
     @ApiQuery({
@@ -63,6 +65,8 @@ export class SessionController {
 
     }
 
+    @ApiBearerAuth()
+    @UseGuards(JwtAuthGuard)
     @Get("sessions")
     @ApiQuery({
         name: 'page',
@@ -80,6 +84,8 @@ export class SessionController {
 
     }
 
+    @ApiBearerAuth()
+    @UseGuards(JwtAuthGuard)
     @ApiResponse({
         status: 200,
         description: 'Number of sessions'
@@ -89,4 +95,5 @@ export class SessionController {
         return await this.sessionService.countSessions();
 
     }
+
 }

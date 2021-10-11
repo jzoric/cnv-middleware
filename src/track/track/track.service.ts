@@ -59,7 +59,6 @@ export class TrackService {
             FILTER LENGTH(ct.interaction) > 0
             ${aql.join(filters)}
             `;
-        console.log(query)
 
         return await this.arangoService.database.query(query)
             .then(res => res.all())
