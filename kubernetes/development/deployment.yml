@@ -28,8 +28,13 @@ spec:
             - name: production-env
               mountPath: /app/env/PRODUCTION.env
               subPath: PRODUCTION.env
+            - mountPath: "/mount"
+              name: nodered-managed-disk
 
       volumes:
         - name: production-env
           configMap:
             name: production-env
+        - name: nodered-managed-disk
+          persistentVolumeClaim:
+            claimName: nodered-managed-disk-pvc
