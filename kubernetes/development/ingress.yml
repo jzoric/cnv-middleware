@@ -18,4 +18,8 @@ spec:
             backend:
               serviceName: vv-middleware-api
               servicePort: 3000
+          - path: /red/
+            backend:
+              serviceName: vv-middleware-api
+              servicePort: 1880
                 
