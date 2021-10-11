@@ -5,6 +5,7 @@ metadata:
   annotations:
     nginx.org/websocket-services: vv-middleware-api
     cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"
 spec:
   tls: 
     - secretName: admin-vv-tls
