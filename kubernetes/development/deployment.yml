@@ -18,6 +18,12 @@ spec:
           imagePullPolicy: Always
           ports:
             - containerPort: 3000
+          readinessProbe:
+            tcpSocket:
+              port: 3000
+            initialDelaySeconds: 20
+            failureThreshold: 3
+            periodSeconds: 10
           volumeMounts:
             - name: production-env
               mountPath: /app/env/PRODUCTION.env
