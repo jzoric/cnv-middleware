@@ -1,17 +1,17 @@
 apiVersion: v1
 kind: Service
 metadata:
-    name: vv-middleware-api
-    annotations:
+  name: vv-middleware-api
+  annotations:
     cloud.google.com/neg: '{"ingress": false}'
 spec:
-    type: LoadBalancer
-    ports:
-      - port: 3000
-        protocol: TCP
-        name: api
-      - port: 1880
-        protocol: TCP
-        name: red
-    selector:
-      app: vv-middleware-api
+  type: LoadBalancer
+  ports:
+    - port: 3000
+      protocol: TCP
+      name: api
+    - port: 1880
+      protocol: TCP
+      name: red
+  selector:
+    app: vv-middleware-api
