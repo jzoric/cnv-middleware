@@ -14,7 +14,7 @@ data:
     ARANGO_DATABASE=conversation
 
     ADMIN_USER=admin
-    ADMIN_PASSWORD=secret
+    ADMIN_PASSWORD=ckB*nuUR464ZJF*.FmYG
     JWT_EXPIRATION_SECONDS=300s
 
     # NODERED related configs
