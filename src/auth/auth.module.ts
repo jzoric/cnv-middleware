@@ -19,7 +19,7 @@ import { ConfigService } from 'src/config/config/config.service';
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         secret: jwtConstants.secret,
-        signOptions: { expiresIn: configService.get('JWT_EXPIRATION_SECONDS') || '20s' },
+        signOptions: { expiresIn: configService.get('JWT_EXPIRATION_SECONDS') || '300s' },
       }),
       
     }),

@@ -24,7 +24,7 @@ async function bootstrap() {
   SwaggerModule.setup('api', app, document);
   app.use(cookieParser());
   
-  const cors = configService.get('cors').split(',');
+  const cors = (configService.get('cors') || '').split(',');
   if(cors) {
     app.use((req, res, next) => {
 
@@ -39,6 +39,14 @@ async function bootstrap() {
     
   }
 
+  // setTimeout(async () => {
+  //   const open = require('open')
+  
+  //   await open('http://localhost:3000/app')
+  //   await open('http://localhost:1880/red')
+  //   await open('http://localhost:3000/api')
+  
+  // }, 5000);
   
   await app.listen(3000);
   

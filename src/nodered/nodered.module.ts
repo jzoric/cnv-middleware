@@ -27,9 +27,9 @@ var settings: NodeRedWorkerSettings = {
   controllers: []
 })
 export class NoderedModule {
-  private USE_BUNDLED_NODERED = false;
+  private USE_BUNDLED_NODERED = true;
   constructor(private readonly noderedService: NoderedService, private readonly configService: ConfigService, private readonly authService: AuthService) {
-    this.USE_BUNDLED_NODERED = configService.get('USE_BUNDLED_NODERED') == 'true';
+    //this.USE_BUNDLED_NODERED = (configService.get('USE_BUNDLED_NODERED') || true) == 'true';
   }
 
   public init(app: INestApplication) {

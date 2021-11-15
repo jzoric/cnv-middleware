@@ -10,9 +10,16 @@ import { SessionModule } from './client/session/session.module';
 import { TrackModule } from './track/track/track.module';
 import { NoderedModule } from './nodered/nodered.module';
 import { AuthModule } from './auth/auth.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
-  imports: [ClientModule,
+  imports: [
+    ClientModule,
+    ServeStaticModule.forRoot({
+      renderPath: '/app/',
+      rootPath: join(__dirname, '..', 'app'),
+    }),
     ArangoModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
