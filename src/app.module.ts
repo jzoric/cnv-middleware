@@ -17,8 +17,8 @@ import { join } from 'path';
   imports: [
     ClientModule,
     ServeStaticModule.forRoot({
-      renderPath: '/app/',
-      rootPath: join(__dirname, '..', 'app'),
+      renderPath: '/resources/',
+      rootPath: join(__dirname, '..', 'resources')
     }),
     ArangoModule.forRootAsync({
       imports: [ConfigModule],

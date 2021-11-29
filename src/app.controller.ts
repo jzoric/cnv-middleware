@@ -8,7 +8,9 @@ export class AppController {
 
   @Get()
   getHello(@Res() res) {
-    //return res.redirect(this.configService.get('root-redirect') || '/api');
+    if(!this.configService.get('isApp')) {
+      return res.redirect(this.configService.get('root-redirect'));
+    }
   }
 
 }

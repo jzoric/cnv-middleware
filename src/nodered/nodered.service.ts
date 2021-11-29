@@ -31,6 +31,7 @@ export class NoderedService {
       this.nodeRedWorker.on('message', (msg) => {
         if('pong' == msg) {
           clearTimeout(this.healthcheckIntervalTimeout);
+          console.log('clear timeout')
         } else {
           this.logger.debug(msg)
         }
@@ -50,10 +51,10 @@ export class NoderedService {
           this.logger.warn("NODERED ping timeout, rebooting in 3s");
           setTimeout(() => {
             this.init(app, settings);
-          }, 3000);
+          }, 5000);
         })
 
-      }, 60000);
+      }, 5000);
 
     }
 }
