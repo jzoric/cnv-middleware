@@ -1,6 +1,6 @@
 
 const DEFAULTS = {
-    isApp: false,
+    isApp: true,
     'root-redirect': '/api',
     cors: 'http://localhost:1234',
     ARANGO_HOST: '',
