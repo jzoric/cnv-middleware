@@ -38,5 +38,5 @@ yarn.lock
 
 .volumes
 
-/resources
+/resources/app/
 /build
