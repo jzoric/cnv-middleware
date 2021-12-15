@@ -21,7 +21,7 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "preinstall:dev": "npm link ../conversation-pluggins",
-    "build:app": "nest build && pkg -c package.json dist/main.js"
+    "build:app": "nest build && pkg -c package.json dist/main.js && cp build/middleware-api-macos build/tinyme.app/middleware-api-macos"
   },
   "dependencies": {
     "@nestjs/common": "^7.6.15",
