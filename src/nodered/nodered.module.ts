@@ -27,23 +27,23 @@ var settings: NodeRedWorkerSettings = {
   controllers: []
 })
 export class NoderedModule {
-  private USE_BUNDLED_NODERED = false;
+
   constructor(private readonly noderedService: NoderedService, private readonly configService: ConfigService, private readonly authService: AuthService) {
-    this.USE_BUNDLED_NODERED = configService.get('USE_BUNDLED_NODERED') == 'true';
+
   }
 
   public init(app: INestApplication) {
     if(this.configService.get('NODERED_HOME_DIR')) {
       settings.settings.userDir = this.configService.get('NODERED_HOME_DIR');
     }
-    if(this.configService.get('NODERED_ENABLE_PROJECTS') == 'true') {
+    if(this.configService.get('NODERED_ENABLE_PROJECTS')) {
       settings.settings.editorTheme = {
         projects: {
           enabled: true
         }
       }
     }
-    if(this.USE_BUNDLED_NODERED) {
+    if(this.configService.get('USE_BUNDLED_NODERED')) {
       if(this.authService.useAuth) {
         settings.settings.adminAuth = {
           type: "credentials",

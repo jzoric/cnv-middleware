@@ -1,5 +1,5 @@
 {
-  "name": "midleware-api",
+  "name": "middleware-api",
   "version": "0.0.1",
   "description": "",
   "author": "",
@@ -10,16 +10,18 @@
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
-    "start:dev": "export NODE_ENV=DEVELOPMENT; export APP_TEST_VAR=lalala; nest start --watch ",
+    "start:dev": "export NODE_ENV=DEVELOPMENT; nest start --watch ",
     "start:debug": "nest start --debug --watch",
     "start:prod": "export NODE_ENV=PRODUCTION; node dist/main",
+    "start:app": "export NODERED_HOME_DIR=/home/lestevao/.node-red-app/ ; nest start --watch",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "preinstall:dev": "npm link ../conversation-pluggins"
+    "preinstall:dev": "npm link ../conversation-pluggins",
+    "build:app": "nest build && pkg -c package.json dist/main.js && cp build/middleware-api-macos build/tinyme.app/middleware-api-macos && chmod +x build/tinyme.app/middleware-api-macos"
   },
   "dependencies": {
     "@nestjs/common": "^7.6.15",
@@ -28,18 +30,21 @@
     "@nestjs/passport": "^8.0.1",
     "@nestjs/platform-express": "^7.6.15",
     "@nestjs/platform-socket.io": "^7.6.18",
+    "@nestjs/serve-static": "^2.2.2",
     "@nestjs/swagger": "^4.8.2",
     "@nestjs/websockets": "^7.6.18",
     "@types/ws": "^7.4.6",
     "arangojs": "7.5.0",
-    "bcrypt": "^5.0.1",
+    "bcryptjs": "^2.4.3",
     "cookie-parser": "^1.4.5",
     "dotenv": "^10.0.0",
     "http-proxy": "^1.18.1",
     "node-red": "^2.0.6",
+    "open": "^8.4.0",
     "passport": "^0.5.0",
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",
+    "pkg": "^5.5.1",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^6.6.6",
@@ -88,5 +93,18 @@
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
+  },
+  "pkg": {
+    "assets": [
+      "resources/app/*",
+      "dist/nodered/*",
+      "node_modules/@node-red/*",
+      "node_modules/@node-red/**/*",
+      "node_modules/@node-red/**/**/*",
+      "node_modules/@node-red/**/**/**/*",
+      "node_modules/swagger-ui-dist/*",
+      "node_modules/@conversation-platform/**/*"
+    ],
+    "outputPath": "build"
   }
 }

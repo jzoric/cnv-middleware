@@ -7,8 +7,10 @@ export class AppController {
   constructor(private readonly appService: AppService, private readonly configService: ConfigService) {}
 
   @Get()
-  getHello(@Res() res): string {
-    return res.redirect(this.configService.get('root-redirect') || '/api');
+  getHello(@Res() res) {
+    if(!this.configService.get('isApp')) {
+      return res.redirect(this.configService.get('root-redirect'));
+    }
   }
 
 }

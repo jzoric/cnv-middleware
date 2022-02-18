@@ -20,13 +20,37 @@ export class ArangoModule {
           provide: ARANGO_DATABASE,
           useFactory: async (args) => {
             let arangoOptions: ArangoOptions = await asyncOptions.useFactory(args);
+              const voidDatabase = {
+                query: (query) => new Promise((resolve, reject) => {
+                  resolve({
+                    all: () => []
+                  })
+                }),
+                collection: (collection) => {
+                  return {
+                    create: (data) => new Promise((resolve, reject) => {
+                      resolve({})
+                    }),
+                    save: (data) => new Promise((resolve, reject) => {
+                      resolve({})
+                    }),
+                    update: (data) => new Promise((resolve, reject) => {
+                      resolve({})
+                    }),
+                  }
+                }
+              }
+            
+              if(!arangoOptions.host || !arangoOptions.database || !arangoOptions.user || !arangoOptions.password) {
+                return voidDatabase;
+              }
               const db = new Database(arangoOptions.host);
               db.useBasicAuth(arangoOptions.user, arangoOptions.password);
-              const database = db.database(arangoOptions.database);
+              let database = null;
+              database = db.database(arangoOptions.database);
               if(! (await database.exists())) {
                 await db.createDatabase(arangoOptions.database);
               }
-              return database;
           },
           inject: asyncOptions.inject || [],
         },

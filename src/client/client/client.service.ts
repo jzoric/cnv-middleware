@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ClientBroker } from './model/client.broker';
 import { ConfigService } from 'src/config/config/config.service';
 import { TrackService } from 'src/track/track/track.service';
+import { ClientTrack } from 'src/track/track/model/client.track';
 
 @Injectable()
 export class ClientService {
@@ -24,7 +25,7 @@ export class ClientService {
         const tid = client.handshake.query.tid;
 
 
-        const clientTrack = await this.trackService.getTrack(sid, tid);
+        const clientTrack = await this.trackService.getTrack(sid, tid) || new ClientTrack(sid,tid);
         try {
             this.clients.push(
                 new ClientBroker(
