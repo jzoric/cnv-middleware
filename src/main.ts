@@ -45,7 +45,7 @@ async function bootstrap() {
     });
     
   }
-  if(configService.get('isApp')) {
+  if(configService.get('isApp') == 'true') {
     logger.log('Launching app urls');
     setTimeout(async () => {
       const open = require('open')
