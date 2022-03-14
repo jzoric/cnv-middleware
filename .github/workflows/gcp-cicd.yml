@@ -87,15 +87,15 @@ jobs:
       run: |-
         cd manifests/development/
         kustomize edit set image IMAGE:TAG=$REGISTRY/$PROJECT_ID/$NAMESPACE-container/$IMAGE:$GITHUB_SHA
-        kustomize build > cnv-development.yaml
+        kustomize build > cnv-middleware-development.yaml
     
     - name: Deploy GCP
       run: |-
         cd manifests/development/
-        scp cnv-development.yaml development:/home/$SSH_USER
+        scp cnv-middleware-development.yaml development:/home/$SSH_USER
         ssh development "ls -lah"
         ssh development NAMESPACE=$NAMESPACE DEPLOYMENT_NAME=$DEPLOYMENT_NAME "echo $NAMESPACE $DEPLOYMENT_NAME"
-        ssh development NAMESPACE=$NAMESPACE DEPLOYMENT_NAME=$DEPLOYMENT_NAME "kubectl -n $NAMESPACE apply -f cnv-development.yaml"
+        ssh development NAMESPACE=$NAMESPACE DEPLOYMENT_NAME=$DEPLOYMENT_NAME "kubectl -n $NAMESPACE apply -f cnv-middleware-development.yaml"
         ssh development NAMESPACE=$NAMESPACE DEPLOYMENT_NAME=$DEPLOYMENT_NAME "kubectl -n $NAMESPACE rollout status deployment/$DEPLOYMENT_NAME"
         
 
