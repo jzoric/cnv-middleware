@@ -10,7 +10,7 @@ on:
 
 env:
   PROJECT_ID: ${{ secrets.GKE_PROJECT }}
-  DEPLOYMENT_NAME: cnv-client
+  DEPLOYMENT_NAME: cnv-middleware-api
   IMAGE: cnv-platform-middleware
   REGISTRY: europe-west3-docker.pkg.dev
   NAMESPACE: cnv-platform
