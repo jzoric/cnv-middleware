@@ -58,6 +58,8 @@ export class ArangoModule {
               if(! (await database.exists())) {
                 await db.createDatabase(arangoOptions.database);
               }
+
+              return database;
           },
           inject: asyncOptions.inject || [],
         },
