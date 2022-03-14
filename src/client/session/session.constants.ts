@@ -1,1 +1,1 @@
-export const SESSION_COOKIE_NAME = 'conversation-vv-sid';
+export const SESSION_COOKIE_NAME = 'cnv-platform';

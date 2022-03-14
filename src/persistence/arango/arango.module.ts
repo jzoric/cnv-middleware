@@ -2,7 +2,7 @@ import { DynamicModule, Global, Logger, Module } from '@nestjs/common';
 import { ARANGO_COLLECTION, ARANGO_DATABASE } from './arango.constants';
 import { ArangoService } from './arango.service';
 import { ArangoModuleAsyncOptions, ArangoOptions } from './interfaces/arango-options.interface';
-import { Database } from 'arangojs';
+import { aql, Database } from 'arangojs';
 
 @Module({
   providers: [ArangoService]
@@ -22,6 +22,8 @@ export class ArangoModule {
             let arangoOptions: ArangoOptions = await asyncOptions.useFactory(args);
               const voidDatabase = {
                 query: (query) => new Promise((resolve, reject) => {
+                  console.log('query', query);
+                  
                   resolve({
                     all: () => []
                   })
@@ -29,12 +31,17 @@ export class ArangoModule {
                 collection: (collection) => {
                   return {
                     create: (data) => new Promise((resolve, reject) => {
+                      console.log('create', data);
+
                       resolve({})
                     }),
                     save: (data) => new Promise((resolve, reject) => {
+                      console.log('save', data);
                       resolve({})
                     }),
                     update: (data) => new Promise((resolve, reject) => {
+                      console.log('update', data);
+
                       resolve({})
                     }),
                   }
