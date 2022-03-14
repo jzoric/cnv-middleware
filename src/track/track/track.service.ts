@@ -2,6 +2,7 @@ import { Injectable, Logger, HttpException } from '@nestjs/common';
 import { aql } from 'arangojs';
 import { UserSession } from 'src/client/session/model/usersession';
 import { ArangoService } from 'src/persistence/arango/arango.service';
+import { Interaction } from './model/client.interaction';
 import { ClientTrack } from './model/client.track';
 
 @Injectable()
@@ -59,11 +60,25 @@ export class TrackService {
             FILTER LENGTH(ct.interaction) > 0
             ${aql.join(filters)}
             `;
-
         return await this.arangoService.database.query(query)
             .then(res => res.all())
             .catch(e => {
                 this.logger.error(e)
+                throw new HttpException(e.response.body.errorMessage, e.code)
+            })
+    }
+
+    async getSessionsByDate(page: number, take: number, startDate: Date, endDate: Date): Promise<ClientTrack[]> {
+        const query = aql`
+            FOR ct in ${this.arangoService.collection}
+            FILTER ct.date <= ${new Date(endDate)}
+            LIMIT ${+(page * take )}, ${+take}
+            RETURN ct
+        `;
+
+        return await this.arangoService.database.query(query)
+            .then(res => res.all())
+            .catch(e => {
                 throw new HttpException(e.response.body.errorMessage, e.code)
             })
     }
@@ -106,6 +121,45 @@ export class TrackService {
         return this.arangoService.collection.update(clientTrack._key, clientTrack);
     }
 
+    async addInteraction(clientTrack: ClientTrack, interaction: Interaction) {
+        const query = aql`
+            FOR doc in ${this.arangoService.collection}
+            FILTER doc._key == ${clientTrack._key}
+            UPDATE doc WITH { interaction: APPEND(doc.interaction, ${interaction})} IN ${this.arangoService.collection} OPTIONS { exclusive: true }
+            RETURN doc
+        `;
+
+        return await this.arangoService.database.query(query)
+        .then(res => res.all())
+        .then(res => res?.[0]);
+    }
+
+    async getInteractions(clientTrack: ClientTrack): Promise<Interaction[]> {
+        const query = aql`
+            FOR doc in ${this.arangoService.collection}
+            FILTER doc._key == ${clientTrack._key}
+            RETURN doc.interaction
+        `;
+
+        return await this.arangoService.database.query(query)
+        .then(res => res.all())
+        .then(res => res?.[0]);
+    }
+
+
+    async updateStore(clientTrack: ClientTrack, store: any) {
+        const query = aql`
+            FOR doc in ${this.arangoService.collection}
+            FILTER doc._key == ${clientTrack._key}
+            UPDATE doc WITH { store: ${store}} IN ${this.arangoService.collection} OPTIONS { exclusive: true }
+            RETURN doc
+        `;
+
+        return await this.arangoService.database.query(query)
+        .then(res => res.all())
+        .then(res => res?.[0]);
+    }
+
     async countClientTracks(): Promise<number> {
         const query = aql`
             FOR S in ${this.arangoService.collection}
@@ -117,5 +171,14 @@ export class TrackService {
             .then(res => res?.[0]);
     }
 
-    
+    async removeClientTrack(clientTrack: ClientTrack) {
+        const query = aql`
+            REMOVE { _key: ${ clientTrack._key} } in ${this.arangoService.collection}
+        `;
+
+        return await this.arangoService.database.query(query)
+            .catch(e => {
+                throw new HttpException(e.response.body.errorMessage, e.code)
+            })
+    }
 }

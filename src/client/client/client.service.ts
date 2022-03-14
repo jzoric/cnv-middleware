@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { ClientBroker } from './model/client.broker';
 import { ConfigService } from 'src/config/config/config.service';
 import { TrackService } from 'src/track/track/track.service';
-import { ClientTrack } from 'src/track/track/model/client.track';
 
 @Injectable()
 export class ClientService {
@@ -20,12 +19,15 @@ export class ClientService {
         return this.clients
     }
 
-    public async handleConnection(client) {
+    public async handleConnection(client: any) {
         const sid = client.handshake.headers.cookie?.split(';').filter(c => c.indexOf('conversation-vv-sid') > -1)?.[0].split('=')?.[1];
         const tid = client.handshake.query.tid;
 
 
-        const clientTrack = await this.trackService.getTrack(sid, tid) || new ClientTrack(sid,tid);
+        const clientTrack = await this.trackService.getTrack(sid, tid);
+        if(!clientTrack) {
+            client.disconnect();
+        }
         try {
             this.clients.push(
                 new ClientBroker(

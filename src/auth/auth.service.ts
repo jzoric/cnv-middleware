@@ -3,7 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 
 import { ConfigService } from 'src/config/config/config.service';
 import { v4 as uuidv4 } from 'uuid';
-const bcrypt = require('bcryptjs');
+const bcrypt = require('bcrypt');
 
 @Injectable()
 export class AuthService {

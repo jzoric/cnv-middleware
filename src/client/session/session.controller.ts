@@ -6,6 +6,7 @@ import { UserSession } from './model/usersession';
 import { TrackService } from 'src/track/track/track.service';
 import { ApiBearerAuth, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { ConfigService } from 'src/config/config/config.service';
 
 @ApiTags('api/v1/session')
 @Controller('api/v1/session')
@@ -13,7 +14,10 @@ export class SessionController {
     private readonly logger = new Logger(SessionController.name);
 
   
-    constructor(private readonly sessionService: SessionService, private readonly trackService: TrackService) {
+    constructor(
+        private readonly configService: ConfigService,
+        private readonly sessionService: SessionService,
+        private readonly trackService: TrackService) {
         
     }
 
@@ -29,13 +33,16 @@ export class SessionController {
         
         let userSession: UserSession;
         let sid = req.cookies[SESSION_COOKIE_NAME];
-
         if(sid) {
             userSession = await this.sessionService.getSession(sid);
         }
         if (!sid || !userSession) {
             userSession = await this.sessionService.createSession(userAgent, userIp);
+            let expireDate = new Date;
+            const expirationTime = +this.configService.get('TRACK_LIFETIME_MONTHS');
+            expireDate.setMonth(expireDate.getMonth() + expirationTime);
             response.cookie(SESSION_COOKIE_NAME, userSession.sid, {
+                expires: expireDate,
                 httpOnly: true
             });
             sid = userSession.sid;

@@ -23,12 +23,16 @@ export class ClientTrack {
     })
     interaction: Interaction[]
 
+    @ApiProperty()
+    store: Object;
+
     constructor(sid: string, flowId: string) {
         this.sid = sid;
         this.tid = uuidv4();
         this.flowId = flowId;
         this.date = new Date();
         this.interaction = [];
+        this.store = {};
 
     }
 }

@@ -1,4 +1,5 @@
 import { Logger } from "@nestjs/common";
+import { json } from "express";
 import { Interaction, OriginInteraction } from "src/track/track/model/client.interaction";
 import { ClientTrack } from "src/track/track/model/client.track";
 import { TrackService } from 'src/track/track/track.service';
@@ -13,6 +14,7 @@ export class ClientBroker {
   clientTrack: ClientTrack;
   isReady: boolean;
   isTerminated: boolean = false;
+  inactivityTimeout: NodeJS.Timeout;
 
   constructor(remoteClient: any, remoteServerURL: string, clientTrack: ClientTrack, private readonly trackService: TrackService) {
 
@@ -20,6 +22,10 @@ export class ClientBroker {
     this.clientTrack = clientTrack;
     this.isReady = false;
     this.createRemoteServer(remoteServerURL);
+    this.inactivityTimeout = setTimeout(() => {
+      this.logger.log("User inactive, terminatting");
+      this.terminate();
+    }, 3600000);
 
 
     this.remoteClient.on("message", async (data) => {
@@ -30,11 +36,22 @@ export class ClientBroker {
         _data = data;
       }
 
-      this.clientTrack.interaction.push(new Interaction(OriginInteraction.CLIENT, _data));
+      clearTimeout(this.inactivityTimeout);
+      this.inactivityTimeout = setTimeout(() => {
+        this.logger.log("User inactive, terminatting");
+        this.terminate();
+      }, 3600000);
+
       if (this.remoteServer.readyState === WebSocket.OPEN) {
         this.remoteServer.send(data);
       }
-      await this.trackService.updateTrack(this.clientTrack)
+
+      try {
+        await this.trackService.addInteraction(this.clientTrack, new Interaction(OriginInteraction.CLIENT, _data))
+      } catch (e) {
+        this.logger.error(e);
+        this.terminate();
+      }
     })
   }
 
@@ -50,47 +67,75 @@ export class ClientBroker {
       this.remoteServer.removeEventListener("message");
 
       setTimeout(() => {
-        if(!this.isTerminated)
-        this.createRemoteServer(remoteURL);
+        if (!this.isTerminated) {
+          this.logger.debug('creating remote server')
+          this.createRemoteServer(remoteURL);
+        }
       }, 1000)
 
     })
 
     this.remoteServer.on("message", async (data) => {
-      if(!this.isReady) {
+      if (!this.isReady) {
         return;
       }
-      this.remoteClient.emit("message", data);
+
       const jsonData = JSON.parse(data);
-      this.clientTrack.interaction.push(new Interaction(OriginInteraction.SERVER, jsonData))
+      if (jsonData.type === "store") {
+
+        try {
+
+          await this.trackService.updateStore(this.clientTrack, jsonData.props);
+
+        } catch (e) {
+          this.logger.error(e);
+          this.terminate();
+        }
+        return;
+      }
+
+      this.remoteClient.emit("message", data);
+
+      const interactions = await this.trackService.getInteractions(this.clientTrack);
+
+      // TODO add this feature again calling the bd? 
+      const lastObject = interactions[interactions.length - 1];
+      if (lastObject?.origin == OriginInteraction.SERVER &&
+        JSON.stringify(lastObject.data) == JSON.stringify(jsonData)) {
+        return;
+      }
+      await this.trackService.addInteraction(this.clientTrack, new Interaction(OriginInteraction.SERVER, jsonData))
     })
 
     this.remoteServer.on("open", async () => {
-      
+
       this.logger.log(`established connection between client ${this.remoteClient.id} with trackid: ${this.clientTrack.tid} and nodeRED`);
 
-      if (this.clientTrack.interaction.length > 0) {
+      const interactions = await this.trackService.getInteractions(this.clientTrack);
+
+      if (interactions.length > 0) {
         this.isReady = false;
         this.logger.log('resync client with nodeRED');
-        const clientMessages = this.clientTrack.interaction.filter(d => d.origin == OriginInteraction.CLIENT).map(d => d.data);
-        
-        let interval = 50;
+        const clientMessages = interactions.filter(d => d.origin == OriginInteraction.CLIENT).map(d => d.data);
+
+        let interval = 600;
         clientMessages.forEach((data, index, array) => {
           setTimeout(() => {
             this.remoteServer.send(JSON.stringify(data));
-            if (index === array.length -1){
-              this.isReady = true;
+            if (index === array.length - 1) {
+              setTimeout(() => {
+                this.isReady = true;
+
+              }, 1000)
+              this.logger.log('resync client finished')
             };
-        }, interval+=50);
+          }, interval += 100);
         })
-
-        this.logger.log('resync client finished')
-
       } else {
         this.isReady = true;
       }
 
-      
+
     })
 
     this.remoteServer.on("close", async (data) => {
@@ -110,12 +155,13 @@ export class ClientBroker {
 
   }
 
-  public async terminate(){
+  public async terminate() {
     this.remoteServer.removeEventListener("open");
     this.remoteServer.removeEventListener("error");
     this.remoteServer.removeEventListener("close");
     this.remoteServer.removeEventListener("message");
     this.isTerminated = true;
+    this.remoteClient.disconnect();
     setTimeout(() => {
       this.remoteServer.close();
     }, 20);

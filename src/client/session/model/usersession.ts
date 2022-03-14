@@ -3,6 +3,9 @@ import { v4 as uuidv4 } from 'uuid';
 
 
 export class UserSession {
+    _key?: string;
+    _id?: string;
+    
     @ApiProperty()
     sid: string;
 

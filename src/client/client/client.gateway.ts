@@ -1,5 +1,7 @@
 import { Logger } from '@nestjs/common';
+import { Cron } from '@nestjs/schedule';
 import { OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway } from '@nestjs/websockets';
+import { IoAdapter } from '@nestjs/platform-socket.io';
 
 import { ClientService } from './client.service';
 
@@ -17,15 +19,14 @@ export class ClientGateway implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(private readonly clientService: ClientService) {
   
     this.logger.debug('gateway online');
-    
-    
-    setInterval(() => {
-      const clients = clientService.getActiveClients();
-      this.logger.debug(`active clients: ${clients.length}`);
-      this.logger.debug( clients.map(c => c.remoteClient.id));
-    }, 20000);
   }
 
+  @Cron('*/10 * * * * *')
+  handleCron() {
+    const clients = this.clientService.getActiveClients();
+    this.logger.debug(`active clients: ${clients.length}`);
+    this.logger.debug( clients.map(c => c.remoteClient.id));
+  }
   
   handleConnection(client: any, ...args: any[]) {
     this.logger.debug(`client connected:: ${client.id} on flow: ${client.nsp.name}`);

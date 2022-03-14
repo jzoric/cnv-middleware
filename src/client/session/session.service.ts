@@ -45,6 +45,23 @@ export class SessionService {
             })
     }
 
+    async getSessionsByDate(page: number, take: number, startDate: Date, endDate: Date): Promise<UserSession[]> {
+        
+        const query = aql`
+            FOR S in ${this.arangoService.collection}
+            FILTER S.createDate >= ${new Date(startDate)} && S.createDate <= ${new Date(endDate)}
+            LIMIT ${+(page * take )}, ${+take}
+            RETURN S
+        `;
+        return await this.arangoService.database.query(query)
+            .then(res => res.all())
+            .catch(e => {
+                throw new HttpException(e.response.body.errorMessage, e.code)
+            })
+    }
+
+
+
     async countSessions(): Promise<number> {
         const query = aql`
             FOR S in ${this.arangoService.collection}
@@ -54,5 +71,15 @@ export class SessionService {
         return await this.arangoService.database.query(query)
             .then(res => res.all())
             .then(res => res?.[0]);
+    }
+
+    async removeSession(userSession: UserSession) {
+        const query = aql`
+            REMOVE { _key: ${ userSession._key} } in ${this.arangoService.collection}
+        `;
+        return await this.arangoService.database.query(query)
+            .catch(e => {
+                throw new HttpException(e.response.body.errorMessage, e.code)
+            })
     }
 }
