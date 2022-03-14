@@ -1,26 +1,26 @@
 apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
-  name: vv-middleware-api
+  name: cnv-middleware-api 
   annotations:
-    nginx.org/websocket-services: vv-middleware-api
+    nginx.org/websocket-services: cnv-middleware-api 
     cert-manager.io/cluster-issuer: letsencrypt-prod
     nginx.ingress.kubernetes.io/proxy-body-size: "0"
 spec:
   tls: 
-    - secretName: admin-vv-tls
+    - secretName: admin-cnv-tls
       hosts:
-        - conversation-vv.productdock.com
+        - conversation-platform.productdock.com
   rules:
-    - host: conversation-vv.productdock.com
+    - host: conversation-platform.productdock.com
       http:
         paths:
           - path: /
             backend:
-              serviceName: vv-middleware-api
+              serviceName: cnv-middleware-api 
               servicePort: 3000
           - path: /red/
             backend:
-              serviceName: vv-middleware-api
+              serviceName: cnv-middleware-api 
               servicePort: 1880
                 

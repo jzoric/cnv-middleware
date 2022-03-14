@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: production-env
+data:
+  PRODUCTION.env: |
+    root-redirect=/red/
+    cors=http://localhost,http://localhost:1234,http://conversation-platform.productdock.com/,https://conversation-platform.productdock.com/
+
+    # ARANGO_DB 
+    #ARANGO_HOST=http://arango:8529
+    #ARANGO_USER=conversationuser
+    #ARANGO_PASSWORD=secret
+    #ARANGO_DATABASE=conversation
+
+    ADMIN_USER=admin
+    ADMIN_PASSWORD=nimda2022##
+    JWT_EXPIRATION_SECONDS=300s
+
+    # NODERED related configs
+
+    USE_BUNDLED_NODERED=true
+    NODERED_WS_CONNECTION=ws://localhost:8080
+    NODERED_HOME_DIR=/mount
+    NODERED_ENABLE_PROJECTS=true
+
+    # TRACK
+    TRACK_LIFETIME_MONTHS = 1

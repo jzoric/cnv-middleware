@@ -1,20 +1,20 @@
 apiVersion : apps/v1
 kind: Deployment
 metadata:
-  name: vv-middleware-api 
+  name: cnv-middleware-api 
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: vv-middleware-api
+      app: cnv-middleware-api 
   template:
     metadata:
       labels:
-        app: vv-middleware-api 
+        app: cnv-middleware-api  
     spec:
       containers:
-        - name: vv-middleware-api 
-          image: eu.gcr.io/PROJECT_ID/IMAGE:TAG
+        - name: cnv-middleware-api  
+          image: IMAGE:TAG
           imagePullPolicy: Always
           ports:
             - containerPort: 3000
@@ -31,6 +31,13 @@ spec:
               subPath: PRODUCTION.env
             - mountPath: "/mount"
               name: nodered-managed-disk
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "250m"
+            limits:
+              memory: "1024Mi"
+              cpu: "2"
 
       volumes:
         - name: production-env

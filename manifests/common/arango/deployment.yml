@@ -18,12 +18,19 @@ spec:
           imagePullPolicy: IfNotPresent 
           env:
             - name: ARANGO_ROOT_PASSWORD
-              value: "secret"
+              value: "nimda2022##"
           ports:
             - containerPort: 8529
           volumeMounts:
             - mountPath: "/var/lib/arangodb3"
               name: arango-managed-disk
+          resources:
+            requests:
+              memory: "1024Mi"
+              cpu: "10m"
+            limits:
+              memory: "1512Mi"
+              cpu: "512m"
       volumes:
         - name: arango-managed-disk
           persistentVolumeClaim:
