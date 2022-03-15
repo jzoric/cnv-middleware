@@ -23,6 +23,7 @@ data:
     NODERED_WS_CONNECTION=ws://localhost:8080
     NODERED_HOME_DIR=/mount
     NODERED_ENABLE_PROJECTS=true
+    NODERED_FLOW_FILE=flows.json
 
     # TRACK
     TRACK_LIFETIME_MONTHS = 1

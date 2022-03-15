@@ -36,12 +36,17 @@ export class NoderedModule {
     if(this.configService.get('NODERED_HOME_DIR')) {
       settings.settings.userDir = this.configService.get('NODERED_HOME_DIR');
     }
+    
     if(this.configService.get('NODERED_ENABLE_PROJECTS')) {
       settings.settings.editorTheme = {
         projects: {
           enabled: true
         }
       }
+    }
+
+    if(this.configService.get('NODERED_FLOW_FILE')) {
+      settings.settings.flowFile = this.configService.get('NODERED_FLOW_FILE');
     }
     if(this.configService.get('USE_BUNDLED_NODERED')) {
       if(this.authService.useAuth) {

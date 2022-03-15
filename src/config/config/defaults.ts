@@ -14,6 +14,7 @@ const DEFAULTS = {
     NODERED_HOME_DIR: '',
     NODERED_WS_CONNECTION: 'ws://localhost:8080',
     NODERED_ENABLE_PROJECTS: true,
+    NODERED_FLOW_FILE: 'flows.json',
     TRACK_LIFETIME_MONTHS: 13
 }
 
