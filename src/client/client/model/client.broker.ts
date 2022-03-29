@@ -5,6 +5,7 @@ import { ClientTrack } from "src/track/track/model/client.track";
 import { TrackService } from 'src/track/track/track.service';
 import * as WebSocket from 'ws';
 
+import { JSONSanitizer } from "src/utils/sanitizer";
 
 export class ClientBroker {
   private readonly logger = new Logger(ClientBroker.name);
@@ -31,7 +32,9 @@ export class ClientBroker {
     this.remoteClient.on("message", async (data) => {
       let _data;
       try {
+        
         _data = JSON.parse(data);
+        JSONSanitizer(_data);
       } catch (e) {
         _data = data;
       }
@@ -43,7 +46,7 @@ export class ClientBroker {
       }, 3600000);
 
       if (this.remoteServer.readyState === WebSocket.OPEN) {
-        this.remoteServer.send(data);
+        this.remoteServer.send(JSON.stringify(_data));
       }
 
       try {
@@ -81,6 +84,7 @@ export class ClientBroker {
       }
 
       const jsonData = JSON.parse(data);
+      JSONSanitizer(jsonData);
       if (jsonData.type === "store") {
 
         try {
@@ -94,7 +98,7 @@ export class ClientBroker {
         return;
       }
 
-      this.remoteClient.emit("message", data);
+      this.remoteClient.emit("message", JSON.stringify(jsonData));
 
       const interactions = await this.trackService.getInteractions(this.clientTrack);
 

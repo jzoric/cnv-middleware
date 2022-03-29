@@ -27,7 +27,6 @@ export class ClientService {
 
 
         let clientTrack = await this.trackService.getTrack(sid, tid);
-
         if(!clientTrack) {
             client.disconnect();
             return;
