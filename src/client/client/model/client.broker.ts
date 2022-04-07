@@ -83,7 +83,7 @@ export class ClientBroker {
       }
 
       const jsonData = JSON.parse(data);
-      JSONSanitizer(jsonData);
+      //JSONSanitizer(jsonData);
       if (jsonData.type === "store") {
 
         try {
