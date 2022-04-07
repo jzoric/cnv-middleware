@@ -87,8 +87,7 @@ export class ClientBroker {
       if (jsonData.type === "store") {
 
         try {
-
-          await this.trackService.updateStore(this.clientTrack, jsonData.props);
+          await this.trackService.updateStore(this.clientTrack, jsonData.data);
 
         } catch (e) {
           this.logger.error(e);
