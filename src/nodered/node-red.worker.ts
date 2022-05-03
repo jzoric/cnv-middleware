@@ -29,7 +29,7 @@ class NodeREDWorker {
       },
 
       customLogger: {
-        level: 'info',
+        level: 'all',
 
         handler: (settings) => {
           return (msg) => {
