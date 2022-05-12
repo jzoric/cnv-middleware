@@ -160,9 +160,26 @@ export class TrackService {
         .then(res => res?.[0]);
     }
 
-    async countClientTracks(): Promise<number> {
+    async countClientTracks(sid: string, flowId: string, startDate: Date, endDate: Date): Promise<number> {
+        const filters = [];
+        
+        if(sid) {
+            filters.push(aql`FILTER ct.sid == ${sid}`)
+        }
+
+        if(flowId) {
+            filters.push(aql`FILTER ct.flowId == ${flowId}`)
+        }
+
+        if(startDate && endDate) {
+            filters.push(
+                aql`FILTER ct.date >= ${new Date(startDate)} && ct.date <= ${new Date(endDate)}`
+            )
+        }
+        
         const query = aql`
-            FOR S in ${this.arangoService.collection}
+            FOR ct in ${this.arangoService.collection}
+            ${aql.join(filters)}
             COLLECT WITH COUNT INTO length
             RETURN length
         `;

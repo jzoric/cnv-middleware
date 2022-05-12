@@ -15,6 +15,8 @@ import { TrackService } from './track/track/track.service';
 import { Cron, ScheduleModule } from '@nestjs/schedule';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { MetricsModule } from './metrics/metrics.module';
+import { CustomFiltersModule } from './custom-filters/custom-filters.module';
 
 @Module({
   imports: [
@@ -38,7 +40,9 @@ import { join } from 'path';
     TrackModule,
     NoderedModule,
     AuthModule,
-    ScheduleModule.forRoot()
+    ScheduleModule.forRoot(),
+    MetricsModule,
+    CustomFiltersModule
   ],
   controllers: [AppController],
   providers: [AppService],

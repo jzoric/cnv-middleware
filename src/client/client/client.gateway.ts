@@ -21,12 +21,12 @@ export class ClientGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.logger.debug('gateway online');
   }
 
-  @Cron('*/10 * * * * *')
-  handleCron() {
-    const clients = this.clientService.getActiveClients();
-    this.logger.debug(`active clients: ${clients.length}`);
-    this.logger.debug( clients.map(c => c.remoteClient.id));
-  }
+  // @Cron('*/10 * * * * *')
+  // handleCron() {
+  //   const clients = this.clientService.getActiveClients();
+  //   this.logger.debug(`active clients: ${clients.length}`);
+  //   this.logger.debug( clients.map(c => c.remoteClient.id));
+  // }
   
   handleConnection(client: any, ...args: any[]) {
     this.logger.debug(`client connected:: ${client.id} on flow: ${client.nsp.name}`);

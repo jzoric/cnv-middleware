@@ -97,9 +97,33 @@ export class TrackController {
         status: 200,
         description: 'Number of sessions'
     })
+    @ApiQuery({
+        name: 'sid',
+        required: false,
+        description: 'User Session Id <br><strong>Defaults to empty</strong>'
+    })
+    @ApiQuery({
+        name: 'flowId',
+        required: false,
+        description: 'Flow Id <br><strong>Defaults to empty</strong>',
+        example: '/m4_v2'
+    })
+    @ApiQuery({
+        name: 'startDate',
+        required: false,
+        description: 'Query Start Date <br><strong>Format:</strong> YYYY-MM-DD <br><strong>Defaults to empty</strong>',
+        example: '2021-08-05'
+        
+    })
+    @ApiQuery({
+        name: 'endDate',
+        required: false,
+        description: 'Query End Date <br><strong>Format:</strong> YYYY-MM-DD <br><strong>Defaults to empty</strong>',
+        example: '2021-08-05'
+    })
     @Get("count")
-    public async countSessoins() {
-        return await this.trackService.countClientTracks();
+    public async countSessions(@Query("sid") sid: string, @Query("flowId") flowId: string, @Query("startDate") startDate: Date, @Query("endDate") endDate: Date) {
+        return await this.trackService.countClientTracks(sid, flowId, startDate, endDate);
 
     }
 }
