@@ -118,13 +118,7 @@ export class TrackService {
         if(tid) {
             filters.push(aql`FILTER ct.tid == ${tid}`)
         }
-        filters.push(aql`
-            LET storeSize = LENGTH(ct.store)
-            LET interactionSize = LENGTH(ct.interaction)
-            RETURN MERGE(UNSET(ct, 'store','interaction'), {storeSize, interactionSize})
-        `)
-
-
+        
         const query = aql`
             FOR ct in ${this.arangoService.collection}
             ${aql.join(filters)}
