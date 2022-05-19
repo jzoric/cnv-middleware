@@ -46,6 +46,29 @@ export class TrackController {
         description: 'Sort by field direction. ASC | DESC',
     })
     @ApiQuery({
+        name: 'interaction',
+        required: false,
+        description: 'Filter by number of interactions. must be used with interactionOperator <br><strong>Defaults to empty</strong>'
+    })
+    @ApiQuery({
+        name: 'interactionOperator',
+        required: false,
+        description: 'Filter interactions by operator. must be used with interaction. <br><strong>Defaults to empty</strong>',
+        enum: ['==', '!=', '<', '>', '=>', '<=']
+    })
+    @ApiQuery({
+        name: 'store',
+        required: false,
+        description: 'Filter by number of stores. must be used with storeOperator <br><strong>Defaults to empty</strong>'
+    })
+    @ApiQuery({
+        name: 'storeOperator',
+        required: false,
+        description: 'Filter stores by operator. must be used with store. <br><strong>Defaults to empty</strong>',
+        enum: ['==', '!=', '<', '>', '=>', '<=']
+
+    })
+    @ApiQuery({
         name: 'startDate',
         required: false,
         description: 'Query Start Date <br><strong>Format:</strong> YYYY-MM-DD <br><strong>Defaults to empty</strong>',
@@ -62,8 +85,27 @@ export class TrackController {
         type: [ClientTrack]
     })
    
-    public async getClientTracks(@Query("page") page: number = 0, @Query("take") take: number = 20, @Query("sid") sid: string, @Query("flowId") flowId: string, @Query("sortBy") sortBy: string, @Query("sortByType") sortByType: string, @Query("startDate") startDate: Date, @Query("endDate") endDate: Date): Promise<ClientTrack[]> {
-        return await this.trackService.getClientTracks(page, take, sid, flowId, sortBy, sortByType, startDate, endDate);
+    public async getClientTracks(
+        @Query("page") page: number = 0, @Query("take") take: number = 20,
+        @Query("sid") sid: string, @Query("flowId") flowId: string, 
+        @Query("sortBy") sortBy: string, @Query("sortByType") sortByType: string, 
+        @Query("interaction") interaction: number, @Query("interactionOperator") interactionOperator: string, 
+        @Query("store") store: number, @Query("storeOperator") storeOperator: string, 
+        @Query("startDate") startDate: Date, @Query("endDate") endDate: Date): Promise<ClientTrack[]> {
+        
+            console.log({ 'getClientTracks': {
+                page, take, sid, flowId,
+                sortBy, sortByType,
+                interaction, interactionOperator,
+                store, storeOperator,
+                startDate, endDate
+            }})
+        return await this.trackService.getClientTracks(
+            page, take, sid, flowId,
+            sortBy, sortByType,
+            interaction, interactionOperator,
+            store, storeOperator,
+            startDate, endDate);
 
     }
 
@@ -107,6 +149,30 @@ export class TrackController {
         example: '/m4_v2'
     })
     @ApiQuery({
+        name: 'interaction',
+        required: false,
+        description: 'Filter by number of interaction. must be used with interactionOperator <br><strong>Defaults to empty</strong>'
+    })
+    @ApiQuery({
+        name: 'interactionOperator',
+        required: false,
+        description: 'Filter interaction by operator. must be used with interaction. <br><strong>Defaults to empty</strong>',
+        enum: ['==', '!=', '<', '>', '=>', '<=']
+
+    })
+    @ApiQuery({
+        name: 'store',
+        required: false,
+        description: 'Filter by number of store. must be used with storeOperator <br><strong>Defaults to empty</strong>'
+    })
+    @ApiQuery({
+        name: 'storeOperator',
+        required: false,
+        description: 'Filter store by operator. must be used with store. <br><strong>Defaults to empty</strong>',
+        enum: ['==', '!=', '<', '>', '=>', '<=']
+
+    })
+    @ApiQuery({
         name: 'startDate',
         required: false,
         description: 'Query Start Date <br><strong>Format:</strong> YYYY-MM-DD <br><strong>Defaults to empty</strong>',
@@ -120,8 +186,21 @@ export class TrackController {
         example: '2021-08-05'
     })
     @Get("count")
-    public async countSessions(@Query("sid") sid: string, @Query("flowId") flowId: string, @Query("startDate") startDate: Date, @Query("endDate") endDate: Date) {
-        return await this.trackService.countClientTracks(sid, flowId, startDate, endDate);
+    public async countSessions(
+        @Query("sid") sid: string, @Query("flowId") flowId: string,
+        @Query("interaction") interaction: number, @Query("interactionOperator") interactionOperator: string, 
+        @Query("store") store: number, @Query("storeOperator") storeOperator: string,
+        @Query("startDate") startDate: Date, @Query("endDate") endDate: Date) {
+            console.log({'countSessions': {sid, flowId,
+            interaction, interactionOperator,
+            store, storeOperator,
+            startDate, endDate }
+        })
+        return await this.trackService.countClientTracks(
+            sid, flowId,
+            interaction, interactionOperator,
+            store, storeOperator,
+            startDate, endDate);
 
     }
 }
