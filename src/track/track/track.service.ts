@@ -84,7 +84,6 @@ export class TrackService {
             FOR ct in ${this.arangoService.collection}
             ${aql.join(filters)}
             `;
-        console.log('query', query)
         return await this.arangoService.database.query(query)
             .then(res => res.all())
             .catch(e => {
@@ -112,18 +111,27 @@ export class TrackService {
         const filters = [];
 
         if(sid) {
-            filters.push(aql`FILTER ct.sid == ${sid}`)
+            filters.push(aql`
+                FILTER ct.sid == ${sid}
+            `);
         }
 
         if(tid) {
-            filters.push(aql`FILTER ct.tid == ${tid}`)
+            filters.push(aql`
+                FILTER ct.tid == ${tid}
+            `)
         }
+
+        filters.push(aql`
+            RETURN ct
+        `)
+
         
         const query = aql`
             FOR ct in ${this.arangoService.collection}
             ${aql.join(filters)}
             `;
-        
+
         return await this.arangoService.database.query(query)
             .then(res => res.all())
             .then(res => res?.[0]);
