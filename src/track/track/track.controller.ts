@@ -54,7 +54,7 @@ export class TrackController {
         name: 'interactionOperator',
         required: false,
         description: 'Filter interactions by operator. must be used with interaction. <br><strong>Defaults to empty</strong>',
-        enum: ['==', '!=', '<', '>', '=>', '<=']
+        enum: ['===', '!=', '<', '>', '=>', '<=']
     })
     @ApiQuery({
         name: 'store',
@@ -65,7 +65,7 @@ export class TrackController {
         name: 'storeOperator',
         required: false,
         description: 'Filter stores by operator. must be used with store. <br><strong>Defaults to empty</strong>',
-        enum: ['==', '!=', '<', '>', '=>', '<=']
+        enum: ['===', '!=', '<', '>', '=>', '<=']
 
     })
     @ApiQuery({
@@ -157,7 +157,7 @@ export class TrackController {
         name: 'interactionOperator',
         required: false,
         description: 'Filter interaction by operator. must be used with interaction. <br><strong>Defaults to empty</strong>',
-        enum: ['==', '!=', '<', '>', '=>', '<=']
+        enum: ['===', '!=', '<', '>', '=>', '<=']
 
     })
     @ApiQuery({
@@ -169,7 +169,7 @@ export class TrackController {
         name: 'storeOperator',
         required: false,
         description: 'Filter store by operator. must be used with store. <br><strong>Defaults to empty</strong>',
-        enum: ['==', '!=', '<', '>', '=>', '<=']
+        enum: ['===', '!=', '<', '>', '=>', '<=']
 
     })
     @ApiQuery({

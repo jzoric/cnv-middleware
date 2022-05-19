@@ -250,7 +250,7 @@ export class TrackService {
 
     private getInteractionFilter(ninteraction: number, interactionOperator: string) {
         switch (interactionOperator) {
-            case '==':
+            case '===':
                 return aql`
                         FILTER LENGTH(ct.interaction) == ${+ninteraction}
                     `
@@ -279,7 +279,7 @@ export class TrackService {
 
     private getStoreFilter(nstore: number, storeOperator: string) {
         switch (storeOperator) {
-            case '==':
+            case '===':
                 return aql`
                         FILTER LENGTH(ct.store) == ${+nstore}
                     `
