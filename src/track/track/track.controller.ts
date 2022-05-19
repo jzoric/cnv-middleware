@@ -36,10 +36,14 @@ export class TrackController {
         example: '/m4_v2'
     })
     @ApiQuery({
-        name: 'filterByClientOrigin',
+        name: 'sortBy',
         required: false,
-        description: 'If true, only client origins is retrieved <br><strong>Defaults to false</strong>',
-        example: 'true'
+        description: 'Sort by field name',
+    })
+    @ApiQuery({
+        name: 'sortByType',
+        required: false,
+        description: 'Sort by field direction. ASC | DESC',
     })
     @ApiQuery({
         name: 'startDate',
@@ -58,8 +62,8 @@ export class TrackController {
         type: [ClientTrack]
     })
    
-    public async getClientTracks(@Query("page") page: number = 0, @Query("take") take: number = 20, @Query("sid") sid: string, @Query("flowId") flowId: string, @Query("filterByClientOrigin") filterByClientOrigin: boolean = false, @Query("startDate") startDate: Date, @Query("endDate") endDate: Date): Promise<ClientTrack[]> {
-        return await this.trackService.getClientTracks(page, take, sid, flowId, filterByClientOrigin, startDate, endDate);
+    public async getClientTracks(@Query("page") page: number = 0, @Query("take") take: number = 20, @Query("sid") sid: string, @Query("flowId") flowId: string, @Query("sortBy") sortBy: string, @Query("sortByType") sortByType: string, @Query("startDate") startDate: Date, @Query("endDate") endDate: Date): Promise<ClientTrack[]> {
+        return await this.trackService.getClientTracks(page, take, sid, flowId, sortBy, sortByType, startDate, endDate);
 
     }
 
@@ -76,18 +80,12 @@ export class TrackController {
         required: true,
         description: '<strong>Required:</strong> the flow track id that holds the user <-> server interactions'
     })
-    @ApiQuery({
-        name: 'filterByClientOrigin',
-        required: false,
-        description: 'If true, only client origins is retrieved <br><strong>Defaults to false</strong>',
-        example: 'true'
-    })
     @ApiResponse({
         type: [ClientTrack]
         
     })
-    public async getClientTrack(@Query("sid") sid: string, @Query("tid") tid: string, @Query("filterByClientOrigin") filterByClientOrigin: boolean = false): Promise<ClientTrack> {
-        return await this.trackService.getTrack(sid, tid, filterByClientOrigin);
+    public async getClientTrack(@Query("sid") sid: string, @Query("tid") tid: string): Promise<ClientTrack> {
+        return await this.trackService.getTrack(sid, tid);
 
     }
 

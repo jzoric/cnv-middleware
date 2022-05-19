@@ -21,45 +21,70 @@ export class TrackService {
         }
     }
 
-    async getClientTracks(page: number, take: number, sid: string, flowId: string, filterByClientOrigin: boolean | string, startDate: Date, endDate: Date): Promise<ClientTrack[]> {
+    async getClientTracks(page: number, take: number, sid: string, flowId: string, sortBy: string, sortByType: string,  startDate: Date, endDate: Date): Promise<ClientTrack[]> {
         const filters = [];
 
         if(sid) {
-            filters.push(aql`FILTER ct.sid == ${sid}`)
+            filters.push(aql`
+                FILTER ct.sid == ${sid}
+            ` )
         }
 
         if(flowId) {
-            filters.push(aql`FILTER ct.flowId == ${flowId}`)
+            filters.push(aql`
+                FILTER ct.flowId == ${flowId}
+            `);
         }
 
         if(startDate && endDate) {
-            filters.push(
-                aql`FILTER ct.date >= ${new Date(startDate)} && ct.date <= ${new Date(endDate)}`
-            )
+            filters.push(aql`
+                FILTER ct.date >= ${new Date(startDate)} && ct.date <= ${new Date(endDate)}
+            `);
         }
 
-        filters.push(
-            aql`LIMIT ${+(page * take )}, ${+take}`
-        )
 
-        if(filterByClientOrigin == true || filterByClientOrigin === 'true') {
-            filters.push(
-                aql`
-                LET interaction = (ct.interaction[* FILTER CONTAINS(CURRENT.origin, "client")])
-                RETURN MERGE(UNSET(ct, 'interaction'), { interaction: interaction})
-                `
-            )
-
-        } else {
-            filters.push(
-                aql`RETURN ct`
-            )
+        if(sortBy && sortByType) {
+            if(sortBy == 'store' || sortBy == 'interaction') {
+                filters.push(aql`
+                    SORT LENGTH(ct.${sortBy}) ${sortByType}
+                `);
+            } else {
+                filters.push(aql`
+                    SORT ct.${sortBy} ${sortByType}
+                `)
+            }
         }
+
+        filters.push(aql`
+            LIMIT ${+(page * take )}, ${+take}
+            `);
+
+        // if(filterByClientOrigin == true || filterByClientOrigin === 'true') {
+        //     filters.push(
+        //         aql`
+        //         LET interaction = (ct.interaction[* FILTER CONTAINS(CURRENT.origin, "client")])
+        //         RETURN MERGE(UNSET(ct, 'interaction'), { interaction: interaction})
+        //         `
+        //     )
+
+        // } else {
+        //     filters.push(
+        //         aql`RETURN ct`
+        //     )
+        // }
+
+
+        filters.push(aql`
+            LET storeSize = LENGTH(ct.store)
+            LET interactionSize = LENGTH(ct.interaction)
+            RETURN MERGE(UNSET(ct, 'store','interaction'), {storeSize, interactionSize})
+        `)
+
         const query = aql`
             FOR ct in ${this.arangoService.collection}
-            FILTER LENGTH(ct.interaction) > 0
             ${aql.join(filters)}
             `;
+        console.log('query', query)
         return await this.arangoService.database.query(query)
             .then(res => res.all())
             .catch(e => {
@@ -83,7 +108,7 @@ export class TrackService {
             })
     }
 
-    async getTrack(sid:string, tid: string, filterByClientOrigin: boolean | string = false): Promise<ClientTrack | null> {
+    async getTrack(sid:string, tid: string): Promise<ClientTrack | null> {
         const filters = [];
 
         if(sid) {
@@ -93,20 +118,13 @@ export class TrackService {
         if(tid) {
             filters.push(aql`FILTER ct.tid == ${tid}`)
         }
+        filters.push(aql`
+            LET storeSize = LENGTH(ct.store)
+            LET interactionSize = LENGTH(ct.interaction)
+            RETURN MERGE(UNSET(ct, 'store','interaction'), {storeSize, interactionSize})
+        `)
 
-        if(filterByClientOrigin == true || filterByClientOrigin === 'true') {
-            filters.push(
-                aql`
-                LET interaction = (ct.interaction[* FILTER CONTAINS(CURRENT.origin, "client")])
-                RETURN MERGE(UNSET(ct, 'interaction'), { interaction: interaction})
-                `
-            )
 
-        } else {
-            filters.push(
-                aql`RETURN ct`
-            )
-        }
         const query = aql`
             FOR ct in ${this.arangoService.collection}
             ${aql.join(filters)}
@@ -177,12 +195,14 @@ export class TrackService {
             )
         }
         
+        
         const query = aql`
             FOR ct in ${this.arangoService.collection}
             ${aql.join(filters)}
             COLLECT WITH COUNT INTO length
             RETURN length
         `;
+        console.log(query)
         return await this.arangoService.database.query(query)
             .then(res => res.all())
             .then(res => res?.[0]);
