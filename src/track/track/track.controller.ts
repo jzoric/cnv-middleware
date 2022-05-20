@@ -10,7 +10,7 @@ export class TrackController {
     constructor(private readonly trackService: TrackService) {
 
     }
-    
+
     @ApiBearerAuth()
     @UseGuards(JwtAuthGuard)
     @Get("tracks")
@@ -73,7 +73,7 @@ export class TrackController {
         required: false,
         description: 'Query Start Date <br><strong>Format:</strong> YYYY-MM-DD <br><strong>Defaults to empty</strong>',
         example: '2021-08-05'
-        
+
     })
     @ApiQuery({
         name: 'endDate',
@@ -84,22 +84,15 @@ export class TrackController {
     @ApiResponse({
         type: [ClientTrack]
     })
-   
+
     public async getClientTracks(
         @Query("page") page: number = 0, @Query("take") take: number = 20,
-        @Query("sid") sid: string, @Query("flowId") flowId: string, 
-        @Query("sortBy") sortBy: string, @Query("sortByType") sortByType: string, 
-        @Query("interaction") interaction: number, @Query("interactionOperator") interactionOperator: string, 
-        @Query("store") store: number, @Query("storeOperator") storeOperator: string, 
+        @Query("sid") sid: string, @Query("flowId") flowId: string,
+        @Query("sortBy") sortBy: string, @Query("sortByType") sortByType: string,
+        @Query("interaction") interaction: number, @Query("interactionOperator") interactionOperator: string,
+        @Query("store") store: number, @Query("storeOperator") storeOperator: string,
         @Query("startDate") startDate: Date, @Query("endDate") endDate: Date): Promise<ClientTrack[]> {
-        
-            console.log({ 'getClientTracks': {
-                page, take, sid, flowId,
-                sortBy, sortByType,
-                interaction, interactionOperator,
-                store, storeOperator,
-                startDate, endDate
-            }})
+
         return await this.trackService.getClientTracks(
             page, take, sid, flowId,
             sortBy, sortByType,
@@ -124,7 +117,7 @@ export class TrackController {
     })
     @ApiResponse({
         type: [ClientTrack]
-        
+
     })
     public async getClientTrack(@Query("sid") sid: string, @Query("tid") tid: string): Promise<ClientTrack> {
         return await this.trackService.getTrack(sid, tid);
@@ -177,7 +170,7 @@ export class TrackController {
         required: false,
         description: 'Query Start Date <br><strong>Format:</strong> YYYY-MM-DD <br><strong>Defaults to empty</strong>',
         example: '2021-08-05'
-        
+
     })
     @ApiQuery({
         name: 'endDate',
@@ -188,14 +181,10 @@ export class TrackController {
     @Get("count")
     public async countSessions(
         @Query("sid") sid: string, @Query("flowId") flowId: string,
-        @Query("interaction") interaction: number, @Query("interactionOperator") interactionOperator: string, 
+        @Query("interaction") interaction: number, @Query("interactionOperator") interactionOperator: string,
         @Query("store") store: number, @Query("storeOperator") storeOperator: string,
         @Query("startDate") startDate: Date, @Query("endDate") endDate: Date) {
-            console.log({'countSessions': {sid, flowId,
-            interaction, interactionOperator,
-            store, storeOperator,
-            startDate, endDate }
-        })
+
         return await this.trackService.countClientTracks(
             sid, flowId,
             interaction, interactionOperator,

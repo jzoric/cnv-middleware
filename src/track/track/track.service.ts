@@ -98,7 +98,6 @@ export class TrackService {
             FOR ct in ${this.arangoService.collection}
             ${aql.join(filters)}
             `;
-        console.log('getClientTracks', query)
         return await this.arangoService.database.query(query)
             .then(res => res.all())
             .catch(e => {
@@ -231,7 +230,6 @@ export class TrackService {
             COLLECT WITH COUNT INTO length
             RETURN length
         `;
-        console.log('countClientTracks', query)
         return await this.arangoService.database.query(query)
             .then(res => res.all())
             .then(res => res?.[0]);
