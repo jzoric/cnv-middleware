@@ -1,8 +1,9 @@
-import { INestApplication, Injectable, Logger } from '@nestjs/common';
+import { HttpService, INestApplication, Injectable, Logger } from '@nestjs/common';
 import { NodeRedWorkerSettings } from './nodered.settings.interface';
 
-import { Worker, isMainThread, parentPort, workerData } from 'worker_threads';
+import { Worker } from 'worker_threads';
 import { setInterval } from 'timers';
+import { ConfigService } from 'src/config/config/config.service';
 
 const path = require('path');
 
@@ -21,12 +22,13 @@ export class NoderedService {
 
   private readonly logger = new Logger(NoderedService.name);
 
-  constructor() { }
+  constructor(
+    private readonly configService: ConfigService,
+    private httpService: HttpService) { }
 
   init(app: INestApplication | any, settings: NodeRedWorkerSettings) {
     this.app = app;
     this.settings = settings;
-
     this.nodeRedWorker = new Worker(noderedWorker, {
       workerData: settings
     });
@@ -66,6 +68,46 @@ export class NoderedService {
   stopHealthCheck() {
     clearTimeout(this.healthcheckIntervalTimeout);
     clearInterval(this.healthcheckInterval);
+  }
+
+  async getCurrentFlows(): Promise<String[]> {
+    const NODERED_HTTP_CONNECTION = this.configService.get('NODERED_HTTP_CONNECTION');
+    const ADMIN_USER = this.configService.get('ADMIN_USER');
+    const ADMIN_PASSWORD = this.configService.get('ADMIN_PASSWORD');
+
+    const data = <any>await this.auth(NODERED_HTTP_CONNECTION, ADMIN_USER, ADMIN_PASSWORD)
+    
+    return new Promise((resolve, reject) => {
+      this.httpService.get(`${NODERED_HTTP_CONNECTION}/red/current_flows`, {
+        headers: {
+          Authorization: `Bearer ${ data.access_token}`
+        }      
+      }).subscribe(res => {
+        resolve(res.data);
+      }, err => {
+        this.logger.error(err);
+        reject(err)
+      })
+    })
+    
+  }
+
+  async auth(server_url: string, username: string, password: string): Promise<string> {
+    
+    return new Promise((resolve, reject) => {
+      this.httpService.post(`${server_url}/red/auth/token`, {
+        client_id: 'node-red-admin',
+        grant_type: 'password',
+        scope: '*',
+        username,
+        password
+      }).subscribe(res => {
+        resolve(res.data)
+      }, err => {
+        this.logger.error(err);
+        reject(err)
+      })
+    })
   }
   
 }

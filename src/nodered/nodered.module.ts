@@ -1,10 +1,11 @@
-import { INestApplication, Module } from '@nestjs/common';
+import { HttpModule, INestApplication, Module } from '@nestjs/common';
 import { AuthModule } from 'src/auth/auth.module';
 import { AuthService } from 'src/auth/auth.service';
 import { ConfigModule } from 'src/config/config/config.module';
 import { ConfigService } from 'src/config/config/config.service';
 import { NoderedService } from './nodered.service';
 import { NodeRedWorkerSettings } from './nodered.settings.interface';
+import { NoderedController } from './nodered.controller';
 
 const os = require('os');
 
@@ -22,9 +23,13 @@ var settings: NodeRedWorkerSettings = {
 };
 
 @Module({
-  imports: [AuthModule, ConfigModule],
+  imports: [
+    AuthModule,
+    ConfigModule,
+    HttpModule
+  ],
   providers: [NoderedService],
-  controllers: []
+  controllers: [NoderedController]
 })
 export class NoderedModule {
 

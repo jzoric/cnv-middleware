@@ -12,29 +12,29 @@ export class CustomFiltersController {
 
     }
 
-    // @ApiBearerAuth()
-    // @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @UseGuards(JwtAuthGuard)
     @Get("")
     getAll(): Promise<CustomFilter[]> {
         return this.customFiltersService.all();
     }
 
-    // @ApiBearerAuth()
-    // @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @UseGuards(JwtAuthGuard)
     @Get(":id")
     get(@Param('id') id: string): Promise<CustomFilter> {
         return this.customFiltersService.get(id);
     }
 
-    // @ApiBearerAuth()
-    // @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @UseGuards(JwtAuthGuard)
     @Post("")
     create(@Body() cf: CustomFilter) {
         return this.customFiltersService.create(cf);
     }
 
-    // @ApiBearerAuth()
-    // @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @UseGuards(JwtAuthGuard)
     @Delete(':id')
     delete(@Param('id') id: string) {
         return this.customFiltersService.remove(id);
