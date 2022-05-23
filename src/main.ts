@@ -9,6 +9,7 @@ import { Logger } from '@nestjs/common';
 
 
 async function bootstrap() {
+  
   const app = await NestFactory.create(AppModule);
   const configService = app.get<ConfigService>(ConfigService);
   const noderedModule = app.get<NoderedModule>(NoderedModule);
@@ -45,6 +46,7 @@ async function bootstrap() {
     });
     
   }
+  
   if(configService.get('isApp') == 'true') {
     logger.log('Launching app urls');
     setTimeout(async () => {
