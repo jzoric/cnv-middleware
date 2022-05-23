@@ -21,7 +21,7 @@ data:
 
     USE_BUNDLED_NODERED=true
     NODERED_WS_CONNECTION=ws://localhost:8080
-    NODERED_HTTP_CONNECTION=http://nodered-websocket:1880
+    NODERED_HTTP_CONNECTION=http://localhost:1880
 
     NODERED_HOME_DIR=/mount
     NODERED_ENABLE_PROJECTS=true
