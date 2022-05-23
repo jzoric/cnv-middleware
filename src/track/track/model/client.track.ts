@@ -21,10 +21,10 @@ export class ClientTrack {
     @ApiProperty({
         type: [Interaction]
     })
-    interaction: Interaction[]
+    interaction?: Interaction[]
 
     @ApiProperty()
-    store: Object;
+    store?: Object;
 
     constructor(sid: string, flowId: string) {
         this.sid = sid;

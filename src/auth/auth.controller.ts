@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, HttpException, HttpStatus, Param, Post } from '@nestjs/common';
 import { ApiBody, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { BasicAuthUserPasswordDTO } from './basicAuthUserPasswordDTO';
@@ -17,11 +17,11 @@ export class AuthController {
     
     @Post('bearer')
     authBearer(@Body("user") user: string, @Body("password") password: string) {
-        console.log(user, password)
+
         if(this.authService.validateUser(user, password)) {
             return this.authService.login(user);
         }
 
-        return '';
+        throw new HttpException('Authentication failure', HttpStatus.UNAUTHORIZED)
     }
 }

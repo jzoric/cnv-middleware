@@ -16,48 +16,86 @@ export class TrackService {
     async createTrack(userSession: UserSession, flowId: string): Promise<ClientTrack> {
         const clientTrack = new ClientTrack(userSession.sid, flowId);
         const insert = this.arangoService.collection.save(clientTrack);
-        if(insert) {
+        if (insert) {
             return clientTrack;
         }
     }
 
-    async getClientTracks(page: number, take: number, sid: string, flowId: string, filterByClientOrigin: boolean | string, startDate: Date, endDate: Date): Promise<ClientTrack[]> {
+    async getClientTracks(
+        page: number, take: number, sid: string, flowId: string,
+        sortBy: string, sortByType: string,
+        ninteractions: number, interactionsOperator: string,
+        nstore: number, storeOperator: string,
+        startDate: Date, endDate: Date): Promise<ClientTrack[]> {
+
         const filters = [];
 
-        if(sid) {
-            filters.push(aql`FILTER ct.sid == ${sid}`)
+        if (sid) {
+            filters.push(aql`
+                FILTER ct.sid == ${sid}
+            ` )
         }
 
-        if(flowId) {
-            filters.push(aql`FILTER ct.flowId == ${flowId}`)
+        if (flowId) {
+            filters.push(aql`
+                FILTER ct.flowId == ${flowId}
+            `);
         }
 
-        if(startDate && endDate) {
-            filters.push(
-                aql`FILTER ct.date >= ${new Date(startDate)} && ct.date <= ${new Date(endDate)}`
-            )
+        if (startDate && endDate) {
+            filters.push(aql`
+                FILTER ct.date >= ${new Date(startDate)} && ct.date <= ${new Date(endDate)}
+            `);
         }
 
-        filters.push(
-            aql`LIMIT ${+(page * take )}, ${+take}`
-        )
 
-        if(filterByClientOrigin == true || filterByClientOrigin === 'true') {
-            filters.push(
-                aql`
-                LET interaction = (ct.interaction[* FILTER CONTAINS(CURRENT.origin, "client")])
-                RETURN MERGE(UNSET(ct, 'interaction'), { interaction: interaction})
-                `
-            )
-
-        } else {
-            filters.push(
-                aql`RETURN ct`
-            )
+        if (sortBy && sortByType) {
+            if (sortBy == 'store' || sortBy == 'interaction') {
+                filters.push(aql`
+                    SORT LENGTH(ct.${sortBy}) ${sortByType}
+                `);
+            } else {
+                filters.push(aql`
+                    SORT ct.${sortBy} ${sortByType}
+                `)
+            }
         }
+
+        if (ninteractions > 0 && interactionsOperator) {
+            filters.push(this.getInteractionFilter(ninteractions, interactionsOperator));
+        }
+
+        if (nstore > 0 && storeOperator) {
+            filters.push(this.getStoreFilter(nstore, storeOperator));
+        }
+
+        filters.push(aql`
+            LIMIT ${+(page * take)}, ${+take}
+            `);
+
+        // if(filterByClientOrigin == true || filterByClientOrigin === 'true') {
+        //     filters.push(
+        //         aql`
+        //         LET interaction = (ct.interaction[* FILTER CONTAINS(CURRENT.origin, "client")])
+        //         RETURN MERGE(UNSET(ct, 'interaction'), { interaction: interaction})
+        //         `
+        //     )
+
+        // } else {
+        //     filters.push(
+        //         aql`RETURN ct`
+        //     )
+        // }
+
+
+        filters.push(aql`
+            LET storeSize = LENGTH(ct.store)
+            LET interactionSize = LENGTH(ct.interaction)
+            RETURN MERGE(UNSET(ct, 'store','interaction'), {storeSize, interactionSize})
+        `)
+
         const query = aql`
             FOR ct in ${this.arangoService.collection}
-            FILTER LENGTH(ct.interaction) > 0
             ${aql.join(filters)}
             `;
         return await this.arangoService.database.query(query)
@@ -72,7 +110,7 @@ export class TrackService {
         const query = aql`
             FOR ct in ${this.arangoService.collection}
             FILTER ct.date <= ${new Date(endDate)}
-            LIMIT ${+(page * take )}, ${+take}
+            LIMIT ${+(page * take)}, ${+take}
             RETURN ct
         `;
 
@@ -83,35 +121,31 @@ export class TrackService {
             })
     }
 
-    async getTrack(sid:string, tid: string, filterByClientOrigin: boolean | string = false): Promise<ClientTrack | null> {
+    async getTrack(sid: string, tid: string): Promise<ClientTrack | null> {
         const filters = [];
 
-        if(sid) {
-            filters.push(aql`FILTER ct.sid == ${sid}`)
+        if (sid) {
+            filters.push(aql`
+                FILTER ct.sid == ${sid}
+            `);
         }
 
-        if(tid) {
-            filters.push(aql`FILTER ct.tid == ${tid}`)
+        if (tid) {
+            filters.push(aql`
+                FILTER ct.tid == ${tid}
+            `)
         }
 
-        if(filterByClientOrigin == true || filterByClientOrigin === 'true') {
-            filters.push(
-                aql`
-                LET interaction = (ct.interaction[* FILTER CONTAINS(CURRENT.origin, "client")])
-                RETURN MERGE(UNSET(ct, 'interaction'), { interaction: interaction})
-                `
-            )
+        filters.push(aql`
+            RETURN ct
+        `)
 
-        } else {
-            filters.push(
-                aql`RETURN ct`
-            )
-        }
+
         const query = aql`
             FOR ct in ${this.arangoService.collection}
             ${aql.join(filters)}
             `;
-        
+
         return await this.arangoService.database.query(query)
             .then(res => res.all())
             .then(res => res?.[0]);
@@ -130,8 +164,8 @@ export class TrackService {
         `;
 
         return await this.arangoService.database.query(query)
-        .then(res => res.all())
-        .then(res => res?.[0]);
+            .then(res => res.all())
+            .then(res => res?.[0]);
     }
 
     async getInteractions(clientTrack: ClientTrack): Promise<Interaction[]> {
@@ -142,8 +176,8 @@ export class TrackService {
         `;
 
         return await this.arangoService.database.query(query)
-        .then(res => res.all())
-        .then(res => res?.[0]);
+            .then(res => res.all())
+            .then(res => res?.[0]);
     }
 
 
@@ -156,13 +190,43 @@ export class TrackService {
         `;
 
         return await this.arangoService.database.query(query)
-        .then(res => res.all())
-        .then(res => res?.[0]);
+            .then(res => res.all())
+            .then(res => res?.[0]);
     }
 
-    async countClientTracks(): Promise<number> {
+    async countClientTracks(
+        sid: string, flowId: string,
+        ninteractions: number, interactionsOperator: string,
+        nstore: number, storeOperator: string,
+        startDate: Date, endDate: Date): Promise<number> {
+        const filters = [];
+
+        if (sid) {
+            filters.push(aql`FILTER ct.sid == ${sid}`)
+        }
+
+        if (flowId) {
+            filters.push(aql`FILTER ct.flowId == ${flowId}`)
+        }
+
+        if (startDate && endDate) {
+            filters.push(
+                aql`FILTER ct.date >= ${new Date(startDate)} && ct.date <= ${new Date(endDate)}`
+            )
+        }
+
+        if (ninteractions > 0 && interactionsOperator) {
+            filters.push(this.getInteractionFilter(ninteractions, interactionsOperator));
+        }
+
+        if (nstore > 0 && storeOperator) {
+            filters.push(this.getStoreFilter(nstore, storeOperator));
+        }
+
+
         const query = aql`
-            FOR S in ${this.arangoService.collection}
+            FOR ct in ${this.arangoService.collection}
+            ${aql.join(filters)}
             COLLECT WITH COUNT INTO length
             RETURN length
         `;
@@ -173,12 +237,70 @@ export class TrackService {
 
     async removeClientTrack(clientTrack: ClientTrack) {
         const query = aql`
-            REMOVE { _key: ${ clientTrack._key} } in ${this.arangoService.collection}
+            REMOVE { _key: ${clientTrack._key} } in ${this.arangoService.collection}
         `;
 
         return await this.arangoService.database.query(query)
             .catch(e => {
                 throw new HttpException(e.response.body.errorMessage, e.code)
             })
+    }
+
+    private getInteractionFilter(ninteraction: number, interactionOperator: string) {
+        switch (interactionOperator) {
+            case '===':
+                return aql`
+                        FILTER LENGTH(ct.interaction) == ${+ninteraction}
+                    `
+            case '!=':
+                return aql`
+                        FILTER LENGTH(ct.interaction) != ${+ninteraction}
+                    `
+            case '<':
+                return aql`
+                        FILTER LENGTH(ct.interaction) < ${+ninteraction}
+                    `
+            case '<=':
+                return aql`
+                        FILTER LENGTH(ct.interaction) <= ${+ninteraction}
+                    `
+            case '>':
+                return aql`
+                        FILTER LENGTH(ct.interaction) > ${+ninteraction}
+                    `
+            case '>=':
+                return aql`
+                        FILTER LENGTH(ct.interaction) >= ${+ninteraction}
+                    `
+        }
+    }
+
+    private getStoreFilter(nstore: number, storeOperator: string) {
+        switch (storeOperator) {
+            case '===':
+                return aql`
+                        FILTER LENGTH(ct.store) == ${+nstore}
+                    `
+            case '!=':
+                return aql`
+                        FILTER LENGTH(ct.store) != ${+nstore}
+                    `
+            case '<':
+                return aql`
+                        FILTER LENGTH(ct.store) < ${+nstore}
+                    `
+            case '<=':
+                return aql`
+                        FILTER LENGTH(ct.store) <= ${+nstore}
+                    `
+            case '>':
+                return aql`
+                        FILTER LENGTH(ct.store) > ${+nstore}
+                    `
+            case '>=':
+                return aql`
+                        FILTER LENGTH(ct.store) >= ${+nstore}
+                    `
+        }
     }
 }

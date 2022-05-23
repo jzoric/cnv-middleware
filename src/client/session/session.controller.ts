@@ -18,7 +18,6 @@ export class SessionController {
         private readonly configService: ConfigService,
         private readonly sessionService: SessionService,
         private readonly trackService: TrackService) {
-        
     }
 
     @ApiQuery({
@@ -93,12 +92,27 @@ export class SessionController {
 
     @ApiBearerAuth()
     @UseGuards(JwtAuthGuard)
+    @Get("session")
+    @ApiQuery({
+        name: 'sessionId',
+        required: false,
+        description: 'Get session by sessionId'
+    })
+    
+    
+    public async getSession(@Query("sessionId") sessionId: string): Promise<UserSession> {
+        return await this.sessionService.getSession(sessionId);
+
+    }
+
+    @ApiBearerAuth()
+    @UseGuards(JwtAuthGuard)
     @ApiResponse({
         status: 200,
         description: 'Number of sessions'
     })
     @Get("count")
-    public async countSessoins() {
+    public async countSessions() {
         return await this.sessionService.countSessions();
 
     }

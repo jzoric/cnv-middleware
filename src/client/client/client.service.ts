@@ -4,6 +4,7 @@ import { ConfigService } from 'src/config/config/config.service';
 import { TrackService } from 'src/track/track/track.service';
 import { SESSION_COOKIE_NAME } from '../session/session.constants';
 import { ClientTrack } from 'src/track/track/model/client.track';
+import { IActiveClientsByFlows } from 'src/interface/ActiveClientsByFlows.interface';
 
 @Injectable()
 export class ClientService {
@@ -19,6 +20,32 @@ export class ClientService {
 
     public getActiveClients(): ClientBroker[] {
         return this.clients
+    }
+
+    public getActiveTracks(): ClientTrack[] {
+        return this.clients.map(clientBroker => {
+            const {
+                date,
+                flowId,
+                sid,
+                tid
+            } = clientBroker.clientTrack;
+            return {
+                date,
+                flowId,
+                sid,
+                tid
+            };
+        })
+    }
+
+    public getActiveClientsByFlows(): IActiveClientsByFlows[] {
+        const activeTracks = this.getActiveTracks();
+        const flows = [...new Set(activeTracks.map(track => track.flowId))];
+        return flows.map(flowId => ({
+            flowId,
+            numClients: activeTracks.filter(t => t.flowId === flowId).length
+        }))
     }
 
     public async handleConnection(client: any) {
