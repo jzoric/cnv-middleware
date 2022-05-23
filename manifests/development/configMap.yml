@@ -4,7 +4,7 @@ metadata:
   name: production-env
 data:
   PRODUCTION.env: |
-    root-redirect=/app/
+    root-redirect=/admin/
     cors=http://localhost,http://localhost:1234,http://conversation-platform.productdock.com/,https://conversation-platform.productdock.com/
 
     # ARANGO_DB 
