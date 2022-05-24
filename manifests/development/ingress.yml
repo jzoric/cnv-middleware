@@ -17,7 +17,11 @@ spec:
     - host: conversation-platform.productdock.com
       http:
         paths:
-          - path: /
+          - path: /api/
+            backend:
+              serviceName: cnv-middleware-api 
+              servicePort: 3000
+          - path: /socket.io/
             backend:
               serviceName: cnv-middleware-api 
               servicePort: 3000
