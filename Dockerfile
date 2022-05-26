@@ -25,4 +25,3 @@ EXPOSE 3000
 EXPOSE 1880
 
 CMD ["npm", "run", "start:prod"]
-
