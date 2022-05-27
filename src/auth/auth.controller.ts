@@ -1,5 +1,6 @@
-import { Body, Controller, Get, HttpException, HttpStatus, Param, Post } from '@nestjs/common';
-import { ApiBody, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Get, HttpException, HttpStatus, Param, Post, UseGuards, Request } from '@nestjs/common';
+import { ApiBody, ApiTags, ApiBearerAuth } from '@nestjs/swagger';
+import { JwtAuthGuard } from './jwt-auth.guard';
 import { AuthService } from './auth.service';
 import { BasicAuthUserPasswordDTO } from './basicAuthUserPasswordDTO';
 
@@ -11,10 +12,17 @@ export class AuthController {
 
     }
 
+    
+    @Get('renew')
+    @ApiBearerAuth()
+    @UseGuards(JwtAuthGuard)
+    renew(@Request() req){
+        return this.authService.login(req.user.username);
+    }
+    
     @ApiBody({
         type: BasicAuthUserPasswordDTO
     })
-    
     @Post('bearer')
     authBearer(@Body("user") user: string, @Body("password") password: string) {
 
