@@ -31,6 +31,7 @@ async function bootstrap() {
   app.use(cookieParser());
 
   const cors = (configService.get('cors') || '').split(',');
+  
   if(cors) {
     logger.log(`enabling cors for ${cors}`);
 
