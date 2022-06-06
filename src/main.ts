@@ -37,6 +37,7 @@ async function bootstrap() {
 
     app.use((req, res, next) => {
       console.log('setting cors for:', req.headers.origin)
+      console.log(req.headers)
       if (cors.indexOf(req.headers.origin) !== -1) {
         res.header('Access-Control-Allow-Origin', req.headers.origin);
         res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
