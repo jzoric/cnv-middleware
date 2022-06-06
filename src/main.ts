@@ -36,20 +36,15 @@ async function bootstrap() {
     logger.log(`enabling cors for ${cors}`);
 
     app.use((req, res, next) => {
-      console.log('setting cors for:', req.headers.origin)
-      console.log(req.headers)
-      if (cors.indexOf(req.headers.origin) !== -1) {
-        res.header('Access-Control-Allow-Origin', req.headers.origin);
+      let origin = req.headers.referer;
+      origin = origin.slice(0,origin.lastIndexOf('/'))
+      console.log(origin)
+      if (cors.indexOf(origin) !== -1) {
+        res.header('Access-Control-Allow-Origin', origin);
         res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
         res.header('Access-Control-Allow-Headers', 'Content-Type, Accept');
         res.header('Access-Control-Allow-Credentials', true);
-      } else {
-        console.log('no valid req.headers.origin')
-          res.header('Access-Control-Allow-Origin', cors);
-          res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
-          res.header('Access-Control-Allow-Headers', 'Content-Type, Accept');
-          res.header('Access-Control-Allow-Credentials', true);
-      }
+      } 
       next();
     });
 
