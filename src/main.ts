@@ -38,7 +38,6 @@ async function bootstrap() {
     app.use((req, res, next) => {
       let origin = req.headers.referer;
       origin = origin.slice(0,origin.lastIndexOf('/'))
-      console.log(origin)
       if (cors.indexOf(origin) !== -1) {
         res.header('Access-Control-Allow-Origin', origin);
         res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
