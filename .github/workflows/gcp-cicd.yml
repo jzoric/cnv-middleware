@@ -73,8 +73,6 @@ jobs:
     # Build the Docker image
     - name: Build
       run: |-
-        export packageVersion=$(awk '/version/{gsub(/("|",)/,"",$2);print $2}' package.json)
-        echo "$REGISTRY/$PROJECT_ID/$NAMESPACE-container/$IMAGE:$packageVersion"
         docker build \
           --tag "$REGISTRY/$PROJECT_ID/$NAMESPACE-container/$IMAGE:$packageVersion" \
           --build-arg GITHUB_SHA="$GITHUB_SHA" \
@@ -85,6 +83,7 @@ jobs:
     # Push the Docker image to Google Container Registry
     - name: Publish
       run: |-
+        export packageVersion=$(awk '/version/{gsub(/("|",)/,"",$2);print $2}' package.json)
         docker push "$REGISTRY/$PROJECT_ID/$NAMESPACE-container/$IMAGE:$packageVersion"
 
     # update git repo
