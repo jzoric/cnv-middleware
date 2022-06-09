@@ -59,12 +59,17 @@ jobs:
           StrictHostKeyChecking no
         END
         
+     # increment package version and publish
+    - name: Build
+      run: |-
+        yarn version --minor
 
     # Build the Docker image
     - name: Build
       run: |-
+        export packageVersion=$(awk '/version/{gsub(/("|",)/,"",$2);print $2}' package.json)
         docker build \
-          --tag "$REGISTRY/$PROJECT_ID/$NAMESPACE-container/$IMAGE:$GITHUB_SHA" \
+          --tag "$REGISTRY/$PROJECT_ID/$NAMESPACE-container/$IMAGE:$packageVersion" \
           --build-arg GITHUB_SHA="$GITHUB_SHA" \
           --build-arg GITHUB_REF="$GITHUB_REF" \
           -f Dockerfile \
@@ -73,8 +78,13 @@ jobs:
     # Push the Docker image to Google Container Registry
     - name: Publish
       run: |-
-        docker push "$REGISTRY/$PROJECT_ID/$NAMESPACE-container/$IMAGE:$GITHUB_SHA"
-
+        docker push "$REGISTRY/$PROJECT_ID/$NAMESPACE-container/$IMAGE:$packageVersion"
+   
+    # update git repo
+    - name: git push changes
+      run: |-
+        git push -u origin HEAD:master
+        
     # Set up kustomize
     - name: Set up Kustomize
       run: |-
@@ -99,7 +109,7 @@ jobs:
     - name: Build manifests
       run: |-
         cd manifests/development/
-        kustomize edit set image IMAGE:TAG=$REGISTRY/$PROJECT_ID/$NAMESPACE-container/$IMAGE:$GITHUB_SHA
+        kustomize edit set image IMAGE:TAG=$REGISTRY/$PROJECT_ID/$NAMESPACE-container/$IMAGE:$packageVersion
         kustomize build > cnv-middleware-development.yaml
     
     - name: Deploy GCP
