@@ -79,12 +79,18 @@ jobs:
     - name: Publish
       run: |-
         docker push "$REGISTRY/$PROJECT_ID/$NAMESPACE-container/$IMAGE:$packageVersion"
-   
+    
+    # Setup git credentials
+    - name: Git user config
+      run: |-
+        git config --global user.email "buildy_mc_build_bot@cloud.de"
+        git config --global user.name "Buildy Mc Build Bot"
+
     # update git repo
     - name: git push changes
       run: |-
         git push -u origin HEAD:master
-        
+
     # Set up kustomize
     - name: Set up Kustomize
       run: |-
