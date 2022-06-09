@@ -73,6 +73,7 @@ jobs:
     # Build the Docker image
     - name: Build
       run: |-
+        export packageVersion=$(awk '/version/{gsub(/("|",)/,"",$2);print $2}' package.json)
         docker build \
           --tag "$REGISTRY/$PROJECT_ID/$NAMESPACE-container/$IMAGE:$packageVersion" \
           --build-arg GITHUB_SHA="$GITHUB_SHA" \
