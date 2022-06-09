@@ -64,7 +64,7 @@ jobs:
       run: |-
         git config --global user.email "buildy_mc_build_bot@cloud.de"
         git config --global user.name "Buildy Mc Build Bot"
-        
+
     # increment package version and publish
     - name: Build
       run: |-
@@ -74,6 +74,7 @@ jobs:
     - name: Build
       run: |-
         export packageVersion=$(awk '/version/{gsub(/("|",)/,"",$2);print $2}' package.json)
+        echo "$REGISTRY/$PROJECT_ID/$NAMESPACE-container/$IMAGE:$packageVersion"
         docker build \
           --tag "$REGISTRY/$PROJECT_ID/$NAMESPACE-container/$IMAGE:$packageVersion" \
           --build-arg GITHUB_SHA="$GITHUB_SHA" \
