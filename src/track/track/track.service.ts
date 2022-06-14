@@ -1,5 +1,6 @@
 import { Injectable, Logger, HttpException } from '@nestjs/common';
 import { aql } from 'arangojs';
+import { AggregatedSessionByFlowId } from 'src/model/aggregatedSessionByFlowId';
 import { Interaction } from 'src/model/client.interaction';
 import { ClientTrack } from 'src/model/client.track';
 import { UserSession } from 'src/model/usersession';
@@ -304,4 +305,35 @@ export class TrackService {
                     `
         }
     }
+
+    // metrics
+
+    async getAggregatedTracksByFlowId(startDate?: Date, endDate?: Date): Promise<AggregatedSessionByFlowId[]> {
+        const filters = [];
+        
+        if (startDate && endDate) {
+            filters.push(aql`
+                FILTER ct.date >= ${new Date(startDate)} && ct.date <= ${new Date(endDate)}
+            `);
+        }
+        
+        filters.push(aql`
+            COLLECT name = ct.flowId into count
+        ` )
+
+        const query = aql`
+            FOR ct in ${this.arangoService.collection}
+            ${aql.join(filters)}
+            RETURN {
+                name: name,
+                count: LENGTH(count)
+            }
+        `;
+        return await this.arangoService.database.query(query)
+            .then(res => res.all())
+            .catch(e => {
+                throw new HttpException(e.response.body.errorMessage, e.code)
+            })
+    }
+
 }

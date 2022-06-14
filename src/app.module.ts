@@ -58,7 +58,7 @@ export class AppModule {
   ) {
     this.sessionUserAgentMigrations();
     this.sessionUserLocationMigrations();
-
+    this.tests();
   }
 
 
@@ -83,6 +83,30 @@ export class AppModule {
       this.logger.debug(`[housekeeper] removing expired tid ${ct.sid}`);
       await this.trackService.removeClientTrack(ct);
     }
+
+  }
+
+  async tests() {
+
+    const endDate = new Date();
+    let startDate = new Date();
+    
+    startDate.setDate(endDate.getDate() - 10)
+
+    const dataLocation = await this.sessionService.getAggregatedSessionsByLocation(startDate, endDate);
+
+    const dataBrowser = await this.sessionService.getAggregatedSessionsByBrowser(startDate, endDate);
+
+    const dataOS = await this.sessionService.getAggregatedSessionsByOS(startDate, endDate);
+
+    const dataFlow = await this.trackService.getAggregatedTracksByFlowId(startDate, endDate);
+
+    console.log({
+      dataLocation,
+      dataBrowser,
+      dataOS,
+      dataFlow
+    })
 
   }
 

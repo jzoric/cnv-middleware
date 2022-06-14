@@ -1,5 +1,5 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { Controller, Get, Query, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { MetricsService } from './metrics.service';
 
@@ -25,4 +25,85 @@ export class MetricsController {
     public getActiveClientsByFlows() {
         return this.metricsService.getActiveClientsByFlows();
     }
+
+    @ApiBearerAuth()
+    @UseGuards(JwtAuthGuard)
+    @ApiQuery({
+        name: 'startDate',
+        required: false,
+        description: 'Query Start Date <br><strong>Format:</strong> YYYY-MM-DD <br><strong>Defaults to empty</strong>',
+        example: '2021-08-05'
+
+    })
+    @ApiQuery({
+        name: 'endDate',
+        required: false,
+        description: 'Query End Date <br><strong>Format:</strong> YYYY-MM-DD <br><strong>Defaults to empty</strong>',
+        example: '2021-08-05'
+    })
+    @Get("getAggregatedSessionsByLocation")
+    public getAggregatedSessionsByLocation(@Query("startDate") startDate: Date, @Query("endDate") endDate: Date) {
+        return this.metricsService.getAggregatedSessionsByLocation(startDate, endDate)
+    }
+
+    @ApiBearerAuth()
+    @UseGuards(JwtAuthGuard)
+    @ApiQuery({
+        name: 'startDate',
+        required: false,
+        description: 'Query Start Date <br><strong>Format:</strong> YYYY-MM-DD <br><strong>Defaults to empty</strong>',
+        example: '2021-08-05'
+
+    })
+    @ApiQuery({
+        name: 'endDate',
+        required: false,
+        description: 'Query End Date <br><strong>Format:</strong> YYYY-MM-DD <br><strong>Defaults to empty</strong>',
+        example: '2021-08-05'
+    })
+    @Get("getAggregatedSessionsByBrowser")
+    public getAggregatedSessionsByBrowser(@Query("startDate") startDate: Date, @Query("endDate") endDate: Date) {
+        return this.metricsService.getAggregatedSessionsByBrowser(startDate, endDate)
+    }
+
+    @ApiBearerAuth()
+    @UseGuards(JwtAuthGuard)
+    @ApiQuery({
+        name: 'startDate',
+        required: false,
+        description: 'Query Start Date <br><strong>Format:</strong> YYYY-MM-DD <br><strong>Defaults to empty</strong>',
+        example: '2021-08-05'
+
+    })
+    @ApiQuery({
+        name: 'endDate',
+        required: false,
+        description: 'Query End Date <br><strong>Format:</strong> YYYY-MM-DD <br><strong>Defaults to empty</strong>',
+        example: '2021-08-05'
+    })
+    @Get("getAggregatedSessionsByOS")
+    public getAggregatedSessionsByOS(@Query("startDate") startDate: Date, @Query("endDate") endDate: Date) {
+        return this.metricsService.getAggregatedSessionsByOS(startDate, endDate)
+    }
+
+    @ApiBearerAuth()
+    @UseGuards(JwtAuthGuard)
+    @ApiQuery({
+        name: 'startDate',
+        required: false,
+        description: 'Query Start Date <br><strong>Format:</strong> YYYY-MM-DD <br><strong>Defaults to empty</strong>',
+        example: '2021-08-05'
+
+    })
+    @ApiQuery({
+        name: 'endDate',
+        required: false,
+        description: 'Query End Date <br><strong>Format:</strong> YYYY-MM-DD <br><strong>Defaults to empty</strong>',
+        example: '2021-08-05'
+    })
+    @Get("getAggregatedTracksByFlowId")
+    public getAggregatedTracksByFlowId(@Query("startDate") startDate: Date, @Query("endDate") endDate: Date) {
+        return this.metricsService.getAggregatedTracksByFlowId(startDate, endDate)
+    }
+
 }

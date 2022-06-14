@@ -8,6 +8,8 @@ import { Browser } from 'src/model/Browser';
 import { CPU } from 'src/model/CPU';
 import { OperatingSystem } from 'src/model/operatingsystem';
 import { AggregatedSessionByLocation } from 'src/model/aggregatedSessionByLocation';
+import { AggregatedSessionByBrowser } from 'src/model/aggregatedSessionByBrowser';
+import { AggregatedSessionByOS } from 'src/model/aggregatedSessionByOS';
 
 @Injectable()
 export class SessionService {
@@ -127,17 +129,18 @@ export class SessionService {
     // metrics
     async getAggregatedSessionsByLocation(startDate?: Date, endDate?: Date): Promise<AggregatedSessionByLocation[]> {
         const filters = [];
-        filters.push(aql`
-            FILTER S.city != null || S.city != ''
-            FILTER S.country != null || S.country != ''
-            COLLECT city = S.city, country = S.country INTO count
-        ` )
 
         if (startDate && endDate) {
             filters.push(aql`
                 FILTER S.createDate >= ${new Date(startDate)} && S.createDate <= ${new Date(endDate)}
             `);
         }
+        
+        filters.push(aql`
+            FILTER S.city != null || S.city != ''
+            FILTER S.country != null || S.country != ''
+            COLLECT city = S.city, country = S.country INTO count
+        ` )
 
         const query = aql`
             FOR S in ${this.arangoService.collection}
@@ -145,6 +148,64 @@ export class SessionService {
             RETURN {
                 country: country,
                 city: city,
+                count: LENGTH(count)
+            }
+        `;
+        return await this.arangoService.database.query(query)
+            .then(res => res.all())
+            .catch(e => {
+                throw new HttpException(e.response.body.errorMessage, e.code)
+            })
+    }
+
+    async getAggregatedSessionsByBrowser(startDate?: Date, endDate?: Date): Promise<AggregatedSessionByBrowser[]> {
+        const filters = [];
+
+        if (startDate && endDate) {
+            filters.push(aql`
+                FILTER S.createDate >= ${new Date(startDate)} && S.createDate <= ${new Date(endDate)}
+            `);
+        }
+
+        filters.push(aql`
+            FILTER S.browser != null 
+            COLLECT name = S.browser.name into count
+        ` )
+
+        const query = aql`
+            FOR S in ${this.arangoService.collection}
+            ${aql.join(filters)}
+            RETURN {
+                name: name,
+                count: LENGTH(count)
+            }
+        `;
+        return await this.arangoService.database.query(query)
+            .then(res => res.all())
+            .catch(e => {
+                throw new HttpException(e.response.body.errorMessage, e.code)
+            })
+    }
+
+    async getAggregatedSessionsByOS(startDate?: Date, endDate?: Date): Promise<AggregatedSessionByOS[]> {
+        const filters = [];
+
+        if (startDate && endDate) {
+            filters.push(aql`
+                FILTER S.createDate >= ${new Date(startDate)} && S.createDate <= ${new Date(endDate)}
+            `);
+        }
+
+        filters.push(aql`
+            FILTER S.operatingSystem != null 
+            COLLECT name = S.operatingSystem.name into count
+        ` )
+
+        const query = aql`
+            FOR S in ${this.arangoService.collection}
+            ${aql.join(filters)}
+            RETURN {
+                name: name,
                 count: LENGTH(count)
             }
         `;
