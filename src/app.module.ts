@@ -14,7 +14,7 @@ import { SessionService } from './session/session.service';
 import { TrackService } from './track/track/track.service';
 import { Cron, ScheduleModule } from '@nestjs/schedule';
 import { ServeStaticModule } from '@nestjs/serve-static';
-import { join } from 'path';
+import { join, parse } from 'path';
 import { MetricsModule } from './metrics/metrics.module';
 import { CustomFiltersModule } from './custom-filters/custom-filters.module';
 import { UAParser } from 'ua-parser-js';
@@ -54,13 +54,10 @@ export class AppModule {
     private readonly sessionService: SessionService,
     private readonly trackService: TrackService
   ) {
-    this.test();
+    this.sessionMigrations();
   }
 
-  async test() {
-    const session = await this.sessionService.getSession('1514a5dd-0ad2-47ef-b783-82c69b9bede2');
-    console.log(session, UAParser(session.userAgent));
-  }
+  
 
   @Cron('*/10 * * * * *')
   async handleCron() {
@@ -83,5 +80,41 @@ export class AppModule {
       await this.trackService.removeClientTrack(ct);
     }
 
+  }
+
+  // migrations
+
+  async sessionMigrations() {
+    const batchSize = 100;
+    let nsessions = await this.sessionService.countessionsWithNoParsedUserAgent();
+    
+    if(nsessions == 0) {
+      this.logger.log(`Session migrations not required`);
+    } else {
+      this.logger.log(`Preparing to migrate ${nsessions} sessions`);
+    }
+
+    while(nsessions - batchSize > 0) {
+      await this.updateSessionWithDetailedUserAgent(0, batchSize)
+      nsessions -=batchSize;
+    }
+    if(nsessions > 0) {
+      await this.updateSessionWithDetailedUserAgent(0, batchSize)
+    }
+  }
+
+
+  private async updateSessionWithDetailedUserAgent(page: number, take: number ) {
+    this.logger.debug(`running batch ${page}, ${take}`);
+    const sessions = await this.sessionService.getSessionsWithNoParsedUserAgent(page, take);
+    sessions.forEach(async (session) => {
+      const parsedUA = UAParser(session.userAgent);
+      session.browser = parsedUA.browser;
+      session.cpu = parsedUA.cpu;
+      session.operatingSystem = parsedUA.os;
+      this.logger.debug(`updating ${session.sid}`);
+      await this.sessionService.updateSession(session);
+
+    })
   }
 }
