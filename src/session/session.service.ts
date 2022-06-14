@@ -7,6 +7,7 @@ import { lookup } from 'geoip-lite';
 import { Browser } from 'src/model/Browser';
 import { CPU } from 'src/model/CPU';
 import { OperatingSystem } from 'src/model/operatingsystem';
+import { AggregatedSessionByLocation } from 'src/model/aggregatedSessionByLocation';
 
 @Injectable()
 export class SessionService {
@@ -31,7 +32,7 @@ export class SessionService {
             const userInfoLocation = lookup(userIp);
             country = userInfoLocation.country;
             city = userInfoLocation.city
-        } catch(e) {
+        } catch (e) {
             this.logger.error(e);
         }
         const userSession = new UserSession(
@@ -123,6 +124,37 @@ export class SessionService {
             })
     }
 
+    // metrics
+    async getAggregatedSessionsByLocation(startDate?: Date, endDate?: Date): Promise<AggregatedSessionByLocation[]> {
+        const filters = [];
+        filters.push(aql`
+            FILTER S.city != null || S.city != ''
+            FILTER S.country != null || S.country != ''
+            COLLECT city = S.city, country = S.country INTO count
+        ` )
+
+        if (startDate && endDate) {
+            filters.push(aql`
+                FILTER S.createDate >= ${new Date(startDate)} && S.createDate <= ${new Date(endDate)}
+            `);
+        }
+
+        const query = aql`
+            FOR S in ${this.arangoService.collection}
+            ${aql.join(filters)}
+            RETURN {
+                country: country,
+                city: city,
+                count: LENGTH(count)
+            }
+        `;
+        return await this.arangoService.database.query(query)
+            .then(res => res.all())
+            .catch(e => {
+                throw new HttpException(e.response.body.errorMessage, e.code)
+            })
+    }
+
     // migrations
     async getSessionsWithNoParsedUserAgent(page: number, take: number): Promise<UserSession[]> {
         const query = aql`
@@ -185,5 +217,5 @@ export class SessionService {
                 throw new HttpException(e.response.body.errorMessage, e.code)
             })
     }
-    
+
 }
