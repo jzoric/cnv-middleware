@@ -14,10 +14,12 @@ import { SessionService } from './session/session.service';
 import { TrackService } from './track/track/track.service';
 import { Cron, ScheduleModule } from '@nestjs/schedule';
 import { ServeStaticModule } from '@nestjs/serve-static';
-import { join, parse } from 'path';
+import { join } from 'path';
 import { MetricsModule } from './metrics/metrics.module';
 import { CustomFiltersModule } from './custom-filters/custom-filters.module';
 import { UAParser } from 'ua-parser-js';
+import { lookup } from 'geoip-lite';
+
 @Module({
   imports: [
     ClientModule,
@@ -54,10 +56,12 @@ export class AppModule {
     private readonly sessionService: SessionService,
     private readonly trackService: TrackService
   ) {
-    this.sessionMigrations();
+    this.sessionUserAgentMigrations();
+    this.sessionUserLocationMigrations();
+
   }
 
-  
+
 
   @Cron('*/10 * * * * *')
   async handleCron() {
@@ -68,14 +72,14 @@ export class AppModule {
     endDate.setMonth(endDate.getMonth() - +this.configService.get('TRACK_LIFETIME_MONTHS'));
 
     let userSessions = await this.sessionService.getSessionsByDate(0, 10000, startDate, endDate);
-    for(let us of userSessions) {
+    for (let us of userSessions) {
       this.logger.debug(`[housekeeper] removing expired sid ${us.sid}`);
       await this.sessionService.removeSession(us);
     }
 
     let clientTracks = await this.trackService.getSessionsByDate(0, 1000, startDate, endDate);
 
-    for(let ct of clientTracks) {
+    for (let ct of clientTracks) {
       this.logger.debug(`[housekeeper] removing expired tid ${ct.sid}`);
       await this.trackService.removeClientTrack(ct);
     }
@@ -84,36 +88,91 @@ export class AppModule {
 
   // migrations
 
-  async sessionMigrations() {
+  async sessionUserAgentMigrations() {
     const batchSize = 100;
     let nsessions = await this.sessionService.countessionsWithNoParsedUserAgent();
-    
-    if(nsessions == 0) {
-      this.logger.log(`Session migrations not required`);
+
+    if (nsessions == 0) {
+      this.logger.log(`Session user agent migrations not required`);
     } else {
-      this.logger.log(`Preparing to migrate ${nsessions} sessions`);
+      this.logger.log(`Preparing to migrate user agent on ${nsessions} sessions`);
     }
 
-    while(nsessions - batchSize > 0) {
+    while (nsessions - batchSize > 0) {
       await this.updateSessionWithDetailedUserAgent(0, batchSize)
-      nsessions -=batchSize;
+      nsessions -= batchSize;
     }
-    if(nsessions > 0) {
+    if (nsessions > 0) {
       await this.updateSessionWithDetailedUserAgent(0, batchSize)
     }
   }
 
+  async sessionUserLocationMigrations() {
+    const batchSize = 100;
+    let nsessions = await this.sessionService.countessionsWithNoParsedUserLocation();
 
-  private async updateSessionWithDetailedUserAgent(page: number, take: number ) {
-    this.logger.debug(`running batch ${page}, ${take}`);
+    if (nsessions == 0) {
+      this.logger.log(`Session user location migrations not required`);
+    } else {
+      this.logger.log(`Preparing to migrate user locations on ${nsessions} sessions`);
+    }
+
+    while (nsessions - batchSize > 0) {
+      await this.updateSessionWithDetailedUserLocation(0, batchSize)
+      nsessions -= batchSize;
+    }
+    if (nsessions > 0) {
+      await this.updateSessionWithDetailedUserLocation(0, batchSize)
+    }
+  }
+
+
+  private async updateSessionWithDetailedUserAgent(page: number, take: number) {
     const sessions = await this.sessionService.getSessionsWithNoParsedUserAgent(page, take);
     sessions.forEach(async (session) => {
-      const parsedUA = UAParser(session.userAgent);
-      session.browser = parsedUA.browser;
-      session.cpu = parsedUA.cpu;
-      session.operatingSystem = parsedUA.os;
-      this.logger.debug(`updating ${session.sid}`);
-      await this.sessionService.updateSession(session);
+      if (session.userAgent) {
+        try {
+          const parsedUA = UAParser(session.userAgent);
+          session.browser = parsedUA?.browser;
+          session.cpu = parsedUA.cpu;
+          session.operatingSystem = parsedUA.os;
+
+        } catch (e) {
+          this.logger.error(e);
+        }
+
+        this.logger.debug(`updating ${session.sid}`);
+        await this.sessionService.updateSession(session);
+      } else {
+        this.logger.error(`Session ${session.sid} is missing a valid user agent`);
+      }
+
+    })
+  }
+
+  private async updateSessionWithDetailedUserLocation(page: number, take: number) {
+    const sessions = await this.sessionService.getSessionsWithNoParsedUserLocation(page, take);
+    sessions.forEach(async (session) => {
+
+      if (session.userIp) {
+        let country: string;
+        let city: string;
+        try {
+          const userInfoLocation = lookup(session.userIp);
+          country = userInfoLocation?.country || '';
+          city = userInfoLocation?.city || '';
+        } catch (e) {
+          this.logger.error(e);
+        }
+        session.country = country;
+        session.city = city;
+        this.logger.debug(`updating ${session.sid}`);
+
+        await this.sessionService.updateSession(session);
+      } else {
+        this.logger.error(`Session ${session.sid} is missing a valid user ip`);
+      }
+
 
     })
   }

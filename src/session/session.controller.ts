@@ -68,7 +68,6 @@ export class SessionController {
 
         return { message: `sid not found` };
 
-
     }
 
     @ApiBearerAuth()

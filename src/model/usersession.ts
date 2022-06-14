@@ -1,6 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { UAParser } from 'ua-parser-js';
 import { v4 as uuidv4 } from 'uuid';
+import { Browser } from './Browser';
+import { CPU } from './CPU';
+import { OperatingSystem } from './operatingsystem';
 
 
 export class UserSession {
@@ -14,21 +16,13 @@ export class UserSession {
     userAgent: string;
 
     @ApiProperty()
-    browser: {
-        name: string;
-        version: string;
-    }
+    browser: Browser
 
     @ApiProperty()
-    operatingSystem: {
-        name: string;
-        version: string;
-    }
+    operatingSystem: OperatingSystem
 
     @ApiProperty()
-    cpu: {
-        architecture: string;
-    }
+    cpu: CPU
 
     @ApiProperty()
     userIp: string;
@@ -36,16 +30,33 @@ export class UserSession {
     @ApiProperty()
     createDate: Date;
 
-    constructor(userAgent: string, userIp: string) {
+    @ApiProperty()
+    country: string;
+
+    @ApiProperty()
+    city: string;
+
+
+    constructor(
+        userAgent: string,
+        browser: Browser,
+        cpu: CPU,
+        operatingSystem: OperatingSystem,
+        userIp: string,
+        country: string,
+        city: string) {
+
         this.sid = uuidv4();
         this.userAgent = userAgent;
         this.userIp = userIp;
         this.createDate = new Date();
 
-        const parsedUA = UAParser(this.userAgent);
-        this.browser = parsedUA.browser;
-        this.cpu = parsedUA.cpu;
-        this.operatingSystem = parsedUA.os;
+        this.browser = browser;
+        this.cpu = cpu;
+        this.operatingSystem = operatingSystem;
+        this.country = country;
+        this.city = city;
+
     }
 
 }

@@ -1,8 +1,12 @@
 import { Injectable, Logger, HttpException } from '@nestjs/common';
 import { aql } from 'arangojs';
-import { DocumentMetadata } from 'arangojs/documents';
 import { ArangoService } from 'src/persistence/arango/arango.service';
 import { UserSession } from '../model/usersession';
+import { UAParser } from 'ua-parser-js';
+import { lookup } from 'geoip-lite';
+import { Browser } from 'src/model/Browser';
+import { CPU } from 'src/model/CPU';
+import { OperatingSystem } from 'src/model/operatingsystem';
 
 @Injectable()
 export class SessionService {
@@ -13,7 +17,31 @@ export class SessionService {
     }
 
     async createSession(userAgent: string, userIp: string): Promise<UserSession> {
-        const userSession = new UserSession(userAgent, userIp);
+        let browser: Browser;
+        let cpu: CPU;
+        let os: OperatingSystem;
+        let country: string;
+        let city: string;
+
+        try {
+            const parsedUA = UAParser(userAgent);
+            browser = parsedUA.browser;
+            cpu = parsedUA.cpu;
+            os = parsedUA.os;
+            const userInfoLocation = lookup(userIp);
+            country = userInfoLocation.country;
+            city = userInfoLocation.city
+        } catch(e) {
+            this.logger.error(e);
+        }
+        const userSession = new UserSession(
+            userAgent,
+            browser,
+            cpu,
+            os, userIp,
+            country,
+            city);
+
         const insert = await this.arangoService.collection.save(userSession);
 
         if (insert) {
@@ -116,6 +144,37 @@ export class SessionService {
             FOR S in ${this.arangoService.collection}
             FILTER S.userAgent != null
             FILTER S.browser == null
+            COLLECT WITH COUNT INTO length
+            RETURN length
+        `;
+        return await this.arangoService.database.query(query)
+            .then(res => res.all())
+            .then(res => res?.[0])
+            .catch(e => {
+                throw new HttpException(e.response.body.errorMessage, e.code)
+            })
+    }
+
+    async getSessionsWithNoParsedUserLocation(page: number, take: number): Promise<UserSession[]> {
+        const query = aql`
+            FOR S in ${this.arangoService.collection}
+            FILTER S.userIp != null
+            FILTER S.city == null
+            LIMIT ${+(page * take)}, ${+take} 
+            RETURN S
+        `;
+        return await this.arangoService.database.query(query)
+            .then(res => res.all())
+            .catch(e => {
+                throw new HttpException(e.response.body.errorMessage, e.code)
+            })
+    }
+
+    async countessionsWithNoParsedUserLocation(): Promise<number> {
+        const query = aql`
+            FOR S in ${this.arangoService.collection}
+            FILTER S.userIp != null
+            FILTER S.city == null
             COLLECT WITH COUNT INTO length
             RETURN length
         `;
