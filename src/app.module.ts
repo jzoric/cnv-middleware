@@ -6,18 +6,18 @@ import { ArangoModule } from './persistence/arango/arango.module';
 import { ConfigModule } from './config/config/config.module';
 
 import { ConfigService } from './config/config/config.service';
-import { SessionModule } from './client/session/session.module';
+import { SessionModule } from './session/session.module';
 import { TrackModule } from './track/track/track.module';
 import { NoderedModule } from './nodered/nodered.module';
 import { AuthModule } from './auth/auth.module';
-import { SessionService } from './client/session/session.service';
+import { SessionService } from './session/session.service';
 import { TrackService } from './track/track/track.service';
 import { Cron, ScheduleModule } from '@nestjs/schedule';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { MetricsModule } from './metrics/metrics.module';
 import { CustomFiltersModule } from './custom-filters/custom-filters.module';
-
+import { UAParser } from 'ua-parser-js';
 @Module({
   imports: [
     ClientModule,
@@ -54,11 +54,17 @@ export class AppModule {
     private readonly sessionService: SessionService,
     private readonly trackService: TrackService
   ) {
-    
+    this.test();
+  }
+
+  async test() {
+    const session = await this.sessionService.getSession('1514a5dd-0ad2-47ef-b783-82c69b9bede2');
+    console.log(session, UAParser(session.userAgent));
   }
 
   @Cron('*/10 * * * * *')
   async handleCron() {
+    //TODO: Use database instead
     const startDate = new Date();
     startDate.setFullYear(1970);
     const endDate = new Date();

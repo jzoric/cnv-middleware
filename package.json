@@ -37,6 +37,7 @@
     "@nestjs/serve-static": "^2.2.2",
     "@nestjs/swagger": "^4.8.2",
     "@nestjs/websockets": "^7.6.18",
+    "@types/ua-parser-js": "^0.7.36",
     "@types/ws": "^7.4.6",
     "arangojs": "7.5.0",
     "bcrypt": "^5.0.1",
@@ -53,6 +54,7 @@
     "rimraf": "^3.0.2",
     "rxjs": "^6.6.6",
     "swagger-ui-express": "^4.1.6",
+    "ua-parser-js": "^1.0.2",
     "uuid": "^8.3.2",
     "validator": "^13.7.0",
     "ws": "^7.5.2"

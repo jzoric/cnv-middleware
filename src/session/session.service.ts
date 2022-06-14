@@ -2,7 +2,7 @@ import { Injectable, Logger, HttpException } from '@nestjs/common';
 import { aql } from 'arangojs';
 import { DocumentMetadata } from 'arangojs/documents';
 import { ArangoService } from 'src/persistence/arango/arango.service';
-import { UserSession } from './model/usersession';
+import { UserSession } from '../model/usersession';
 
 @Injectable()
 export class SessionService {

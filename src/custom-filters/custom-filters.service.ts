@@ -1,7 +1,7 @@
 import { HttpException, Injectable, Logger } from '@nestjs/common';
 import { aql } from 'arangojs';
 import { ArangoService } from 'src/persistence/arango/arango.service';
-import { CustomFilter} from './model/custom-filter';
+import { CustomFilter} from '../model/custom-filter';
 import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()

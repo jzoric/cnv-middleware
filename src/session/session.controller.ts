@@ -2,7 +2,7 @@ import { applyDecorators, Controller, Get, Logger, Param, Query, Req, Res, UseGu
 import { SessionService } from './session.service';
 import { Request, Response } from 'express';
 import { SESSION_COOKIE_NAME } from './session.constants';
-import { UserSession } from './model/usersession';
+import { UserSession } from '../model/usersession';
 import { TrackService } from 'src/track/track/track.service';
 import { ApiBearerAuth, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
@@ -84,7 +84,9 @@ export class SessionController {
         required: false,
         description: 'Number of items to return per page. <strong>Defaults to 20</strong>'
     })
-    
+    @ApiResponse({
+        type: [UserSession]
+    })
     public async getSessions(@Query("page") page: number = 0, @Query("take") take: number = 20): Promise<UserSession[]> {
         return await this.sessionService.getSessions(page, take);
 
@@ -98,8 +100,9 @@ export class SessionController {
         required: false,
         description: 'Get session by sessionId'
     })
-    
-    
+    @ApiResponse({
+        type: UserSession
+    })
     public async getSession(@Query("sessionId") sessionId: string): Promise<UserSession> {
         return await this.sessionService.getSession(sessionId);
 

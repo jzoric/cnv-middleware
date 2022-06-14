@@ -2,7 +2,7 @@ import { Body, Controller, Delete, Get, Param, Post, UseGuards } from '@nestjs/c
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { CustomFiltersService } from './custom-filters.service';
-import { CustomFilter } from './model/custom-filter';
+import { CustomFilter } from '../model/custom-filter';
 
 @ApiTags('api/v1/custom-filters')
 @Controller('api/v1/custom-filters')

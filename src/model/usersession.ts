@@ -13,6 +13,23 @@ export class UserSession {
     userAgent: string;
 
     @ApiProperty()
+    browser: {
+        name: string;
+        version: string;
+    }
+
+    @ApiProperty()
+    operatingSystem: {
+        name: string;
+        version: string;
+    }
+
+    @ApiProperty()
+    cpu: {
+        architecture: string;
+    }
+
+    @ApiProperty()
     userIp: string;
 
     @ApiProperty()

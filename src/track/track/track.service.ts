@@ -1,9 +1,10 @@
 import { Injectable, Logger, HttpException } from '@nestjs/common';
 import { aql } from 'arangojs';
-import { UserSession } from 'src/client/session/model/usersession';
+import { Interaction } from 'src/model/client.interaction';
+import { ClientTrack } from 'src/model/client.track';
+import { UserSession } from 'src/model/usersession';
 import { ArangoService } from 'src/persistence/arango/arango.service';
-import { Interaction } from './model/client.interaction';
-import { ClientTrack } from './model/client.track';
+
 
 @Injectable()
 export class TrackService {

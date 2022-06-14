@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { ClientBroker } from './model/client.broker';
+import { ClientBroker } from '../../model/client.broker';
 import { ConfigService } from 'src/config/config/config.service';
 import { TrackService } from 'src/track/track/track.service';
-import { SESSION_COOKIE_NAME } from '../session/session.constants';
-import { ClientTrack } from 'src/track/track/model/client.track';
+import { SESSION_COOKIE_NAME } from '../../session/session.constants';
 import { IActiveClientsByFlows } from 'src/interface/ActiveClientsByFlows.interface';
+import { ClientTrack } from 'src/model/client.track';
 
 @Injectable()
 export class ClientService {
