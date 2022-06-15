@@ -1,4 +1,5 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { HttpException, Injectable, Logger } from '@nestjs/common';
+import { aql } from 'arangojs';
 import { ClientService } from 'src/client/client/client.service';
 import { ActiveClientsByFlows } from 'src/model/ActiveClientsByFlows.interface';
 import { ActiveTrack } from 'src/model/ActiveTrack';
@@ -26,11 +27,27 @@ export class MetricsService {
 
     async createMetricFlowByHour(timestamp: Date, name: string, count: number): Promise<MetricFlowByHour> {
         const metric = new MetricFlowByHour(timestamp, name, count);
-        
+
         const insert = this.arangoService.collection.save(metric);
         if (insert) {
             return metric;
         }
+    }
+
+    async getMetricsFlowByHour(startDate: Date, endDate: Date): Promise<MetricFlowByHour[]> {
+        const query = aql`
+            FOR m in ${this.arangoService.collection}
+            FILTER m.date > ${startDate}
+            FILTER m.date < ${endDate}
+            RETURN m
+            `;
+
+        return await this.arangoService.database.query(query)
+            .then(res => res.all())
+            .catch(e => {
+                this.logger.error(e)
+                throw new HttpException(e.response.body.errorMessage, e.code)
+            })
     }
 
     getActiveTracks(): ActiveTrack[] {

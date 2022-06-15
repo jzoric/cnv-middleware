@@ -15,6 +15,7 @@ import { PropertiesService } from 'src/properties/properties.service';
 import { PropertiesModule } from 'src/properties/properties.module';
 import { Property } from 'src/model/property';
 import { MetricStateFlowProcessor } from 'src/model/metricStateFlowProcessor';
+import { Cron } from '@nestjs/schedule';
 
 @Module({
   providers: [MetricsService],
@@ -39,10 +40,9 @@ export class MetricsModule {
     private readonly metricService: MetricsService,
     private readonly configService: ConfigService,
     private readonly propertiesService: PropertiesService) {
-    this.runDailyFlowMetrics();
 
   }
-
+  @Cron('0 0 * * *')
   async runDailyFlowMetrics() {
 
     let state = (await this.propertiesService.getProperty<MetricStateFlowProcessor>(this.METRIC_STATE_FLOW_PROCESSOR))?.data;
@@ -79,8 +79,6 @@ export class MetricsModule {
       }
       startDate.setDate(startDate.getDate() + 1);
     }
-
-
 
   }
 
