@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { ClientService } from 'src/client/client/client.service';
-import { IActiveClientsByFlows } from 'src/interface/ActiveClientsByFlows.interface';
+import { ActiveClientsByFlows } from 'src/model/ActiveClientsByFlows.interface';
+import { ActiveTrack } from 'src/model/ActiveTrack';
 import { AggregatedSessionByBrowser } from 'src/model/aggregatedSessionByBrowser';
-import { AggregatedSessionByFlowId } from 'src/model/aggregatedSessionByFlowId';
 import { AggregatedSessionByLocation } from 'src/model/aggregatedSessionByLocation';
 import { AggregatedSessionByOS } from 'src/model/aggregatedSessionByOS';
-import { ClientTrack } from 'src/model/client.track';
+import { AggregatedTrackByFlowId } from 'src/model/aggregatedTrackByFlowId';
 import { SessionService } from 'src/session/session.service';
 import { TrackService } from 'src/track/track/track.service';
 
@@ -19,11 +19,11 @@ export class MetricsService {
         
     }
 
-    getActiveTracks(): ClientTrack[] {
+    getActiveTracks(): ActiveTrack[] {
         return this.clientService.getActiveTracks();
     }
 
-    getActiveClientsByFlows(): IActiveClientsByFlows[] {
+    getActiveClientsByFlows(): ActiveClientsByFlows[] {
         return this.clientService.getActiveClientsByFlows();
     }
 
@@ -39,7 +39,7 @@ export class MetricsService {
         return this.sessionService.getAggregatedSessionsByOS(startDate, endDate);
     }
 
-    getAggregatedTracksByFlowId(startDate?: Date, endDate?: Date): Promise<AggregatedSessionByFlowId[]> {
+    getAggregatedTracksByFlowId(startDate?: Date, endDate?: Date): Promise<AggregatedTrackByFlowId[]> {
         return this.trackService.getAggregatedTracksByFlowId(startDate, endDate);
     }
 }

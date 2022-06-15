@@ -3,8 +3,8 @@ import { ClientBroker } from '../../model/client.broker';
 import { ConfigService } from 'src/config/config/config.service';
 import { TrackService } from 'src/track/track/track.service';
 import { SESSION_COOKIE_NAME } from '../../session/session.constants';
-import { IActiveClientsByFlows } from 'src/interface/ActiveClientsByFlows.interface';
-import { ClientTrack } from 'src/model/client.track';
+import { ActiveClientsByFlows } from 'src/model/ActiveClientsByFlows.interface';
+import { ActiveTrack } from 'src/model/ActiveTrack';
 
 @Injectable()
 export class ClientService {
@@ -22,7 +22,7 @@ export class ClientService {
         return this.clients
     }
 
-    public getActiveTracks(): ClientTrack[] {
+    public getActiveTracks(): ActiveTrack[] {
         return this.clients.map(clientBroker => {
             const {
                 date,
@@ -39,7 +39,7 @@ export class ClientService {
         })
     }
 
-    public getActiveClientsByFlows(): IActiveClientsByFlows[] {
+    public getActiveClientsByFlows(): ActiveClientsByFlows[] {
         const activeTracks = this.getActiveTracks();
         const flows = [...new Set(activeTracks.map(track => track.flowId))];
         return flows.map(flowId => ({

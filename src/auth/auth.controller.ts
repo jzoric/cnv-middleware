@@ -1,8 +1,10 @@
 import { Body, Controller, Get, HttpException, HttpStatus, Param, Post, UseGuards, Request } from '@nestjs/common';
-import { ApiBody, ApiTags, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiBody, ApiTags, ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { AuthService } from './auth.service';
 import { BasicAuthUserPasswordDTO } from './basicAuthUserPasswordDTO';
+import { ActivateFlowResponse } from 'src/model/activateflowresponse';
+import { LoginResponse } from 'src/model/loginresponse';
 
 @ApiTags('api/auth')
 @Controller('api/auth')
@@ -16,12 +18,18 @@ export class AuthController {
     @Get('renew')
     @ApiBearerAuth()
     @UseGuards(JwtAuthGuard)
+    @ApiResponse({
+        type: ActivateFlowResponse
+    })
     renew(@Request() req){
         return this.authService.login(req.user.username);
     }
     
     @ApiBody({
         type: BasicAuthUserPasswordDTO
+    })
+    @ApiResponse({
+        type: LoginResponse
     })
     @Post('bearer')
     authBearer(@Body("user") user: string, @Body("password") password: string) {

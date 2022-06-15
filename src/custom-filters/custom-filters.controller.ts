@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Param, Post, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { CustomFiltersService } from './custom-filters.service';
 import { CustomFilter } from '../model/custom-filter';
@@ -15,6 +15,9 @@ export class CustomFiltersController {
     @ApiBearerAuth()
     @UseGuards(JwtAuthGuard)
     @Get("")
+    @ApiResponse({
+        type: [CustomFilter]
+    })
     getAll(): Promise<CustomFilter[]> {
         return this.customFiltersService.all();
     }
@@ -22,6 +25,9 @@ export class CustomFiltersController {
     @ApiBearerAuth()
     @UseGuards(JwtAuthGuard)
     @Get(":id")
+    @ApiResponse({
+        type: CustomFilter
+    })
     get(@Param('id') id: string): Promise<CustomFilter> {
         return this.customFiltersService.get(id);
     }
@@ -29,6 +35,9 @@ export class CustomFiltersController {
     @ApiBearerAuth()
     @UseGuards(JwtAuthGuard)
     @Post("")
+    @ApiResponse({
+        type: CustomFilter
+    })
     create(@Body() cf: CustomFilter) {
         return this.customFiltersService.create(cf);
     }

@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-
 import { ConfigService } from 'src/config/config/config.service';
+import { LoginResponse } from 'src/model/loginresponse';
 import { v4 as uuidv4 } from 'uuid';
 const bcrypt = require('bcrypt');
 
@@ -59,7 +59,7 @@ export class AuthService {
         return user == this.adminuser && bcrypt.compareSync(password, this.bcryptpassword);
     }
 
-    async login(user: any) {
+    async login(user: any): Promise<LoginResponse> {
         const payload = {
             username: user,
             timestamp: new Date()

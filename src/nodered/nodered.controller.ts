@@ -1,5 +1,5 @@
 import { Controller, Get, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { NoderedService } from './nodered.service';
 
@@ -12,6 +12,9 @@ export class NoderedController {
 
     @ApiBearerAuth()
     @UseGuards(JwtAuthGuard)
+    @ApiResponse({
+        type: [String]
+    })
     @Get("flows")
     get(): Promise<String[]> {
         return this.noderedService.getCurrentFlows();

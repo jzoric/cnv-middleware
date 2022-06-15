@@ -7,6 +7,7 @@ import { TrackService } from 'src/track/track/track.service';
 import { ApiBearerAuth, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { ConfigService } from 'src/config/config/config.service';
+import { ActivateFlowResponse } from 'src/model/activateflowresponse';
 
 @ApiTags('api/v1/session')
 @Controller('api/v1/session')
@@ -25,8 +26,11 @@ export class SessionController {
         required: true,
         description: 'nodered server name flowid <strong>Eg: /default</strong>'
     })
+    @ApiResponse({
+        type: ActivateFlowResponse
+    })
     @Get("activate")
-    public async getUserSession(@Req() req: Request, @Query('flowId') flowId: string, @Res({ passthrough: true }) response: Response) {
+    public async getUserSession(@Req() req: Request, @Query('flowId') flowId: string, @Res({ passthrough: true }) response: Response): Promise<ActivateFlowResponse> {
         const userAgent = req.headers['user-agent'];
         const userIp = req.headers['x-forwarded-for']?.toString() || req.socket.remoteAddress;
         

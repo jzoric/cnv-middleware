@@ -1,6 +1,6 @@
 import { Injectable, Logger, HttpException } from '@nestjs/common';
 import { aql } from 'arangojs';
-import { AggregatedSessionByFlowId } from 'src/model/aggregatedSessionByFlowId';
+import { AggregatedTrackByFlowId } from 'src/model/aggregatedTrackByFlowId';
 import { Interaction } from 'src/model/client.interaction';
 import { ClientTrack } from 'src/model/client.track';
 import { UserSession } from 'src/model/usersession';
@@ -308,7 +308,7 @@ export class TrackService {
 
     // metrics
 
-    async getAggregatedTracksByFlowId(startDate?: Date, endDate?: Date): Promise<AggregatedSessionByFlowId[]> {
+    async getAggregatedTracksByFlowId(startDate?: Date, endDate?: Date): Promise<AggregatedTrackByFlowId[]> {
         const filters = [];
         
         if (startDate && endDate) {

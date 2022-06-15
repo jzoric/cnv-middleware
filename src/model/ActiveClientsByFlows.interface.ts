@@ -1,8 +1,10 @@
 import { ApiProperty } from "@nestjs/swagger";
 
-export class AggregatedSessionByBrowser {
+export class ActiveClientsByFlows {
+    
     @ApiProperty()
-    name: string;
+    flowId: string;
+
     @ApiProperty()
-    count: number;
+    numClients: number;
 }

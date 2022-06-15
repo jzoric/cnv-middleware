@@ -1,12 +1,9 @@
 import { ApiProperty } from "@nestjs/swagger";
 
-export class AggregatedSessionByLocation {
+export class AggregatedTrackByFlowId {
 
     @ApiProperty()
-    country: string;
-
-    @ApiProperty()
-    city: string;
+    name: string;
 
     @ApiProperty()
     count: number;

@@ -1,6 +1,12 @@
 import { Controller, Get, Query, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { ActiveClientsByFlows } from 'src/model/ActiveClientsByFlows.interface';
+import { ActiveTrack } from 'src/model/ActiveTrack';
+import { AggregatedSessionByBrowser } from 'src/model/aggregatedSessionByBrowser';
+import { AggregatedSessionByLocation } from 'src/model/aggregatedSessionByLocation';
+import { AggregatedSessionByOS } from 'src/model/aggregatedSessionByOS';
+import { AggregatedTrackByFlowId } from 'src/model/aggregatedTrackByFlowId';
 import { MetricsService } from './metrics.service';
 
 
@@ -15,6 +21,9 @@ export class MetricsController {
     @ApiBearerAuth()
     @UseGuards(JwtAuthGuard)
     @Get("activeClients")
+    @ApiResponse({
+        type: [ActiveTrack]
+    })
     public getActiveClients() {
         return this.metricsService.getActiveTracks();
     }
@@ -22,6 +31,9 @@ export class MetricsController {
     @ApiBearerAuth()
     @UseGuards(JwtAuthGuard)
     @Get("activeClientsByFlows")
+    @ApiResponse({
+        type: [ActiveClientsByFlows]
+    })
     public getActiveClientsByFlows() {
         return this.metricsService.getActiveClientsByFlows();
     }
@@ -42,6 +54,9 @@ export class MetricsController {
         example: '2021-08-05'
     })
     @Get("getAggregatedSessionsByLocation")
+    @ApiResponse({
+        type: [AggregatedSessionByLocation]
+    })
     public getAggregatedSessionsByLocation(@Query("startDate") startDate: Date, @Query("endDate") endDate: Date) {
         return this.metricsService.getAggregatedSessionsByLocation(startDate, endDate)
     }
@@ -62,6 +77,9 @@ export class MetricsController {
         example: '2021-08-05'
     })
     @Get("getAggregatedSessionsByBrowser")
+    @ApiResponse({
+        type: [AggregatedSessionByBrowser]
+    })
     public getAggregatedSessionsByBrowser(@Query("startDate") startDate: Date, @Query("endDate") endDate: Date) {
         return this.metricsService.getAggregatedSessionsByBrowser(startDate, endDate)
     }
@@ -82,6 +100,9 @@ export class MetricsController {
         example: '2021-08-05'
     })
     @Get("getAggregatedSessionsByOS")
+    @ApiResponse({
+        type: [AggregatedSessionByOS]
+    })
     public getAggregatedSessionsByOS(@Query("startDate") startDate: Date, @Query("endDate") endDate: Date) {
         return this.metricsService.getAggregatedSessionsByOS(startDate, endDate)
     }
@@ -102,6 +123,9 @@ export class MetricsController {
         example: '2021-08-05'
     })
     @Get("getAggregatedTracksByFlowId")
+    @ApiResponse({
+        type: [AggregatedTrackByFlowId]
+    })
     public getAggregatedTracksByFlowId(@Query("startDate") startDate: Date, @Query("endDate") endDate: Date) {
         return this.metricsService.getAggregatedTracksByFlowId(startDate, endDate)
     }
