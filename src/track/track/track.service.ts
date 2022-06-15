@@ -314,6 +314,7 @@ export class TrackService {
         if (startDate && endDate) {
             filters.push(aql`
                 FILTER ct.date >= ${new Date(startDate)} && ct.date <= ${new Date(endDate)}
+                FILTER LENGTH(ct.interaction) > 0
             `);
         }
         

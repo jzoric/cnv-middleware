@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ClientService } from 'src/client/client/client.service';
 import { ActiveClientsByFlows } from 'src/model/ActiveClientsByFlows.interface';
 import { ActiveTrack } from 'src/model/ActiveTrack';
@@ -6,17 +6,31 @@ import { AggregatedSessionByBrowser } from 'src/model/aggregatedSessionByBrowser
 import { AggregatedSessionByLocation } from 'src/model/aggregatedSessionByLocation';
 import { AggregatedSessionByOS } from 'src/model/aggregatedSessionByOS';
 import { AggregatedTrackByFlowId } from 'src/model/aggregatedTrackByFlowId';
+import { MetricFlowByDate } from 'src/model/metricFlowByDate';
+import { MetricFlowByHour } from 'src/model/metricFlowByHour';
+import { ArangoService } from 'src/persistence/arango/arango.service';
 import { SessionService } from 'src/session/session.service';
 import { TrackService } from 'src/track/track/track.service';
 
 @Injectable()
 export class MetricsService {
+    private readonly logger = new Logger(MetricsService.name);
     constructor(
         private readonly clientService: ClientService,
         private readonly sessionService: SessionService,
-        private readonly trackService: TrackService
+        private readonly trackService: TrackService,
+        private readonly arangoService: ArangoService
     ) {
         
+    }
+
+    async createMetricFlowByHour(timestamp: Date, name: string, count: number): Promise<MetricFlowByHour> {
+        const metric = new MetricFlowByHour(timestamp, name, count);
+        
+        const insert = this.arangoService.collection.save(metric);
+        if (insert) {
+            return metric;
+        }
     }
 
     getActiveTracks(): ActiveTrack[] {

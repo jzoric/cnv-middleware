@@ -19,6 +19,7 @@ import { MetricsModule } from './metrics/metrics.module';
 import { CustomFiltersModule } from './custom-filters/custom-filters.module';
 import { UAParser } from 'ua-parser-js';
 import { lookup } from 'geoip-lite';
+import { PropertiesModule } from './properties/properties.module';
 
 @Module({
   imports: [
@@ -44,7 +45,8 @@ import { lookup } from 'geoip-lite';
     AuthModule,
     ScheduleModule.forRoot(),
     MetricsModule,
-    CustomFiltersModule
+    CustomFiltersModule,
+    PropertiesModule
   ],
   controllers: [AppController],
   providers: [AppService],
@@ -58,7 +60,6 @@ export class AppModule {
   ) {
     this.sessionUserAgentMigrations();
     this.sessionUserLocationMigrations();
-    this.tests();
   }
 
 
@@ -86,29 +87,6 @@ export class AppModule {
 
   }
 
-  async tests() {
-
-    const endDate = new Date();
-    let startDate = new Date();
-    
-    startDate.setDate(endDate.getDate() - 10)
-
-    const dataLocation = await this.sessionService.getAggregatedSessionsByLocation(startDate, endDate);
-
-    const dataBrowser = await this.sessionService.getAggregatedSessionsByBrowser(startDate, endDate);
-
-    const dataOS = await this.sessionService.getAggregatedSessionsByOS(startDate, endDate);
-
-    const dataFlow = await this.trackService.getAggregatedTracksByFlowId(startDate, endDate);
-
-    console.log({
-      dataLocation,
-      dataBrowser,
-      dataOS,
-      dataFlow
-    })
-
-  }
 
   // migrations
 
