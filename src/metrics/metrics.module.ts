@@ -16,6 +16,7 @@ import { PropertiesModule } from 'src/properties/properties.module';
 import { Property } from 'src/model/property';
 import { MetricStateFlowProcessor } from 'src/model/metricStateFlowProcessor';
 import { Cron } from '@nestjs/schedule';
+import { getDayDateInterval } from 'src/utils/date';
 
 @Module({
   providers: [MetricsService],
@@ -33,73 +34,56 @@ import { Cron } from '@nestjs/schedule';
 export class MetricsModule {
   private readonly logger = new Logger(MetricsModule.name);
   private METRIC_STATE_FLOW_PROCESSOR = 'METRIC_STATE_FLOW_PROCESSOR';
-
+  private TRACK_LIFETIME_MONTHS: number
   constructor(
     private readonly sessionService: SessionService,
     private readonly trackService: TrackService,
     private readonly metricService: MetricsService,
     private readonly configService: ConfigService,
     private readonly propertiesService: PropertiesService) {
+    this.TRACK_LIFETIME_MONTHS = +this.configService.get('TRACK_LIFETIME_MONTHS');
+    this.runDailyFlowMetrics();
+    this.housekeeping();
 
   }
+
   @Cron('0 0 * * *')
   async runDailyFlowMetrics() {
 
     let state = (await this.propertiesService.getProperty<MetricStateFlowProcessor>(this.METRIC_STATE_FLOW_PROCESSOR))?.data;
 
     if (!state) {
-      const TRACK_LIFETIME_MONTHS: number = +this.configService.get('TRACK_LIFETIME_MONTHS');
       const startDate = new Date();
-
-      startDate.setMonth(startDate.getMonth() - TRACK_LIFETIME_MONTHS)
-
+      startDate.setMonth(startDate.getMonth() - this.TRACK_LIFETIME_MONTHS)
       state = (await this.propertiesService.setProperty<MetricStateFlowProcessor>(this.METRIC_STATE_FLOW_PROCESSOR, new MetricStateFlowProcessor(startDate)))?.data;
     }
 
     let startDate = new Date(state.lastProcessedTimestamp);
     let curDate = new Date();
     curDate.setDate(curDate.getDate() - 1);
+
     while (startDate < curDate) {
-
-      const dates = this.getDayDateInterval(startDate);
-
+      const dates = getDayDateInterval(startDate);
       for (let i = 0; i < dates.length; i++) {
         const pair = dates[i];
         this.logger.debug(`processing daily metrics at ${pair[0]}`)
         const dataFlow = await this.trackService.getAggregatedTracksByFlowId(pair[0], pair[1]);
         state = (await this.propertiesService.setProperty<MetricStateFlowProcessor>(this.METRIC_STATE_FLOW_PROCESSOR, new MetricStateFlowProcessor(pair[0])))?.data;
-        dataFlow.forEach( async (d) => {
+        dataFlow.forEach(async (d) => {
           this.metricService.createMetricFlowByHour(pair[0], d.name, d.count)
-          
         })
-
         state = (await this.propertiesService.setProperty<MetricStateFlowProcessor>(this.METRIC_STATE_FLOW_PROCESSOR, new MetricStateFlowProcessor(pair[1])))?.data;
-
-
       }
       startDate.setDate(startDate.getDate() + 1);
     }
-
   }
 
-  private getDayDateInterval(date: Date) {
-    let dateIntervals = [];
-
-    date.setHours(0, 0, 0, 0);
-    let nextDay: Date = new Date(date);
-    nextDay.setDate(nextDay.getDate() + 1);
-
-    do {
-      let startDate: Date = new Date(date);
-      let endDate: Date = new Date(startDate);
-      endDate.setHours(date.getHours() + 1);
-      date = endDate;
-
-      dateIntervals.push([startDate, endDate])
-    } while (date < nextDay)
-
-
-    return dateIntervals
-
+  @Cron('0 0 * * *')
+  private async housekeeping() {
+    const endDate = new Date();
+    endDate.setMonth(-this.TRACK_LIFETIME_MONTHS);
+    endDate.setHours(0, 0, 0, 0);
+    await this.metricService.removeMetricsByDate(endDate);
   }
+
 }

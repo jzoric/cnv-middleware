@@ -1,5 +1,6 @@
-import { Controller, Get, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Query, Res, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Response } from 'express';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { ActiveClientsByFlows } from 'src/model/ActiveClientsByFlows.interface';
 import { ActiveTrack } from 'src/model/ActiveTrack';
@@ -7,6 +8,7 @@ import { AggregatedSessionByBrowser } from 'src/model/aggregatedSessionByBrowser
 import { AggregatedSessionByLocation } from 'src/model/aggregatedSessionByLocation';
 import { AggregatedSessionByOS } from 'src/model/aggregatedSessionByOS';
 import { AggregatedTrackByFlowId } from 'src/model/aggregatedTrackByFlowId';
+import { NormalizedMetricsFlowByHour } from 'src/model/normalizedMetricsFlowByHour';
 import { MetricsService } from './metrics.service';
 
 
@@ -44,14 +46,14 @@ export class MetricsController {
         name: 'startDate',
         required: false,
         description: 'Query Start Date <br><strong>Format:</strong> YYYY-MM-DD <br><strong>Defaults to empty</strong>',
-        example: '2021-08-05'
+        example: new Date()
 
     })
     @ApiQuery({
         name: 'endDate',
         required: false,
         description: 'Query End Date <br><strong>Format:</strong> YYYY-MM-DD <br><strong>Defaults to empty</strong>',
-        example: '2021-08-05'
+        example: new Date()
     })
     @Get("getAggregatedSessionsByLocation")
     @ApiResponse({
@@ -67,14 +69,14 @@ export class MetricsController {
         name: 'startDate',
         required: false,
         description: 'Query Start Date <br><strong>Format:</strong> YYYY-MM-DD <br><strong>Defaults to empty</strong>',
-        example: '2021-08-05'
+        example: new Date()
 
     })
     @ApiQuery({
         name: 'endDate',
         required: false,
         description: 'Query End Date <br><strong>Format:</strong> YYYY-MM-DD <br><strong>Defaults to empty</strong>',
-        example: '2021-08-05'
+        example: new Date()
     })
     @Get("getAggregatedSessionsByBrowser")
     @ApiResponse({
@@ -90,14 +92,14 @@ export class MetricsController {
         name: 'startDate',
         required: false,
         description: 'Query Start Date <br><strong>Format:</strong> YYYY-MM-DD <br><strong>Defaults to empty</strong>',
-        example: '2021-08-05'
+        example: new Date()
 
     })
     @ApiQuery({
         name: 'endDate',
         required: false,
         description: 'Query End Date <br><strong>Format:</strong> YYYY-MM-DD <br><strong>Defaults to empty</strong>',
-        example: '2021-08-05'
+        example: new Date()
     })
     @Get("getAggregatedSessionsByOS")
     @ApiResponse({
@@ -113,14 +115,14 @@ export class MetricsController {
         name: 'startDate',
         required: false,
         description: 'Query Start Date <br><strong>Format:</strong> YYYY-MM-DD <br><strong>Defaults to empty</strong>',
-        example: '2021-08-05'
+        example: new Date()
 
     })
     @ApiQuery({
         name: 'endDate',
         required: false,
         description: 'Query End Date <br><strong>Format:</strong> YYYY-MM-DD <br><strong>Defaults to empty</strong>',
-        example: '2021-08-05'
+        example: new Date()
     })
     @Get("getAggregatedTracksByFlowId")
     @ApiResponse({
@@ -128,6 +130,26 @@ export class MetricsController {
     })
     public getAggregatedTracksByFlowId(@Query("startDate") startDate: Date, @Query("endDate") endDate: Date) {
         return this.metricsService.getAggregatedTracksByFlowId(startDate, endDate)
+    }
+
+    @ApiBearerAuth()
+    @UseGuards(JwtAuthGuard)
+    @ApiQuery({
+        name: 'startDate',
+        required: false,
+        description: 'Query Start Date <br><strong>Format:</strong> YYYY-MM-DD <br><strong>Defaults to empty</strong>',
+        example: new Date()
+
+    })
+    @ApiQuery({
+        name: 'endDate',
+        required: false,
+        description: 'Query End Date <br><strong>Format:</strong> YYYY-MM-DD <br><strong>Defaults to empty</strong>',
+        example: new Date()
+    })
+    @Get("getNormalizedMetricsFlowByHour")
+    public getNormalizedMetricsFlowByHour(@Query("startDate") startDate: Date, @Query("endDate") endDate: Date) {
+        return this.metricsService.getNormalizedMetricsFlowByHour(startDate, endDate);
     }
 
 }

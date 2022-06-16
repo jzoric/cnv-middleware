@@ -36,7 +36,7 @@ async function bootstrap() {
     logger.log(`enabling cors for ${cors}`);
 
     app.use((req, res, next) => {
-      let origin = req.headers.referer;
+      let origin = req.headers.referer || '';
       origin = origin.slice(0,origin.lastIndexOf('/'))
       if (cors.indexOf(origin) !== -1) {
         res.header('Access-Control-Allow-Origin', origin);

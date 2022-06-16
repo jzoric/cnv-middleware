@@ -72,14 +72,14 @@ export class TrackController {
         name: 'startDate',
         required: false,
         description: 'Query Start Date <br><strong>Format:</strong> YYYY-MM-DD <br><strong>Defaults to empty</strong>',
-        example: '2021-08-05'
+        example: new Date()
 
     })
     @ApiQuery({
         name: 'endDate',
         required: false,
         description: 'Query End Date <br><strong>Format:</strong> YYYY-MM-DD <br><strong>Defaults to empty</strong>',
-        example: '2021-08-05'
+        example: new Date()
     })
     @ApiResponse({
         type: [ClientTrack]
@@ -169,14 +169,14 @@ export class TrackController {
         name: 'startDate',
         required: false,
         description: 'Query Start Date <br><strong>Format:</strong> YYYY-MM-DD <br><strong>Defaults to empty</strong>',
-        example: '2021-08-05'
+        example: new Date()
 
     })
     @ApiQuery({
         name: 'endDate',
         required: false,
         description: 'Query End Date <br><strong>Format:</strong> YYYY-MM-DD <br><strong>Defaults to empty</strong>',
-        example: '2021-08-05'
+        example: new Date()
     })
     @Get("count")
     public async countSessions(
