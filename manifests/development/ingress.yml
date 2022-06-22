@@ -1,4 +1,4 @@
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: cnv-middleware-api 
@@ -17,16 +17,26 @@ spec:
     - host: conversation-platform.productdock.com
       http:
         paths:
-          - path: /api/
-            backend:
-              serviceName: cnv-middleware-api 
-              servicePort: 3000
-          - path: /socket.io/
-            backend:
-              serviceName: cnv-middleware-api 
-              servicePort: 3000
-          - path: /red/
-            backend:
-              serviceName: cnv-middleware-api 
-              servicePort: 1880
+        - path: /api/
+          pathType: Prefix
+          backend:
+            service:
+              name: cnv-middleware-api 
+              port: 
+                number: 3000
+        - path: /socket.io/
+          pathType: Prefix
+          backend:
+            service:
+              name: cnv-middleware-api 
+              port: 
+                number: 3000
+        - path: /red/
+          pathType: Prefix
+          backend:
+            service:
+              name: cnv-middleware-api 
+              port: 
+                number: 1880
+        
                 
