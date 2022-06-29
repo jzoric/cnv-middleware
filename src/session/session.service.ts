@@ -41,7 +41,8 @@ export class SessionService {
             userAgent,
             browser,
             cpu,
-            os, userIp,
+            os,
+            // userIp,
             country,
             city);
 
@@ -263,11 +264,42 @@ export class SessionService {
             })
     }
 
+    async getSessionsWithParsedUserLocationAndIP(page: number, take: number): Promise<UserSession[]> {
+        const query = aql`
+            FOR S in ${this.arangoService.collection}
+            FILTER S.userIp != null
+            FILTER S.city != null
+            LIMIT ${+(page * take)}, ${+take} 
+            RETURN S
+        `;
+        return await this.arangoService.database.query(query)
+            .then(res => res.all())
+            .catch(e => {
+                throw new HttpException(e.response.body.errorMessage, e.code)
+            })
+    }
+
     async countessionsWithNoParsedUserLocation(): Promise<number> {
         const query = aql`
             FOR S in ${this.arangoService.collection}
             FILTER S.userIp != null
             FILTER S.city == null
+            COLLECT WITH COUNT INTO length
+            RETURN length
+        `;
+        return await this.arangoService.database.query(query)
+            .then(res => res.all())
+            .then(res => res?.[0])
+            .catch(e => {
+                throw new HttpException(e.response.body.errorMessage, e.code)
+            })
+    }
+
+    async countessionsWithParsedUserLocationAndIP(): Promise<number> {
+        const query = aql`
+            FOR S in ${this.arangoService.collection}
+            FILTER S.userIp != null
+            FILTER S.city != null
             COLLECT WITH COUNT INTO length
             RETURN length
         `;
