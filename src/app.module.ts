@@ -117,7 +117,7 @@ export class AppModule {
     let nsessions = await this.sessionService.countessionsWithNoParsedUserLocation();
 
     if (nsessions == 0) {
-      this.logger.log(`Session user IP migrations not required`);
+      this.logger.log(`Session user location migrations not required`);
     } else {
       this.logger.log(`Preparing to migrate user IP on ${nsessions} sessions`);
     }
@@ -136,7 +136,7 @@ export class AppModule {
     let nsessions = await this.sessionService.countessionsWithParsedUserLocationAndIP();
 
     if (nsessions == 0) {
-      this.logger.log(`Session user location migrations not required`);
+      this.logger.log(`Session user ip migrations not required`);
     } else {
       this.logger.log(`Preparing to migrate user locations on ${nsessions} sessions`);
     }
