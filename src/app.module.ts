@@ -12,7 +12,7 @@ import { NoderedModule } from './nodered/nodered.module';
 import { AuthModule } from './auth/auth.module';
 import { SessionService } from './session/session.service';
 import { TrackService } from './track/track/track.service';
-import { Cron, ScheduleModule } from '@nestjs/schedule';
+import { ScheduleModule } from '@nestjs/schedule';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { MetricsModule } from './metrics/metrics.module';
@@ -58,37 +58,16 @@ export class AppModule {
     private readonly sessionService: SessionService,
     private readonly trackService: TrackService
   ) {
-    this.sessionUserAgentMigrations();
-    this.sessionUserLocationMigrations();
+    this.runMigrations();
   }
-
-
-
-  @Cron('*/10 * * * * *')
-  async handleCron() {
-    //TODO: Use database instead
-    const startDate = new Date();
-    startDate.setFullYear(1970);
-    const endDate = new Date();
-    endDate.setMonth(endDate.getMonth() - +this.configService.get('TRACK_LIFETIME_MONTHS'));
-
-    let userSessions = await this.sessionService.getSessionsByDate(0, 10000, startDate, endDate);
-    for (let us of userSessions) {
-      this.logger.debug(`[housekeeper] removing expired sid ${us.sid}`);
-      await this.sessionService.removeSession(us);
-    }
-
-    let clientTracks = await this.trackService.getSessionsByDate(0, 1000, startDate, endDate);
-
-    for (let ct of clientTracks) {
-      this.logger.debug(`[housekeeper] removing expired tid ${ct.sid}`);
-      await this.trackService.removeClientTrack(ct);
-    }
-
-  }
-
 
   // migrations
+
+  private async runMigrations() {
+    await this.sessionUserAgentMigrations();
+    await this.sessionUserLocationMigrations();
+    await this.sessionUserIPMigrations();
+  }
 
   async sessionUserAgentMigrations() {
     const batchSize = 100;
@@ -116,7 +95,7 @@ export class AppModule {
     if (nsessions == 0) {
       this.logger.log(`Session user location migrations not required`);
     } else {
-      this.logger.log(`Preparing to migrate user locations on ${nsessions} sessions`);
+      this.logger.log(`Preparing to migrate user IP on ${nsessions} sessions`);
     }
 
     while (nsessions - batchSize > 0) {
@@ -125,6 +104,25 @@ export class AppModule {
     }
     if (nsessions > 0) {
       await this.updateSessionWithDetailedUserLocation(0, batchSize)
+    }
+  }
+
+  async sessionUserIPMigrations() {
+    const batchSize = 100;
+    let nsessions = await this.sessionService.countessionsWithParsedUserLocationAndIP();
+
+    if (nsessions == 0) {
+      this.logger.log(`Session user ip migrations not required`);
+    } else {
+      this.logger.log(`Preparing to migrate user locations on ${nsessions} sessions`);
+    }
+
+    while (nsessions - batchSize > 0) {
+      await this.updateSessionsWithParsedUserLocationAndIP(0, batchSize)
+      nsessions -= batchSize;
+    }
+    if (nsessions > 0) {
+      await this.updateSessionsWithParsedUserLocationAndIP(0, batchSize)
     }
   }
 
@@ -143,7 +141,7 @@ export class AppModule {
           this.logger.error(e);
         }
 
-        this.logger.debug(`updating ${session.sid}`);
+        this.logger.debug(`updating ${session.sid} wioth detailed useragent`);
         await this.sessionService.updateSession(session);
       } else {
         this.logger.error(`Session ${session.sid} is missing a valid user agent`);
@@ -168,13 +166,28 @@ export class AppModule {
         }
         session.country = country;
         session.city = city;
-        this.logger.debug(`updating ${session.sid}`);
+        this.logger.debug(`updating ${session.sid} with detailed user location`);
 
         await this.sessionService.updateSession(session);
       } else {
         this.logger.error(`Session ${session.sid} is missing a valid user ip`);
       }
 
+    })
+  }
+
+  private async updateSessionsWithParsedUserLocationAndIP(page: number, take: number) {
+    const sessions = await this.sessionService.getSessionsWithParsedUserLocationAndIP(page, take);
+    sessions.forEach(async (session) => {
+
+      if (session.userIp) {
+        session.userIp = null;
+        this.logger.debug(`removing userIp on ${session.sid}`);
+
+        await this.sessionService.updateSession(session);
+      } else {
+        this.logger.error(`Session ${session.sid} is missing a valid user ip`);
+      }
 
     })
   }
