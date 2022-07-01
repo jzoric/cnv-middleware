@@ -5,10 +5,11 @@ import * as WebSocket from 'ws';
 import { JSONSanitizer } from "src/utils/sanitizer";
 import { Interaction, OriginInteraction } from "./client.interaction";
 import { ClientTrack } from "./client.track";
+import { ClientService } from "src/client/client/client.service";
 
 export class ClientBroker {
   private readonly logger = new Logger(ClientBroker.name);
-
+  private USER_INACTIVE_PERIOD  = 3600000;
   remoteClient: any;
   remoteServer: any;
   clientTrack: ClientTrack;
@@ -16,7 +17,7 @@ export class ClientBroker {
   isTerminated: boolean = false;
   inactivityTimeout: NodeJS.Timeout;
 
-  constructor(remoteClient: any, remoteServerURL: string, clientTrack: ClientTrack, private readonly trackService: TrackService) {
+  constructor(remoteClient: any, remoteServerURL: string, clientTrack: ClientTrack, private readonly trackService: TrackService, private readonly clientService: ClientService) {
 
     this.remoteClient = remoteClient;
     this.clientTrack = clientTrack;
@@ -24,8 +25,8 @@ export class ClientBroker {
     this.createRemoteServer(remoteServerURL);
     this.inactivityTimeout = setTimeout(() => {
       this.logger.log("User inactive, terminatting");
-      this.terminate();
-    }, 3600000);
+      this.clientService.handleDisconnect(this.remoteClient)
+    }, this.USER_INACTIVE_PERIOD);
 
 
     this.remoteClient.on("message", async (data) => {
@@ -41,8 +42,8 @@ export class ClientBroker {
       clearTimeout(this.inactivityTimeout);
       this.inactivityTimeout = setTimeout(() => {
         this.logger.log("User inactive, terminatting");
-        this.terminate();
-      }, 3600000);
+        this.clientService.handleDisconnect(this.remoteClient)
+      }, this.USER_INACTIVE_PERIOD);
 
       if (this.remoteServer.readyState === WebSocket.OPEN) {
         this.remoteServer.send(JSON.stringify(_data));
@@ -52,7 +53,7 @@ export class ClientBroker {
         await this.trackService.addInteraction(this.clientTrack, new Interaction(OriginInteraction.CLIENT, _data))
       } catch (e) {
         this.logger.error(e);
-        this.terminate();
+        this.clientService.handleDisconnect(this.remoteClient)
       }
     })
   }
@@ -91,7 +92,7 @@ export class ClientBroker {
 
         } catch (e) {
           this.logger.error(e);
-          this.terminate();
+          this.clientService.handleDisconnect(this.remoteClient)
         }
         return;
       }

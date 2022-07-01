@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ClientBroker } from '../../model/client.broker';
 import { ConfigService } from 'src/config/config/config.service';
 import { TrackService } from 'src/track/track/track.service';
@@ -8,6 +8,7 @@ import { ActiveTrack } from 'src/model/ActiveTrack';
 
 @Injectable()
 export class ClientService {
+    private logger: Logger = new Logger(ClientService.name)
     private clients: ClientBroker[]; 
     private WSCONN;
     constructor(
@@ -16,6 +17,10 @@ export class ClientService {
     ) {
         this.clients = [];
         this.WSCONN = this.configService.get("NODERED_WS_CONNECTION") || 'ws://localhost:8080';
+
+        // setInterval(() => {
+        //     this.logger.log(`client connections: ${this.getActiveClients().length}`);
+        // }, 2000);
     }
 
     public getActiveClients(): ClientBroker[] {
@@ -64,7 +69,8 @@ export class ClientService {
                     client,
                     `${this.WSCONN}${client.nsp.name}`,
                     clientTrack,
-                    this.trackService
+                    this.trackService,
+                    this
                 )
                 );
         } catch(e) {
