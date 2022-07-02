@@ -12,7 +12,6 @@ export class TrackService {
     private readonly logger = new Logger(TrackService.name);
 
     constructor(private readonly arangoService: ArangoService) {
-
     }
 
     async createTrack(userSession: UserSession, flowId: string): Promise<ClientTrack> {
@@ -24,11 +23,11 @@ export class TrackService {
     }
 
     async getClientTracks(
-        page: number, take: number, sid: string, flowId: string,
-        sortBy: string, sortByType: string,
-        ninteractions: number, interactionsOperator: string,
-        nstore: number, storeOperator: string,
-        startDate: Date, endDate: Date): Promise<ClientTrack[]> {
+        page?: number, take?: number, sid?: string, flowId?: string,
+        sortBy?: string, sortByType?: string,
+        ninteractions?: number, interactionsOperator?: string,
+        nstore?: number, storeOperator?: string,
+        startDate?: Date, endDate?: Date): Promise<ClientTrack[]> {
 
         const filters = [];
 
@@ -197,10 +196,10 @@ export class TrackService {
     }
 
     async countClientTracks(
-        sid: string, flowId: string,
-        ninteractions: number, interactionsOperator: string,
-        nstore: number, storeOperator: string,
-        startDate: Date, endDate: Date): Promise<number> {
+        sid?: string, flowId?: string,
+        ninteractions?: number, interactionsOperator?: string,
+        nstore?: number, storeOperator?: string,
+        startDate?: Date, endDate?: Date): Promise<number> {
         const filters = [];
 
         if (sid) {
@@ -337,4 +336,5 @@ export class TrackService {
             })
     }
 
+    
 }

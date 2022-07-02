@@ -20,6 +20,7 @@ import { CustomFiltersModule } from './custom-filters/custom-filters.module';
 import { UAParser } from 'ua-parser-js';
 import { lookup } from 'geoip-lite';
 import { PropertiesModule } from './properties/properties.module';
+import { InteractionModule } from './interaction/interaction.module';
 
 @Module({
   imports: [
@@ -46,7 +47,8 @@ import { PropertiesModule } from './properties/properties.module';
     ScheduleModule.forRoot(),
     MetricsModule,
     CustomFiltersModule,
-    PropertiesModule
+    PropertiesModule,
+    InteractionModule
   ],
   controllers: [AppController],
   providers: [AppService],

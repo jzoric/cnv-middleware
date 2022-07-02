@@ -24,7 +24,13 @@ export class ClientTrack {
     interaction?: Interaction[]
 
     @ApiProperty()
+    interactionSize?: number;
+    
+    @ApiProperty()
     store?: Object;
+    
+    @ApiProperty()
+    storeSize?: number
 
     constructor(sid: string, flowId: string) {
         this.sid = sid;
