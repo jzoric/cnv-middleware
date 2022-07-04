@@ -44,7 +44,7 @@ async function bootstrap() {
         res.header('Access-Control-Allow-Headers', 'Content-Type, Accept');
         res.header('Access-Control-Allow-Credentials', true);
       } else {
-        logger.warn(`cors not processed for: ${origin}`);
+        logger.warn(`cors not processed for: ${origin}. If its an issue, don't forget to add this entry on the configuration file.`);
       }
       next();
     });
