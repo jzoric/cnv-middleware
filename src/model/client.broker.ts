@@ -110,15 +110,14 @@ export class ClientBroker {
         this.remoteClient.emit("message", data);
       }
 
-      const interactions = await this.interactionService.getInteractions(this.clientTrack.flowId, this.clientTrack.tid);
-
-      // TODO add this feature again calling the bd? 
-      const lastObject = interactions[interactions.length - 1];
-      if (lastObject?.origin == OriginInteraction.SERVER &&
-        JSON.stringify(lastObject.data) == JSON.stringify(jsonData)) {
-          console.log('same object', JSON.stringify(jsonData));
-        return;
-      }
+      // const interactions = await this.interactionService.getInteractions(this.clientTrack.flowId, this.clientTrack.tid);
+      // // TODO add this feature again calling the bd? 
+      // const lastObject = interactions[interactions.length - 1];
+      // if (lastObject?.origin == OriginInteraction.SERVER &&
+      //   JSON.stringify(lastObject.data) == JSON.stringify(jsonData)) {
+      //     console.log('same object', JSON.stringify(jsonData));
+      //   return;
+      // }
       await this.interactionService.createInteraction(new Interaction(this.clientTrack.tid, this.clientTrack.flowId, OriginInteraction.SERVER, jsonData, currentTimestamp))
     })
 
