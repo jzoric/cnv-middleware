@@ -1,14 +1,11 @@
-import { HttpException, Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { aql } from 'arangojs';
 import { DocumentCollection, EdgeCollection } from 'arangojs/collection';
 import { Interaction } from 'src/model/client.interaction';
-import { ClientTrack } from 'src/model/client.track';
 import { ArangoService } from 'src/persistence/arango/arango.service';
-import { TrackService } from 'src/track/track/track.service';
 
 @Injectable()
 export class InteractionService {
-    private readonly logger: Logger = new Logger(InteractionService.name);
 
     constructor(
         private readonly arangoService: ArangoService) {
@@ -16,13 +13,45 @@ export class InteractionService {
                 type: 'persistent',
                 fields: ['sid', 'flowId', 'tid']
             })
+        
+            setTimeout(() => {
+                this.test();
+            }, 5000);
     }
+
+    private async test() {
+        let interactions = await this.getInteractions('/productdock', '0ea17ad3-1281-461d-bea2-896b8a15aaee');
+        interactions = interactions.map(interaction => {
+            let type = 'flow';
+            switch(interaction.data.type) {
+                case 'event': type = 'event'; break;
+                case 'question': type = 'question'; break;
+                case 'answer': type = 'answer'; break;
+                
+            }
+            return {
+                tid: interaction.tid,
+                flowId: interaction.flowId,
+                timestamp: interaction.timestamp,
+                origin: interaction.origin,
+                nodeId: interaction.data.nodeId,
+                type,
+                name: interaction.data.name || interaction.data.type,
+                value: interaction.data.value,
+                data: interaction.data
+
+            }
+        });
+
+        console.table(interactions)
+    }
+
 
     public getCollection(): DocumentCollection<any> & EdgeCollection<any> {
         return this.arangoService.collection;
     }
 
-    async createTrack(interaction: Interaction): Promise<Interaction> {
+    async createInteraction(interaction: Interaction): Promise<Interaction> {
 
         const insert = await this.arangoService.collection.save(interaction);
         if (insert) {
@@ -30,18 +59,17 @@ export class InteractionService {
         }
     }
 
-    async migrateInteractions(): Promise<any> {
+    async getInteractions(flowId: string, tid: string): Promise<Interaction[]> {
+
         const query = aql`
-            FOR ct in ${this.arangoService.collection}
-            FILTER IS_ARRAY(ct.interaction)
-            
+            FOR i in ${this.arangoService.collection}
+            FILTER i.flowId == ${flowId}
+            FILTER i.tid == ${tid}
+            SORT i.timestamp ASC
+            RETURN i
         `;
 
-        return await this.arangoService.database.query(query)
-            .then(res => res.all())
-            .catch(e => {
-                throw new HttpException(e.response.body.errorMessage, e.code)
-            })
+        return this.arangoService.queryMany<Interaction>(query);
     }
 
 }

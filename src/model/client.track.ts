@@ -18,9 +18,9 @@ export class ClientTrack {
     @ApiProperty()
     date: Date;
 
-    @ApiProperty({
-        type: [Interaction]
-    })
+    // @ApiProperty({
+    //     type: [Interaction]
+    // })
     interaction?: Interaction[]
 
     @ApiProperty()
@@ -37,7 +37,6 @@ export class ClientTrack {
         this.tid = uuidv4();
         this.flowId = flowId;
         this.date = new Date();
-        this.interaction = [];
         this.store = {};
 
     }

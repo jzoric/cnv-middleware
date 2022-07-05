@@ -1,6 +1,8 @@
 import { Logger, Module, OnModuleInit } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
 import { ConfigModule } from 'src/config/config/config.module';
+import { MetricsModule } from 'src/metrics/metrics.module';
+import { PropertiesModule } from 'src/properties/properties.module';
 import { SessionModule } from 'src/session/session.module';
 import { TrackModule } from 'src/track/track/track.module';
 import { HousekeeperService } from './housekeeper.service';
@@ -9,7 +11,9 @@ import { HousekeeperService } from './housekeeper.service';
   imports: [
     ConfigModule,
     TrackModule,
-    SessionModule
+    SessionModule,
+    MetricsModule,
+    PropertiesModule
   ],
   providers: [HousekeeperService],
   exports: [HousekeeperService]
@@ -22,9 +26,12 @@ export class HousekeeperModule implements OnModuleInit {
   ) {
 
   }
+  
   onModuleInit() {
     this.cleanExpiredSessions();
     this.cleanExpiredTracks();
+    this.cleanExpiredMetrics();
+    this.runDailyFlowMetrics();
   }
 
   @Cron('*/10 * * * *')
@@ -48,6 +55,22 @@ export class HousekeeperModule implements OnModuleInit {
     for (let us of userSessions) {
       this.logger.log(` * removing expired session sid: ${us.sid}`);
     }
+  }
 
+  @Cron('0 0 * * *')
+  private async cleanExpiredMetrics() {
+    this.logger.log('cleaning expired metrics');
+    let count = await this.houseKeeperService.cleanExpiredMetrics();
+
+    this.logger.log(` * removed ${count} expired metrics`);
+    
+  }
+
+  @Cron('0 0 * * *')
+  private async runDailyFlowMetrics() {
+    this.logger.log('calculating daily metrics');
+    await this.houseKeeperService.runDailyFlowMetrics();
+    this.logger.log('calculating daily metrics ✅ ');
+    
   }
 }

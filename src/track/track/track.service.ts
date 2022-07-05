@@ -1,8 +1,7 @@
-import { Injectable, Logger, HttpException, UseFilters } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { aql } from 'arangojs';
 import { InteractionService } from 'src/interaction/interaction.service';
 import { AggregatedTrackByFlowId } from 'src/model/aggregatedTrackByFlowId';
-import { Interaction } from 'src/model/client.interaction';
 import { ClientTrack } from 'src/model/client.track';
 import { UserSession } from 'src/model/usersession';
 import { ArangoService } from 'src/persistence/arango/arango.service';
@@ -10,7 +9,7 @@ import { ArangoService } from 'src/persistence/arango/arango.service';
 
 @Injectable()
 export class TrackService {
-
+    
     constructor(
         private readonly arangoService: ArangoService,
         private readonly interactionService: InteractionService) {
@@ -81,25 +80,17 @@ export class TrackService {
             LIMIT ${+(page * take)}, ${+take}
             `);
 
-        // if(filterByClientOrigin == true || filterByClientOrigin === 'true') {
-        //     filters.push(
-        //         aql`
-        //         LET interaction = (ct.interaction[* FILTER CONTAINS(CURRENT.origin, "client")])
-        //         RETURN MERGE(UNSET(ct, 'interaction'), { interaction: interaction})
-        //         `
-        //     )
-
-        // } else {
-        //     filters.push(
-        //         aql`RETURN ct`
-        //     )
-        // }
-
 
         filters.push(aql`
             LET storeSize = LENGTH(ct.store)
-            LET interactionSize = LENGTH(ct.interaction)
-            RETURN MERGE(UNSET(ct, 'store','interaction'), {storeSize, interactionSize})
+            LET interactionSize = (
+                FOR interaction in ${this.interactionService.getCollection()}
+                    FILTER interaction.tid == ct.tid
+                    FILTER interaction.flowId == ct.flowId
+                    COLLECT WITH COUNT into count
+                    RETURN count
+            )[0]
+            RETURN MERGE(UNSET(ct, 'store'), {storeSize, interactionSize})
         `)
 
         const query = aql`
@@ -139,34 +130,6 @@ export class TrackService {
             return this.arangoService.query<ClientTrack>(query);
 
     }
-
-    async updateTrack(clientTrack: ClientTrack) {
-        return this.arangoService.collection.update(clientTrack._key, clientTrack);
-    }
-
-    async addInteraction(clientTrack: ClientTrack, interaction: Interaction) {
-        const query = aql`
-            FOR doc in ${this.arangoService.collection}
-            FILTER doc._key == ${clientTrack._key}
-            UPDATE doc WITH { interaction: APPEND(doc.interaction, ${interaction})} IN ${this.arangoService.collection} OPTIONS { exclusive: true }
-            RETURN doc
-        `;
-
-        return this.arangoService.query<ClientTrack>(query);
-
-    }
-
-    async getInteractions(clientTrack: ClientTrack): Promise<Interaction[]> {
-        const query = aql`
-            FOR doc in ${this.arangoService.collection}
-            FILTER doc._key == ${clientTrack._key}
-            RETURN doc.interaction
-        `;
-
-        return this.arangoService.queryMany<Interaction>(query);
-
-    }
-
 
     async updateStore(clientTrack: ClientTrack, store: any) {
         const query = aql`

@@ -1,20 +1,28 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from 'src/config/config/config.service';
+import { MetricsService } from 'src/metrics/metrics.service';
 import { ClientTrack } from 'src/model/client.track';
+import { MetricFlowByHour } from 'src/model/metricFlowByHour';
+import { MetricStateFlowProcessor } from 'src/model/metricStateFlowProcessor';
 import { UserSession } from 'src/model/usersession';
+import { PropertiesService } from 'src/properties/properties.service';
 import { SessionService } from 'src/session/session.service';
 import { TrackService } from 'src/track/track/track.service';
+import { getDayDateInterval } from 'src/utils/date';
 
 @Injectable()
 export class HousekeeperService {
 
     private readonly logger: Logger = new Logger(HousekeeperService.name);
+    private METRIC_STATE_FLOW_PROCESSOR = 'METRIC_STATE_FLOW_PROCESSOR';
     private TRACK_LIFETIME_MONTHS: number
 
     constructor(
         private readonly configService: ConfigService,
         private readonly trackService: TrackService,
-        private readonly sessionService: SessionService
+        private readonly sessionService: SessionService,
+        private readonly metricService: MetricsService,
+        private readonly propertiesService: PropertiesService
     ) {
         this.TRACK_LIFETIME_MONTHS = +this.configService.get('TRACK_LIFETIME_MONTHS');
     }  
@@ -36,6 +44,41 @@ export class HousekeeperService {
         endDate.setHours(0, 0, 0, 0);
 
         return this.sessionService.deleteExpiredSessions(endDate);
+    }
 
+    async cleanExpiredMetrics(): Promise<MetricFlowByHour[]> {
+        const endDate = new Date();
+        endDate.setMonth(endDate.getMonth() -this.TRACK_LIFETIME_MONTHS);
+        endDate.setHours(0, 0, 0, 0);
+        return await this.metricService.removeMetricsByDate(endDate);
+    }
+
+    async runDailyFlowMetrics(): Promise<void> {
+        let state = (await this.propertiesService.getProperty<MetricStateFlowProcessor>(this.METRIC_STATE_FLOW_PROCESSOR))?.data;
+
+    if (!state) {
+      const startDate = new Date();
+      startDate.setMonth(startDate.getMonth() - this.TRACK_LIFETIME_MONTHS)
+      state = (await this.propertiesService.setProperty<MetricStateFlowProcessor>(this.METRIC_STATE_FLOW_PROCESSOR, new MetricStateFlowProcessor(startDate)))?.data;
+    }
+
+    let startDate = new Date(state.lastProcessedTimestamp);
+    let curDate = new Date();
+    curDate.setDate(curDate.getDate() - 1);
+
+    while (startDate < curDate) {
+      const dates = getDayDateInterval(startDate);
+      for (let i = 0; i < dates.length; i++) {
+        const pair = dates[i];
+        this.logger.debug(`processing daily metrics at ${pair[0]}`)
+        const dataFlow = await this.trackService.getAggregatedTracksByFlowId(pair[0], pair[1]);
+        state = (await this.propertiesService.setProperty<MetricStateFlowProcessor>(this.METRIC_STATE_FLOW_PROCESSOR, new MetricStateFlowProcessor(pair[0])))?.data;
+        dataFlow.forEach(async (d) => {
+          this.metricService.createMetricFlowByHour(pair[0], d.name, d.count)
+        })
+        state = (await this.propertiesService.setProperty<MetricStateFlowProcessor>(this.METRIC_STATE_FLOW_PROCESSOR, new MetricStateFlowProcessor(pair[1])))?.data;
+      }
+      startDate.setDate(startDate.getDate() + 1);
+    }
     }
 }

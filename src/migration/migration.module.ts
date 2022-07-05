@@ -11,9 +11,6 @@ import { MigrationService } from './migration.service';
   providers: [MigrationService]
 })
 export class MigrationModule   {
-  private readonly logger: Logger = new Logger(MigrationModule.name);
-
-
 
   static forRoot(): DynamicModule {
     
@@ -25,7 +22,7 @@ export class MigrationModule   {
           provide: MIGRATION,
           inject: [MigrationService, SessionService, TrackService],
           useFactory: async (migrationService: MigrationService) => {
-            return migrationService.runMigrations()
+            return await migrationService.runMigrations()
           },
           
         },

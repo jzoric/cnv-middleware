@@ -4,20 +4,25 @@ export class Interaction {
 
     @ApiProperty()
     tid: string;
+
+    @ApiProperty()
+    flowId: string;
     
     @ApiProperty()
     origin: OriginInteraction;
 
     @ApiProperty()
-    data: any;
+    data?: any;
 
     @ApiProperty()
     timestamp: Date;
 
-    constructor(origin: OriginInteraction, data: any) {
+    constructor(tid: string, flowId: string, origin: OriginInteraction, data: any, timestamp: Date = new Date()) {
+        this.tid = tid;
+        this.flowId = flowId;
         this.origin = origin;
         this.data = data;
-        this.timestamp = new Date();
+        this.timestamp = timestamp;
     }
 }
 
