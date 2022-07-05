@@ -18,20 +18,25 @@ export class ClientTrack {
     @ApiProperty()
     date: Date;
 
-    @ApiProperty({
-        type: [Interaction]
-    })
+    // @ApiProperty({
+    //     type: [Interaction]
+    // })
     interaction?: Interaction[]
 
     @ApiProperty()
+    interactionSize?: number;
+    
+    @ApiProperty()
     store?: Object;
+    
+    @ApiProperty()
+    storeSize?: number
 
     constructor(sid: string, flowId: string) {
         this.sid = sid;
         this.tid = uuidv4();
         this.flowId = flowId;
         this.date = new Date();
-        this.interaction = [];
         this.store = {};
 
     }

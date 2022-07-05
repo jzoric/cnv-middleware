@@ -132,8 +132,9 @@ export class MetricsService {
         const query = aql`
             FOR m in ${this.arangoService.collection}
             FILTER m.date < ${endDate}
-            REMOVE { _key: m._key } in ${this.arangoService.collection}
-            RETURN m
+            
+            COLLECT WITH count into count
+            RETURN count
             `;
         return await this.arangoService.database.query(query)
             .then(res => res.all())

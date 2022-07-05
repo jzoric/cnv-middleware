@@ -6,6 +6,7 @@ import { JSONSanitizer } from "src/utils/sanitizer";
 import { Interaction, OriginInteraction } from "./client.interaction";
 import { ClientTrack } from "./client.track";
 import { ClientService } from "src/client/client/client.service";
+import { InteractionService } from "src/interaction/interaction.service";
 
 export class ClientBroker {
   private readonly logger = new Logger(ClientBroker.name);
@@ -17,7 +18,14 @@ export class ClientBroker {
   isTerminated: boolean = false;
   inactivityTimeout: NodeJS.Timeout;
 
-  constructor(remoteClient: any, remoteServerURL: string, clientTrack: ClientTrack, private readonly trackService: TrackService, private readonly clientService: ClientService) {
+  constructor(
+    remoteClient: any,
+    remoteServerURL: string,
+    clientTrack: ClientTrack,
+    private readonly trackService: TrackService,
+    private readonly clientService: ClientService,
+    private readonly interactionService: InteractionService
+    ) {
 
     this.remoteClient = remoteClient;
     this.clientTrack = clientTrack;
@@ -50,7 +58,7 @@ export class ClientBroker {
       }
 
       try {
-        await this.trackService.addInteraction(this.clientTrack, new Interaction(OriginInteraction.CLIENT, _data))
+        await this.interactionService.createInteraction(new Interaction(this.clientTrack.tid, this.clientTrack.flowId, OriginInteraction.CLIENT, _data))
       } catch (e) {
         this.logger.error(e);
         this.clientService.handleDisconnect(this.remoteClient)
@@ -79,6 +87,7 @@ export class ClientBroker {
     })
 
     this.remoteServer.on("message", async (data) => {
+      const currentTimestamp = new Date();
       if (!this.isReady) {
         return;
       }
@@ -97,30 +106,31 @@ export class ClientBroker {
         return;
       }
 
-      this.remoteClient.emit("message", JSON.stringify(jsonData));
-
-      const interactions = await this.trackService.getInteractions(this.clientTrack);
-
-      // TODO add this feature again calling the bd? 
-      const lastObject = interactions[interactions.length - 1];
-      if (lastObject?.origin == OriginInteraction.SERVER &&
-        JSON.stringify(lastObject.data) == JSON.stringify(jsonData)) {
-        return;
+      if (!(jsonData.type == "endNode" || jsonData.type == "question" || jsonData.type == "answer")) {
+        this.remoteClient.emit("message", data);
       }
-      await this.trackService.addInteraction(this.clientTrack, new Interaction(OriginInteraction.SERVER, jsonData))
+
+      // const interactions = await this.interactionService.getInteractions(this.clientTrack.flowId, this.clientTrack.tid);
+      // // TODO add this feature again calling the bd? 
+      // const lastObject = interactions[interactions.length - 1];
+      // if (lastObject?.origin == OriginInteraction.SERVER &&
+      //   JSON.stringify(lastObject.data) == JSON.stringify(jsonData)) {
+      //     console.log('same object', JSON.stringify(jsonData));
+      //   return;
+      // }
+      await this.interactionService.createInteraction(new Interaction(this.clientTrack.tid, this.clientTrack.flowId, OriginInteraction.SERVER, jsonData, currentTimestamp))
     })
 
     this.remoteServer.on("open", async () => {
 
       this.logger.log(`established connection between client ${this.remoteClient.id} with trackid: ${this.clientTrack.tid} and nodeRED`);
 
-      const interactions = await this.trackService.getInteractions(this.clientTrack);
+      const interactions = await this.interactionService.getInteractions(this.clientTrack.flowId, this.clientTrack.tid);
 
       if (interactions.length > 0) {
         this.isReady = false;
         this.logger.log('resync client with nodeRED');
         const clientMessages = interactions.filter(d => d.origin == OriginInteraction.CLIENT).map(d => d.data);
-
         let interval = 600;
         clientMessages.forEach((data, index, array) => {
           setTimeout(() => {

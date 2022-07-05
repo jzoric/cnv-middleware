@@ -20,32 +20,9 @@ export class ArangoModule {
           provide: ARANGO_DATABASE,
           useFactory: async (args) => {
             let arangoOptions: ArangoOptions = await asyncOptions.useFactory(args);
-              const voidDatabase = {
-                query: (query) => new Promise((resolve, reject) => {
-                  
-                  resolve({
-                    all: () => []
-                  })
-                }),
-                collection: (collection) => {
-                  return {
-                    create: (data) => new Promise((resolve, reject) => {
-
-                      resolve({})
-                    }),
-                    save: (data) => new Promise((resolve, reject) => {
-                      resolve({})
-                    }),
-                    update: (data) => new Promise((resolve, reject) => {
-
-                      resolve({})
-                    }),
-                  }
-                }
-              }
             
               if(!arangoOptions.host || !arangoOptions.database || !arangoOptions.user || !arangoOptions.password) {
-                return voidDatabase;
+                throw new Error('you must specify database credentials: host, database, user and passaord')
               }
               const db = new Database(arangoOptions.host);
               db.useBasicAuth(arangoOptions.user, arangoOptions.password);

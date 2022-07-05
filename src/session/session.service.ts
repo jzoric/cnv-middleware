@@ -16,6 +16,10 @@ export class SessionService {
     private readonly logger = new Logger(SessionService.name);
 
     constructor(private readonly arangoService: ArangoService) {
+        this.arangoService.collection.ensureIndex({
+            type: 'persistent',
+            fields: ['sid']
+        })
 
     }
 
@@ -115,16 +119,6 @@ export class SessionService {
         return await this.arangoService.database.query(query)
             .then(res => res.all())
             .then(res => res?.[0]);
-    }
-
-    async removeSession(userSession: UserSession) {
-        const query = aql`
-            REMOVE { _key: ${userSession._key} } in ${this.arangoService.collection}
-        `;
-        return await this.arangoService.database.query(query)
-            .catch(e => {
-                throw new HttpException(e.response.body.errorMessage, e.code)
-            })
     }
 
     // metrics
@@ -309,6 +303,22 @@ export class SessionService {
             .catch(e => {
                 throw new HttpException(e.response.body.errorMessage, e.code)
             })
+    }
+
+
+    // cron helpers
+
+    async deleteExpiredSessions(endDate: Date): Promise<UserSession[]> {
+        const query = aql`
+            FOR S in ${this.arangoService.collection}
+            FILTER S.createDate <= ${new Date(endDate)}
+            REMOVE { _key: S._key } in ${this.arangoService.collection}
+                
+            RETURN {
+                sid: S.sid,
+            }
+        `;
+        return this.arangoService.queryMany<UserSession>(query);
     }
 
 }

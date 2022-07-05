@@ -5,6 +5,7 @@ import { TrackService } from 'src/track/track/track.service';
 import { SESSION_COOKIE_NAME } from '../../session/session.constants';
 import { ActiveClientsByFlows } from 'src/model/ActiveClientsByFlows.interface';
 import { ActiveTrack } from 'src/model/ActiveTrack';
+import { InteractionService } from 'src/interaction/interaction.service';
 
 @Injectable()
 export class ClientService {
@@ -13,7 +14,8 @@ export class ClientService {
     private WSCONN;
     constructor(
         private readonly configService: ConfigService,
-        private readonly trackService: TrackService
+        private readonly trackService: TrackService,
+        private readonly interactionService: InteractionService
     ) {
         this.clients = [];
         this.WSCONN = this.configService.get("NODERED_WS_CONNECTION") || 'ws://localhost:8080';
@@ -70,7 +72,8 @@ export class ClientService {
                     `${this.WSCONN}${client.nsp.name}`,
                     clientTrack,
                     this.trackService,
-                    this
+                    this,
+                    this.interactionService
                 )
                 );
         } catch(e) {
