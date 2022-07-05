@@ -1,4 +1,4 @@
-import { Logger, Module } from '@nestjs/common';
+import { Logger, Module, OnModuleInit } from '@nestjs/common';
 import { MetricsService } from './metrics.service';
 import { MetricsController } from './metrics.controller';
 import { ClientModule } from 'src/client/client/client.module';
@@ -31,7 +31,7 @@ import { getDayDateInterval } from 'src/utils/date';
     PropertiesModule
   ]
 })
-export class MetricsModule {
+export class MetricsModule implements OnModuleInit {
   private readonly logger = new Logger(MetricsModule.name);
   private METRIC_STATE_FLOW_PROCESSOR = 'METRIC_STATE_FLOW_PROCESSOR';
   private TRACK_LIFETIME_MONTHS: number
@@ -42,9 +42,13 @@ export class MetricsModule {
     private readonly configService: ConfigService,
     private readonly propertiesService: PropertiesService) {
     this.TRACK_LIFETIME_MONTHS = +this.configService.get('TRACK_LIFETIME_MONTHS');
+    
+
+  }
+
+  onModuleInit() {
     this.runDailyFlowMetrics();
     this.housekeeping();
-
   }
 
   @Cron('0 0 * * *')

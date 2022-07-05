@@ -1,4 +1,6 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { HttpException, Injectable, Logger } from '@nestjs/common';
+import { aql } from 'arangojs';
+import { DocumentCollection, EdgeCollection } from 'arangojs/collection';
 import { Interaction } from 'src/model/client.interaction';
 import { ClientTrack } from 'src/model/client.track';
 import { ArangoService } from 'src/persistence/arango/arango.service';
@@ -9,72 +11,37 @@ export class InteractionService {
     private readonly logger: Logger = new Logger(InteractionService.name);
 
     constructor(
-        private readonly arangoService: ArangoService,
-        private readonly trackService: TrackService
-        ) {
-        //this.migrate()
+        private readonly arangoService: ArangoService) {
+            this.arangoService.collection.ensureIndex({
+                type: 'persistent',
+                fields: ['sid', 'flowId', 'tid']
+            })
+    }
+
+    public getCollection(): DocumentCollection<any> & EdgeCollection<any> {
+        return this.arangoService.collection;
     }
 
     async createTrack(interaction: Interaction): Promise<Interaction> {
-        
+
         const insert = await this.arangoService.collection.save(interaction);
         if (insert) {
             return interaction;
         }
     }
 
-    async migrate() {
-
-        const batchSize = 10;
-        let page = 0;
-        let count = await this.trackService.countClientTracks();
-        
-        if (count == 0) {
-            this.logger.log(`Interaction migrations not required`);
-        } else {
-            this.logger.log(`Preparing to migrate interactions ${count} tracks`);
-        }
-
-        while (count - batchSize > 0) {
-            await this.migrateInteractionsFromTracks(page, batchSize);
+    async migrateInteractions(): Promise<any> {
+        const query = aql`
+            FOR ct in ${this.arangoService.collection}
+            FILTER IS_ARRAY(ct.interaction)
             
-            count -= batchSize;
-            page ++;
-        }
-        if (count > 0) {
-            this.logger.log(`page ${page}, take ${batchSize}`)
+        `;
 
-            //await this.updateSessionsWithParsedUserLocationAndIP(0, batchSize)
-        }
+        return await this.arangoService.database.query(query)
+            .then(res => res.all())
+            .catch(e => {
+                throw new HttpException(e.response.body.errorMessage, e.code)
+            })
     }
 
-    private async migrateInteractionsFromTracks(page: number, take: number) {
-        const tracks = await this.trackService.getClientTracks(page, take);
-        tracks.forEach(async (current: ClientTrack) => {
-            if(current.interactionSize > 0) {
-
-                try {
-                    const track = await this.trackService.getTrack(current.sid, current.tid); 
-    
-                    let migrated = 0;
-                    for(let interaction of track.interaction) {
-                        interaction.tid = track.tid;
-                        await this.createTrack(interaction);
-                        migrated ++;
-    
-                    }
-                    
-                    this.logger.debug(`${migrated} interactions of track ${track.tid} into interaction collection `);
-
-                } catch(e) {
-                    this.logger.error(`error while migrating tid: ${current.tid}`);
-                }
-                
-                
-            }
-            
-          
-    
-        })
-      }
 }

@@ -6,9 +6,12 @@ import { InteractionService } from './interaction.service';
 @Module({
   imports: [
     ArangoModule.collection('interaction'),
-    TrackModule
   ],
   providers: [InteractionService],
   exports: [InteractionService]
 })
-export class InteractionModule {}
+export class InteractionModule {
+  constructor(private readonly interactionService: InteractionService) {
+    
+  }
+}
