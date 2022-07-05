@@ -280,10 +280,22 @@ export class TrackService {
         
     }
 
-    async migrateTrackInteraction(): Promise<number> {
+    async getMigratableInteractionTracks(): Promise<number> {
         const query = aql`
             FOR ct in ${this.arangoService.collection}
             FILTER ct.interaction
+            COLLECT WITH count into count
+            RETURN count
+        `;
+
+        return this.arangoService.query<number>(query);
+
+    }
+    async migrateTrackInteraction(limit: number): Promise<number> {
+        const query = aql`
+            FOR ct in ${this.arangoService.collection}
+            FILTER ct.interaction
+            LIMIT 0, ${limit}
             REPLACE ct WITH UNSET(ct, 'interaction') IN ${this.arangoService.collection}
                 FOR interaction in ct.interaction
                 let data = MERGE(interaction, {flowId: ct.flowId, tid: ct.tid})
