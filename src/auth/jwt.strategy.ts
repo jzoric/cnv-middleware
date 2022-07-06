@@ -1,12 +1,13 @@
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { jwtConstants } from './constants';
 import { ConfigService } from 'src/config/config/config.service';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  adminuser: any;
+  private readonly logger: Logger = new Logger(JwtStrategy.name);
+  private adminuser: any;
 
   constructor(private readonly configService: ConfigService) {
     super({
@@ -14,7 +15,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       ignoreExpiration: false,
       secretOrKey: jwtConstants.secret,
     });
-    this.adminuser = configService.get('ADMIN_USER')
+
+    this.adminuser = this.configService.get('ADMIN_USER');
+
+    if(process.env.NODE_ENV == 'DEVELOPMENT') {
+      this.logger.warn('Server is in development mode. A jwt secret will be static accross server reboots')
+    }
 
   }
 

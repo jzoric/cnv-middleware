@@ -16,9 +16,20 @@ export class SessionService {
     private readonly logger = new Logger(SessionService.name);
 
     constructor(private readonly arangoService: ArangoService) {
-        this.arangoService.collection.ensureIndex({
-            type: 'persistent',
-            fields: ['sid']
+
+        const indexes = ['sid',
+        'tid',
+        'userAgent',
+        'browser',
+        'userIp',
+        'city',
+        'createDate'];
+
+        indexes.forEach(index => {
+            this.arangoService.collection.ensureIndex({
+                type: 'persistent',
+                fields: [index]
+            })
         })
 
     }

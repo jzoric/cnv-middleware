@@ -9,15 +9,31 @@ import { ArangoService } from 'src/persistence/arango/arango.service';
 
 @Injectable()
 export class TrackService {
-    
+
     constructor(
         private readonly arangoService: ArangoService,
         private readonly interactionService: InteractionService) {
 
+        this.arangoService.collection.ensureIndex({
+            type: 'persistent',
+            fields: ['sid', 'flowId', 'tid']
+        })
+
+        const indexes = [
+            'sid',
+            'flowId',
+            'tid',
+            'interaction',
+            'store',
+            'date'
+            ];
+
+        indexes.forEach(index => {
             this.arangoService.collection.ensureIndex({
                 type: 'persistent',
-                fields: ['sid', 'flowId', 'tid']
+                fields: [index]
             })
+        })
     }
 
     async createTrack(userSession: UserSession, flowId: string): Promise<ClientTrack> {
@@ -81,23 +97,24 @@ export class TrackService {
             `);
 
 
-        filters.push(aql`
-            LET storeSize = LENGTH(ct.store)
-            LET interactionSize = (
-                FOR interaction in ${this.interactionService.getCollection()}
-                    FILTER interaction.tid == ct.tid
-                    FILTER interaction.flowId == ct.flowId
-                    COLLECT WITH COUNT into count
-                    RETURN count
-            )[0]
-            RETURN MERGE(UNSET(ct, 'store'), {storeSize, interactionSize})
-        `)
+        // filters.push(aql`
+        //     LET storeSize = LENGTH(ct.store)
+        //     LET interactionSize = (
+        //         FOR interaction in ${this.interactionService.getCollection()}
+        //             FILTER interaction.tid == ct.tid
+        //             FILTER interaction.flowId == ct.flowId
+        //             COLLECT WITH COUNT into count
+        //             RETURN count
+        //     )[0]
+        //     RETURN MERGE(UNSET(ct, 'store'), {storeSize, interactionSize})
+        // `);
 
         const query = aql`
             FOR ct in ${this.arangoService.collection}
             ${aql.join(filters)}
+            RETURN ct
             `;
-            return this.arangoService.queryMany<ClientTrack>(query);
+        return this.arangoService.queryMany<ClientTrack>(query);
 
     }
 
@@ -127,7 +144,7 @@ export class TrackService {
             ${aql.join(filters)}
             `;
 
-            return this.arangoService.query<ClientTrack>(query);
+        return this.arangoService.query<ClientTrack>(query);
 
     }
 
@@ -277,7 +294,7 @@ export class TrackService {
         `;
 
         return this.arangoService.queryMany<ClientTrack>(query);
-        
+
     }
 
     async getMigratableInteractionTracks(): Promise<number> {
