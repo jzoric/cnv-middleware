@@ -29,7 +29,7 @@ export class MigrationService {
 
     async sessionUserAgentMigrations(): Promise<any> {
 
-        const batchSize = 100;
+        const batchSize = 10;
         let nsessions = await this.sessionService.countessionsWithNoParsedUserAgent();
 
         if (nsessions == 0) {
@@ -48,7 +48,7 @@ export class MigrationService {
 
     }
     async sessionUserLocationMigrations() {
-        const batchSize = 100;
+        const batchSize = 10;
         let nsessions = await this.sessionService.countessionsWithNoParsedUserLocation();
 
         if (nsessions == 0) {
@@ -67,7 +67,7 @@ export class MigrationService {
     }
 
     async sessionUserIPMigrations() {
-        const batchSize = 100;
+        const batchSize = 10;
         let nsessions = await this.sessionService.countessionsWithParsedUserLocationAndIP();
 
         if (nsessions == 0) {
