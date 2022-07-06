@@ -166,7 +166,7 @@ export class MigrationService {
     private async migrateInteractions(): Promise<any> {
         this.logger.log(`Checking for pending interaction migrations from tracks`);
         let count =  await this.trackService.getMigratableInteractionTracks();
-        const chunkSize = 100;
+        const chunkSize = 10;
 
         while(count > 0) {
             const migrated = await this.trackService.migrateTrackInteraction(chunkSize);
