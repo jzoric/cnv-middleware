@@ -5,7 +5,7 @@ metadata:
 data:
   PRODUCTION.env: |
     root-redirect=/admin/
-    cors=http://localhost,http://localhost:1234,http://conversation-platform.productdock.com/,https://conversation-platform.productdock.com/,https://conversation-platform.productdock.com/admin/,https://conversation-platform.productdock.com/admin/dashboard/dashboard
+    cors=http://localhost,http://localhost:1234,http://conversation-platform.productdock.com/,https://conversation-platform.productdock.com/,https://conversation-platform.productdock.com/admin/,https://conversation-platform.productdock.com/admin/dashboard/
 
     # ARANGO_DB 
     ARANGO_HOST=http://arango:8529
