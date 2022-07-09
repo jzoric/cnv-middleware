@@ -18,12 +18,12 @@ export class SessionService {
     constructor(private readonly arangoService: ArangoService) {
 
         const indexes = ['sid',
-        'tid',
-        'userAgent',
-        'browser',
-        'userIp',
-        'city',
-        'createDate'];
+            'tid',
+            'userAgent',
+            'browser',
+            'userIp',
+            'city',
+            'createDate'];
 
         indexes.forEach(index => {
             this.arangoService.collection.ensureIndex({
@@ -91,9 +91,22 @@ export class SessionService {
             .then(res => res?.[0]);
     }
 
-    async getSessions(page: number, take: number): Promise<UserSession[]> {
+    async getSessions(page: number, take: number, sortBy?: string, sortByType?: string): Promise<UserSession[]> {
+
+        const filters = [];
+
+        if (sortBy && sortByType) {
+            filters.push(aql`
+                SORT S.${sortBy} ${sortByType}
+            `)
+        } else {
+            filters.push(aql`
+                SORT S.createDate ASC
+            `)
+        }
         const query = aql`
             FOR S in ${this.arangoService.collection}
+            ${aql.join(filters)}
             LIMIT ${+(page * take)}, ${+take} 
             RETURN S
         `;
@@ -141,7 +154,7 @@ export class SessionService {
                 FILTER S.createDate >= ${new Date(startDate)} && S.createDate <= ${new Date(endDate)}
             `);
         }
-        
+
         filters.push(aql`
             FILTER S.city != null || S.city != ''
             FILTER S.country != null || S.country != ''

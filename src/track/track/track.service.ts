@@ -73,15 +73,13 @@ export class TrackService {
 
 
         if (sortBy && sortByType) {
-            if (sortBy == 'store' || sortBy == 'interaction') {
-                filters.push(aql`
-                    SORT LENGTH(ct.${sortBy}) ${sortByType}
-                `);
-            } else {
-                filters.push(aql`
-                    SORT ct.${sortBy} ${sortByType}
-                `)
-            }
+            filters.push(aql`
+                SORT ct.${sortBy} ${sortByType}
+            `)
+        } else {
+            filters.push(aql`
+                SORT ct.date ASC
+            `)
         }
 
         if (ninteractions > 0 && interactionsOperator) {

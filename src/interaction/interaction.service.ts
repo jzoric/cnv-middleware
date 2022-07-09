@@ -14,6 +14,10 @@ export class InteractionService {
             type: 'persistent',
             fields: ['sid', 'flowId', 'tid']
         })
+        this.arangoService.collection.ensureIndex({
+            type: 'persistent',
+            fields: ['flowId', 'tid']
+        })
         const indexes = [
             'sid',
             'flowId',
@@ -42,21 +46,84 @@ export class InteractionService {
         }
     }
 
-    async getInteractions(flowId: string, tid: string): Promise<Interaction[]> {
+    async getInteractions(
+        page: number = 0, take: number = 5, flowId?: string, tid?: string,
+        sortBy?: string, sortByType?: string): Promise<Interaction[]> {
+
+        const filters = [];
+
+        if (tid) {
+            filters.push(aql`
+                FILTER i.tid == ${tid}
+            ` )
+        }
+
+        if (flowId) {
+            filters.push(aql`
+                FILTER i.flowId == ${flowId}
+            `);
+        }
+        if (sortBy && sortByType) {
+            filters.push(aql`
+                SORT i.${sortBy} ${sortByType}
+            `)
+        } else {
+            filters.push(aql`
+                SORT i.timestamp ASC
+            `)
+        }
+
+        filters.push(aql`
+            LIMIT ${+(page * take)}, ${+take}
+            `);
 
         const query = aql`
             FOR i in ${this.arangoService.collection}
-            FILTER i.flowId == ${flowId}
-            FILTER i.tid == ${tid}
-            SORT i.timestamp ASC
+            ${aql.join(filters)}
             RETURN i
         `;
-
         return this.arangoService.queryMany<Interaction>(query);
     }
 
+    async countInteractions(flowId?: string, tid?: string,
+        sortBy?: string, sortByType?: string): Promise<number> {
+
+        const filters = [];
+
+        if (tid) {
+            filters.push(aql`
+                FILTER i.sid == ${tid}
+            ` )
+        }
+
+        if (flowId) {
+            filters.push(aql`
+                FILTER i.flowId == ${flowId}
+            `);
+        }
+        if (sortBy && sortByType) {
+            filters.push(aql`
+                SORT i.${sortBy} ${sortByType}
+            `)
+        } else {
+            filters.push(aql`
+                SORT i.timestamp ASC
+            `)
+        }
+
+        const query = aql`
+            FOR i in ${this.arangoService.collection}
+            ${aql.join(filters)}
+            RETURN i
+        `;
+
+        return this.arangoService.query(query);
+    }
+    
+
     public async getInteractionCSV(flowId: string, tid: string): Promise<string> {
-        let interactions = await this.getInteractions(flowId, tid);
+        const count = await this.countInteractions(flowId, tid);
+        let interactions = await this.getInteractions(0, count, flowId, tid);
         interactions = interactions.map(interaction => {
             let type = 'flow';
             switch (interaction.data.type) {

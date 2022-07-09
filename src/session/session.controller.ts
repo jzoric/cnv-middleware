@@ -90,8 +90,20 @@ export class SessionController {
     @ApiResponse({
         type: [UserSession]
     })
-    public async getSessions(@Query("page") page: number = 0, @Query("take") take: number = 20): Promise<UserSession[]> {
-        return await this.sessionService.getSessions(page, take);
+    @ApiQuery({
+        name: 'sortBy',
+        required: false,
+        description: 'Sort by field name',
+    })
+    @ApiQuery({
+        name: 'sortByType',
+        required: false,
+        description: 'Sort by field direction. ASC | DESC',
+    })
+    public async getSessions(
+        @Query("page") page: number = 0, @Query("take") take: number = 20,
+        @Query("sortBy") sortBy: string, @Query("sortByType") sortByType: string): Promise<UserSession[]> {
+        return await this.sessionService.getSessions(page, take, sortBy, sortByType);
 
     }
 

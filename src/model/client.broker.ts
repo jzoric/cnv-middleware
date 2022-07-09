@@ -124,8 +124,8 @@ export class ClientBroker {
     this.remoteServer.on("open", async () => {
 
       this.logger.log(`established connection between client ${this.remoteClient.id} with trackid: ${this.clientTrack.tid} and nodeRED`);
-
-      const interactions = await this.interactionService.getInteractions(this.clientTrack.flowId, this.clientTrack.tid);
+      const count = await this.interactionService.countInteractions(this.clientTrack.flowId, this.clientTrack.tid);
+      const interactions = await this.interactionService.getInteractions(0, count, this.clientTrack.flowId, this.clientTrack.tid);
 
       if (interactions.length > 0) {
         this.isReady = false;
