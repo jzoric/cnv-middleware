@@ -47,7 +47,8 @@ export class SessionController {
             response.cookie(SESSION_COOKIE_NAME, userSession.sid, {
                 expires: expireDate,
                 httpOnly: true,
-                sameSite: 'none'
+                sameSite: 'none',
+                secure: true
             });
             sid = userSession.sid;
         }
