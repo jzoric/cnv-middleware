@@ -46,7 +46,8 @@ export class SessionController {
             expireDate.setMonth(expireDate.getMonth() + expirationTime);
             response.cookie(SESSION_COOKIE_NAME, userSession.sid, {
                 expires: expireDate,
-                httpOnly: true
+                httpOnly: true,
+                sameSite: 'none'
             });
             sid = userSession.sid;
         }
