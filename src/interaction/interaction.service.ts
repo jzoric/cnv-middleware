@@ -92,7 +92,7 @@ export class InteractionService {
 
         if (tid) {
             filters.push(aql`
-                FILTER i.sid == ${tid}
+                FILTER i.tid == ${tid}
             ` )
         }
 
@@ -114,10 +114,11 @@ export class InteractionService {
         const query = aql`
             FOR i in ${this.arangoService.collection}
             ${aql.join(filters)}
-            RETURN i
+            COLLECT WITH COUNT into count
+            RETURN count
         `;
 
-        return this.arangoService.query(query);
+        return this.arangoService.query<number>(query);
     }
     
 
