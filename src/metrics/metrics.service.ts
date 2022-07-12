@@ -8,12 +8,11 @@ import { AggregatedSessionByBrowser } from 'src/model/aggregatedSessionByBrowser
 import { AggregatedSessionByLocation } from 'src/model/aggregatedSessionByLocation';
 import { AggregatedSessionByOS } from 'src/model/aggregatedSessionByOS';
 import { AggregatedTrackByFlowId } from 'src/model/aggregatedTrackByFlowId';
-import { MetricFlowByDate } from 'src/model/metricFlowByDate';
 import { MetricFlowByHour } from 'src/model/metricFlowByHour';
 import { NormalizedMetricsFlowByHour } from 'src/model/normalizedMetricsFlowByHour';
 import { ArangoService } from 'src/persistence/arango/arango.service';
 import { SessionService } from 'src/session/session.service';
-import { TrackService } from 'src/track/track/track.service';
+import { TrackService } from 'src/track/track.service';
 import { getDayDateInterval } from 'src/utils/date';
 
 @Injectable()

@@ -1,9 +1,8 @@
-import { DynamicModule, Logger, Module, OnModuleInit } from '@nestjs/common';
-import { throwError } from 'rxjs';
+import { DynamicModule, Module } from '@nestjs/common';
 import { SessionModule } from 'src/session/session.module';
 import { SessionService } from 'src/session/session.service';
-import { TrackModule } from 'src/track/track/track.module';
-import { TrackService } from 'src/track/track/track.service';
+import { TrackModule } from 'src/track/track.module';
+import { TrackService } from 'src/track/track.service';
 import { MIGRATION } from './migration.constants';
 import { MigrationService } from './migration.service';
 

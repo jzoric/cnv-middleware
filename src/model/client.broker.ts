@@ -1,5 +1,5 @@
 import { Logger } from "@nestjs/common";
-import { TrackService } from 'src/track/track/track.service';
+import { TrackService } from 'src/track/track.service';
 import * as WebSocket from 'ws';
 
 import { JSONSanitizer } from "src/utils/sanitizer";

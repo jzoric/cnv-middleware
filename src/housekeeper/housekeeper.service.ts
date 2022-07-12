@@ -7,7 +7,7 @@ import { MetricStateFlowProcessor } from 'src/model/metricStateFlowProcessor';
 import { UserSession } from 'src/model/usersession';
 import { PropertiesService } from 'src/properties/properties.service';
 import { SessionService } from 'src/session/session.service';
-import { TrackService } from 'src/track/track/track.service';
+import { TrackService } from 'src/track/track.service';
 import { getDayDateInterval } from 'src/utils/date';
 
 @Injectable()

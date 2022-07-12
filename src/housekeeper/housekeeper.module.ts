@@ -4,7 +4,7 @@ import { ConfigModule } from 'src/config/config/config.module';
 import { MetricsModule } from 'src/metrics/metrics.module';
 import { PropertiesModule } from 'src/properties/properties.module';
 import { SessionModule } from 'src/session/session.module';
-import { TrackModule } from 'src/track/track/track.module';
+import { TrackModule } from 'src/track/track.module';
 import { HousekeeperService } from './housekeeper.service';
 
 @Module({

@@ -7,7 +7,7 @@ import { ConfigModule } from './config/config/config.module';
 
 import { ConfigService } from './config/config/config.service';
 import { SessionModule } from './session/session.module';
-import { TrackModule } from './track/track/track.module';
+import { TrackModule } from './track/track.module';
 import { NoderedModule } from './nodered/nodered.module';
 import { AuthModule } from './auth/auth.module';
 

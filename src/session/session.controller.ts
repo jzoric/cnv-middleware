@@ -1,9 +1,9 @@
-import { applyDecorators, Controller, Get, Logger, Param, Query, Req, Res, UseGuards } from '@nestjs/common';
+import { Controller, Get, Logger, Param, Query, Req, Res, UseGuards } from '@nestjs/common';
 import { SessionService } from './session.service';
 import { Request, Response } from 'express';
 import { SESSION_COOKIE_NAME } from './session.constants';
 import { UserSession } from '../model/usersession';
-import { TrackService } from 'src/track/track/track.service';
+import { TrackService } from 'src/track/track.service';
 import { ApiBearerAuth, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { ConfigService } from 'src/config/config/config.service';

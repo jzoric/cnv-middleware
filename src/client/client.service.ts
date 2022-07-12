@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ClientBroker } from 'src/model/client.broker';
 import { ConfigService } from 'src/config/config/config.service';
-import { TrackService } from 'src/track/track/track.service';
+import { TrackService } from 'src/track/track.service';
 import { SESSION_COOKIE_NAME } from 'src/session/session.constants';
 import { ActiveClientsByFlows } from 'src/model/ActiveClientsByFlows.interface';
 import { ActiveTrack } from 'src/model/ActiveTrack';
