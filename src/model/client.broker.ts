@@ -5,7 +5,7 @@ import * as WebSocket from 'ws';
 import { JSONSanitizer } from "src/utils/sanitizer";
 import { Interaction, OriginInteraction } from "./client.interaction";
 import { ClientTrack } from "./client.track";
-import { ClientService } from "src/client/client/client.service";
+import { ClientService } from "src/client/client.service";
 import { InteractionService } from "src/interaction/interaction.service";
 
 export class ClientBroker {

@@ -1,6 +1,6 @@
 import { HttpException, Injectable, Logger } from '@nestjs/common';
 import { aql } from 'arangojs';
-import { ClientService } from 'src/client/client/client.service';
+import { ClientService } from 'src/client/client.service';
 import { ActiveClientsByFlows } from 'src/model/ActiveClientsByFlows.interface';
 import { ActiveTrack } from 'src/model/ActiveTrack';
 import { AggregatedMetricsFlowByHour } from 'src/model/aggregatedMetricsFlowByHour';
