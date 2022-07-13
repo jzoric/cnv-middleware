@@ -10,7 +10,7 @@ import { InteractionService } from "src/interaction/interaction.service";
 
 export class ClientBroker {
   private readonly logger = new Logger(ClientBroker.name);
-  private USER_INACTIVE_PERIOD  = 3600000;
+  private USER_INACTIVE_PERIOD = 3600000;
   remoteClient: any;
   remoteServer: any;
   clientTrack: ClientTrack;
@@ -25,7 +25,7 @@ export class ClientBroker {
     private readonly trackService: TrackService,
     private readonly clientService: ClientService,
     private readonly interactionService: InteractionService
-    ) {
+  ) {
 
     this.remoteClient = remoteClient;
     this.clientTrack = clientTrack;
@@ -40,7 +40,7 @@ export class ClientBroker {
     this.remoteClient.on("message", async (data) => {
       let _data;
       try {
-        
+
         _data = JSON.parse(data);
         JSONSanitizer(_data);
       } catch (e) {
@@ -106,7 +106,7 @@ export class ClientBroker {
         return;
       }
 
-      if (!(jsonData.type == "endNode" || jsonData.type == "question" || jsonData.type == "answer")) {
+      if (!(jsonData.type == "startNode" || jsonData.type == "endNode" || jsonData.type == "question" || jsonData.type == "answer" || jsonData.type == "event")) {
         this.remoteClient.emit("message", data);
       }
 
@@ -133,16 +133,18 @@ export class ClientBroker {
         const clientMessages = interactions.filter(d => d.origin == OriginInteraction.CLIENT).map(d => d.data);
         let interval = 600;
         clientMessages.forEach((data, index, array) => {
-          setTimeout(() => {
-            this.remoteServer.send(JSON.stringify(data));
-            if (index === array.length - 1) {
-              setTimeout(() => {
-                this.isReady = true;
+          if (!(data.type == "startNode" || data.type == "endNode" || data.type == "question" || data.type == "answer" || data.type == "event")) {
+            setTimeout(() => {
+              this.remoteServer.send(JSON.stringify(data));
+              if (index === array.length - 1) {
+                setTimeout(() => {
+                  this.isReady = true;
 
-              }, 1000)
-              this.logger.log('resync client finished')
-            };
-          }, interval += 100);
+                }, 1000)
+                this.logger.log('resync client finished')
+              };
+            }, interval += 100);
+          }
         })
       } else {
         this.isReady = true;
