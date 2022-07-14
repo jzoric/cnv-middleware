@@ -7,7 +7,7 @@ WORKDIR /app
 COPY . .
 
 RUN npm install
-RUN npm install @cnv-platform/cnv-pluggins@latest
+RUN npm install @cnv-platform/cnv-plugins@latest
 
 RUN npm run build
 
