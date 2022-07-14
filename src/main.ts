@@ -38,7 +38,10 @@ async function bootstrap() {
     app.use((req, res, next) => {
       let origin = req.headers.referer || '';
       origin = origin.slice(0,origin.lastIndexOf('/'))
-      if (cors.indexOf(origin) !== -1) {
+      const match = cors.filter( elm => {
+        return origin.indexOf(elm) > -1
+      })
+      if (match.length > 0) {
         res.header('Access-Control-Allow-Origin', origin);
         res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
         res.header('Access-Control-Allow-Headers', 'Content-Type, Accept');
