@@ -48,10 +48,11 @@ export class InteractionService {
 
     async getInteractions(
         page: number = 0, take: number = 5, flowId?: string, tid?: string,
-        sortBy?: string, sortByType?: string): Promise<Interaction[]> {
+        sortBy?: string, sortByType?: string, startDate?: Date, endDate?: Date): Promise<Interaction[]> {
 
         const filters = [];
 
+        
         if (tid) {
             filters.push(aql`
                 FILTER i.tid == ${tid}
@@ -63,6 +64,13 @@ export class InteractionService {
                 FILTER i.flowId == ${flowId}
             `);
         }
+
+        if(startDate && endDate) {
+            filters.push(aql`
+                FILTER i.timestamp >= ${new Date(startDate)} && i.timestamp <= ${new Date()}
+            ` )
+        }
+        
         if (sortBy && sortByType) {
             filters.push(aql`
                 SORT i.${sortBy} ${sortByType}
@@ -86,7 +94,7 @@ export class InteractionService {
     }
 
     async countInteractions(flowId?: string, tid?: string,
-        sortBy?: string, sortByType?: string): Promise<number> {
+        sortBy?: string, sortByType?: string, startDate?: Date, endDate?: Date): Promise<number> {
 
         const filters = [];
 
@@ -101,6 +109,13 @@ export class InteractionService {
                 FILTER i.flowId == ${flowId}
             `);
         }
+
+        if(startDate && endDate) {
+            filters.push(aql`
+                FILTER i.timestamp >= ${new Date(startDate)} && i.timestamp <= ${new Date()}
+            ` )
+        }
+        
         if (sortBy && sortByType) {
             filters.push(aql`
                 SORT i.${sortBy} ${sortByType}
@@ -118,11 +133,12 @@ export class InteractionService {
             RETURN count
         `;
 
+
         return this.arangoService.query<number>(query);
     }
     
 
-    public async getInteractionCSV(flowId: string, tid: string): Promise<string> {
+    public async getInteractionCSV(flowId: string, tid: string, startDate?: Date, endDate?: Date): Promise<string> {
         const count = await this.countInteractions(flowId, tid);
         let interactions = await this.getInteractions(0, count, flowId, tid);
         interactions = interactions.map(interaction => {

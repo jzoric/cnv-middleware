@@ -18,7 +18,7 @@ export class InteractionController {
     @ApiQuery({
         name: 'page',
         required: false,
-        description: 'Current page of the results. <br><strong>Defaults to 20</strong>'
+        description: 'Current page of the results. <br><strong>Defaults to 0</strong>'
     })
     @ApiQuery({
         name: 'take',
@@ -46,10 +46,24 @@ export class InteractionController {
         required: false,
         description: 'Sort by field direction. ASC | DESC',
     })
+    @ApiQuery({
+        name: 'startDate',
+        required: false,
+        description: 'Query Start Date <br><strong>Format:</strong> YYYY-MM-DD <br><strong>Defaults to empty</strong>',
+        example: new Date()
+
+    })
+    @ApiQuery({
+        name: 'endDate',
+        required: false,
+        description: 'Query End Date <br><strong>Format:</strong> YYYY-MM-DD <br><strong>Defaults to empty</strong>',
+        example: new Date()
+    })
     getInteractions(@Query("page") page: number = 0, @Query("take") take: number = 20,
         @Query("tid") tid: string, @Query("flowId") flowId: string,
-        @Query("sortBy") sortBy: string, @Query("sortByType") sortByType: string,): Promise<Interaction[]> {
-        return this.interactionService.getInteractions(page, take, flowId, tid, sortBy, sortByType);
+        @Query("sortBy") sortBy: string, @Query("sortByType") sortByType: string,
+        @Query("startDate") startDate: Date, @Query("endDate") endDate: Date): Promise<Interaction[]> {
+        return this.interactionService.getInteractions(page, take, flowId, tid, sortBy, sortByType, startDate, endDate);
     }
 
     @ApiBearerAuth()
@@ -76,10 +90,24 @@ export class InteractionController {
         required: false,
         description: 'Sort by field direction. ASC | DESC',
     })
+    @ApiQuery({
+        name: 'startDate',
+        required: false,
+        description: 'Query Start Date <br><strong>Format:</strong> YYYY-MM-DD <br><strong>Defaults to empty</strong>',
+        example: new Date()
+
+    })
+    @ApiQuery({
+        name: 'endDate',
+        required: false,
+        description: 'Query End Date <br><strong>Format:</strong> YYYY-MM-DD <br><strong>Defaults to empty</strong>',
+        example: new Date()
+    })
     countInteractions(
         @Query("tid") tid: string, @Query("flowId") flowId: string,
-        @Query("sortBy") sortBy: string, @Query("sortByType") sortByType: string,): Promise<number> {
-        return this.interactionService.countInteractions(flowId, tid, sortBy, sortByType);
+        @Query("sortBy") sortBy: string, @Query("sortByType") sortByType: string,
+        @Query("startDate") startDate: Date, @Query("endDate") endDate: Date): Promise<number> {
+        return this.interactionService.countInteractions(flowId, tid, sortBy, sortByType, startDate, endDate);
     }
 
     @ApiBearerAuth()
@@ -96,13 +124,28 @@ export class InteractionController {
         description: 'Flow Id <br><strong>Defaults to empty</strong>',
         example: '/m4_v2'
     })
-    async getInteractionsCSV(@Query("tid") tid: string, @Query("flowId") flowId: string, @Response() res) {
+    @ApiQuery({
+        name: 'startDate',
+        required: false,
+        description: 'Query Start Date <br><strong>Format:</strong> YYYY-MM-DD <br><strong>Defaults to empty</strong>',
+        example: new Date()
+
+    })
+    @ApiQuery({
+        name: 'endDate',
+        required: false,
+        description: 'Query End Date <br><strong>Format:</strong> YYYY-MM-DD <br><strong>Defaults to empty</strong>',
+        example: new Date()
+    })
+    async getInteractionsCSV(
+        @Query("tid") tid: string, @Query("flowId") flowId: string, 
+        @Query("startDate") startDate: Date, @Query("endDate") endDate: Date, @Response() res) {
         res.set({
             'Content-Type': 'text/csv',
             'Content-Disposition': `attachment; filename="${flowId}-${tid}.csv"`,
           });
         res.charset = 'UTF-8';
-        res.write(await this.interactionService.getInteractionCSV(flowId, tid));
+        res.write(await this.interactionService.getInteractionCSV(flowId, tid, startDate, endDate));
         res.end();
     }
 }
