@@ -142,7 +142,7 @@ export class InteractionController {
         @Query("startDate") startDate: Date, @Query("endDate") endDate: Date, @Response() res) {
         res.set({
             'Content-Type': 'text/csv',
-            'Content-Disposition': `attachment; filename="${flowId}-${tid}.csv"`,
+            'Content-Disposition': `attachment; filename="export-${new Date().toISOString()}.csv"`,
           });
         res.charset = 'UTF-8';
         res.write(await this.interactionService.getInteractionCSV(flowId, tid, startDate, endDate));
