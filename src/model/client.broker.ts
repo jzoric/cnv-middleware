@@ -50,11 +50,15 @@ export class ClientBroker {
       clearTimeout(this.inactivityTimeout);
       this.inactivityTimeout = setTimeout(() => {
         this.logger.log("User inactive, terminatting");
+        let jsonData = { "type": "abortNode" };
+        this.interactionService.createInteraction(new Interaction(this.clientTrack.tid, this.clientTrack.flowId, OriginInteraction.SERVER, jsonData));
         this.clientService.handleDisconnect(this.remoteClient)
       }, this.USER_INACTIVE_PERIOD);
 
       if (this.remoteServer.readyState === WebSocket.OPEN) {
-        this.remoteServer.send(JSON.stringify(_data));
+        if (!(_data.type == 'event')) {
+          this.remoteServer.send(JSON.stringify(_data));
+        }
       }
 
       try {
