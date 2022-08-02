@@ -34,6 +34,8 @@ export class InteractionService {
 
     }
 
+
+
     public getCollection(): DocumentCollection<any> & EdgeCollection<any> {
         return this.arangoService.collection;
     }
@@ -139,8 +141,8 @@ export class InteractionService {
     
 
     public async getInteractionCSV(flowId: string, tid: string, startDate?: Date, endDate?: Date): Promise<string> {
-        const count = await this.countInteractions(flowId, tid);
-        let interactions = await this.getInteractions(0, count, flowId, tid);
+        const count = await this.countInteractions(flowId, tid, null, null, startDate, endDate);
+        let interactions = await this.getInteractions(0, count, flowId, tid, null, null, startDate, endDate);
         interactions = interactions.map(interaction => {
             let type = 'flow';
             switch (interaction.data.type) {
@@ -162,7 +164,9 @@ export class InteractionService {
 
             }
         });
-
+        if(interactions.length == 0) {
+            return '';
+        }
         const p = new parser.Parser();
         return p.parse(interactions);
     }

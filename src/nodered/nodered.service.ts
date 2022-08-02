@@ -1,9 +1,10 @@
-import { HttpService, INestApplication, Injectable, Logger } from '@nestjs/common';
+import { INestApplication, Injectable, Logger } from '@nestjs/common';
 import { NodeRedWorkerSettings } from './nodered.settings.interface';
 
 import { Worker } from 'worker_threads';
 import { setInterval } from 'timers';
 import { ConfigService } from 'src/config/config/config.service';
+import { HttpService } from '@nestjs/axios';
 
 const path = require('path');
 
