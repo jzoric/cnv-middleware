@@ -31,10 +31,7 @@ export class InteractionService {
                 fields: [index]
             })
         })
-
     }
-
-
 
     public getCollection(): DocumentCollection<any> & EdgeCollection<any> {
         return this.arangoService.collection;

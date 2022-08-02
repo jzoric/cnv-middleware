@@ -8,6 +8,7 @@
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",
+    "build:doc": "npx @compodoc/compodoc -p tsconfig.json",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "export NODE_ENV=DEVELOPMENT; nest start --watch ",
@@ -15,7 +16,7 @@
     "start:preprod": "export NODE_ENV=PREPRODUCTION; nest start --watch ",
     "start:debug": "nest start --debug --watch",
     "start:prod": "export NODE_ENV=PRODUCTION; node dist/main",
-    "start:app": "export NODERED_HOME_DIR=/home/lestevao/.node-red-app/ ; nest start --watch",
+    "start:doc": "npx @compodoc/compodoc -p tsconfig.json -s",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",
     "test:watch": "jest --watch",
@@ -23,7 +24,7 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "preinstall:dev": "npm link ../cnv-plugins",
-    "build:app": "nest build && pkg -c package.json dist/main.js && cp build/middleware-api-macos build/tinyme.app/middleware-api-macos && chmod +x build/tinyme.app/middleware-api-macos",
+    
     "start:arango": "docker-compose -f docker/development/arangodb.yml up -d",
     "stop:arango": "docker-compose -f docker/development/arangodb.yml down"
   },
@@ -62,6 +63,7 @@
     "ws": "^7.5.2"
   },
   "devDependencies": {
+    "@compodoc/compodoc": "^1.1.19",
     "@nestjs/cli": "^9.0.0",
     "@nestjs/schematics": "^9.0.1",
     "@nestjs/testing": "^9.0.7",
