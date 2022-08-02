@@ -1,6 +1,6 @@
 {
   "name": "middleware-api",
-  "version": "0.40.0",
+  "version": "0.41.0",
   "description": "",
   "author": "",
   "private": true,
@@ -24,7 +24,6 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "preinstall:dev": "npm link ../cnv-plugins",
-    
     "start:arango": "docker-compose -f docker/development/arangodb.yml up -d",
     "stop:arango": "docker-compose -f docker/development/arangodb.yml down"
   },
