@@ -30,7 +30,7 @@ spec:
             
             # TRACK
             - name: TRACK_LIFETIME_MONTHS
-              value: 1
+              value: "1"
 
             # ARANGO_DB
             # - name: ARANGO_HOST
@@ -44,7 +44,7 @@ spec:
 
             # NODERED related configs
             - name: USE_BUNDLED_NODERED
-              value: true
+              value: "true"
             - name: NODERED_WS_CONNECTION
               value: ws://localhost:8080
             - name: NODERED_HTTP_CONNECTION
@@ -52,7 +52,7 @@ spec:
             - name: NODERED_HOME_DIR
               value: /mount
             - name: NODERED_ENABLE_PROJECTS
-              value: true
+              value: "true"
             - name: NODERED_FLOW_FILE
               value: flows.json
             
