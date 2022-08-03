@@ -3,7 +3,7 @@ kind: Secret
 metadata:
   name: cnv-middleware-secret
 type: Opaque
-data:
+stringData:
   ARANGO_HOST: $ARANGO_HOST
   ARANGO_USER: $ARANGO_USER
   ARANGO_PASSWORD: $ARANGO_PASSWORD

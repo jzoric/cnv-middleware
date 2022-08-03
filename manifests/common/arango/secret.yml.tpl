@@ -3,5 +3,5 @@ kind: Secret
 metadata:
   name: arango-secret
 type: Opaque
-data:
+stringData:
   ARANGO_ROOT_PASSWORD: $ARANGO_ROOT_PASSWORD
