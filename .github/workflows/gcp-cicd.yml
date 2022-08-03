@@ -18,6 +18,13 @@ env:
   SSH_KEY: ${{ secrets.DEVELOPMENT_SSH_KEY }}
   SSH_HOST: ${{ secrets.DEVELOPMENT_SSH_HOST }}
 
+  ARANGO_ROOT_PASSWORD: ${{ secrets.ARANGO_ROOT_PASSWORD }}
+  ARANGO_HOST: ${{ secrets.ARANGO_HOST }}
+  ARANGO_USER: ${{ secrets.ARANGO_USER }}
+  ARANGO_PASSWORD: ${{ secrets.ARANGO_PASSWORD }}
+  ADMIN_USER: ${{ secrets.ADMIN_USER }}
+  ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+
 jobs:
   setup-build-publish-deploy:
     name: Setup, Build, Publish, and Deploy
