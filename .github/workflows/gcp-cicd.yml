@@ -22,6 +22,7 @@ env:
   ARANGO_HOST: ${{ secrets.ARANGO_HOST }}
   ARANGO_USER: ${{ secrets.ARANGO_USER }}
   ARANGO_PASSWORD: ${{ secrets.ARANGO_PASSWORD }}
+  ARANGO_DATABASE: ${{ secrets.ARANGO_DATABASE }}
   ADMIN_USER: ${{ secrets.ADMIN_USER }}
   ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
 
