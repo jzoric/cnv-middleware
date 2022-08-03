@@ -103,6 +103,7 @@ jobs:
     - name: Build dependencies manifests
       run: |-
         cd manifests/common/arango
+        cat secret.yml.tpl | envsubst > secret.yml
         kustomize build > cnv-middleware-dependencies.yaml
     
     - name: Deploy dependencies GCP
@@ -117,6 +118,7 @@ jobs:
       run: |-
         export packageVersion=$(awk '/version/{gsub(/("|",)/,"",$2);print $2}' package.json)
         cd manifests/development/
+        cat secret.yml.tpl | envsubst > secret.yml
         kustomize edit set image IMAGE:TAG=$REGISTRY/$PROJECT_ID/$NAMESPACE-container/$IMAGE:$packageVersion
         kustomize build > cnv-middleware-development.yaml
     

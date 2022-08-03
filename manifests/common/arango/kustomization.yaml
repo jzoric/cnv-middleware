@@ -4,4 +4,4 @@ resources:
 - deployment.yml
 - service.yml
 - pvc.yml
-
+- secret.yml

@@ -15,10 +15,13 @@ spec:
       containers:
         - name: arango 
           image: arangodb:3.7.12
-          imagePullPolicy: IfNotPresent 
-          env:
-            - name: ARANGO_ROOT_PASSWORD
-              value: "nimda2022##"
+          imagePullPolicy: IfNotPresent
+          # env:
+          #   - name: ARANGO_ROOT_PASSWORD
+          #     value: "secret"
+          envFrom:
+            - secretRef:
+                name: arango-secret
           ports:
             - containerPort: 8529
           volumeMounts:
