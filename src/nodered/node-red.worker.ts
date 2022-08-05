@@ -1,9 +1,6 @@
-import { waitForDebugger } from 'inspector';
 import {
-  Worker,
   parentPort,
   workerData,
-  threadId
 } from 'worker_threads';
 import { NodeRedWorkerSettings } from './nodered.settings.interface';
 
@@ -11,8 +8,6 @@ const express = require('express');
 const http = require('http');
 
 const RED = require("node-red");
-
-
 
 class NodeREDWorker {
   app = express();
@@ -31,7 +26,7 @@ class NodeREDWorker {
       customLogger: {
         level: 'all',
 
-        handler: (settings) => {
+        handler: () => {
           return (msg) => {
             try {
               msg.msg.split('\n').forEach(m => {

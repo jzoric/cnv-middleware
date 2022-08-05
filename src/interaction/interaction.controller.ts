@@ -59,10 +59,11 @@ export class InteractionController {
         description: 'Query End Date <br><strong>Format:</strong> YYYY-MM-DD <br><strong>Defaults to empty</strong>',
         example: new Date()
     })
-    getInteractions(@Query("page") page: number = 0, @Query("take") take: number = 20,
+    getInteractions(
         @Query("tid") tid: string, @Query("flowId") flowId: string,
         @Query("sortBy") sortBy: string, @Query("sortByType") sortByType: string,
-        @Query("startDate") startDate: Date, @Query("endDate") endDate: Date): Promise<Interaction[]> {
+        @Query("startDate") startDate: Date, @Query("endDate") endDate: Date,
+        @Query("page") page: number = 0, @Query("take") take: number = 20): Promise<Interaction[]> {
         return this.interactionService.getInteractions(page, take, flowId, tid, sortBy, sortByType, startDate, endDate);
     }
 

@@ -21,7 +21,7 @@ export class MigrationModule   {
           provide: MIGRATION,
           inject: [MigrationService, SessionService, TrackService],
           useFactory: async (migrationService: MigrationService) => {
-            return await migrationService.runMigrations()
+            return migrationService.runMigrations()
           },
           
         },

@@ -19,10 +19,6 @@ export class ClientService {
     ) {
         this.clients = [];
         this.WSCONN = this.configService.get("NODERED_WS_CONNECTION") || 'ws://localhost:8080';
-
-        // setInterval(() => {
-        //     this.logger.log(`client connections: ${this.getActiveClients().length}`);
-        // }, 2000);
     }
 
     public getActiveClients(): ClientBroker[] {

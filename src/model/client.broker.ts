@@ -56,7 +56,7 @@ export class ClientBroker {
       }, this.USER_INACTIVE_PERIOD);
 
       if (this.remoteServer.readyState === WebSocket.OPEN) {
-        if (!(_data.type == 'event')) {
+        if (_data.type !== 'event') {
           this.remoteServer.send(JSON.stringify(_data));
         }
       }
@@ -97,7 +97,7 @@ export class ClientBroker {
       }
 
       const jsonData = JSON.parse(data);
-      //JSONSanitizer(jsonData);
+      
       if (jsonData.type === "store") {
 
         try {
@@ -114,14 +114,6 @@ export class ClientBroker {
         this.remoteClient.emit("message", data);
       }
 
-      // const interactions = await this.interactionService.getInteractions(this.clientTrack.flowId, this.clientTrack.tid);
-      // // TODO add this feature again calling the bd? 
-      // const lastObject = interactions[interactions.length - 1];
-      // if (lastObject?.origin == OriginInteraction.SERVER &&
-      //   JSON.stringify(lastObject.data) == JSON.stringify(jsonData)) {
-      //     console.log('same object', JSON.stringify(jsonData));
-      //   return;
-      // }
       await this.interactionService.createInteraction(new Interaction(this.clientTrack.tid, this.clientTrack.flowId, OriginInteraction.SERVER, jsonData, currentTimestamp))
     })
 
@@ -146,8 +138,9 @@ export class ClientBroker {
 
                 }, 1000)
                 this.logger.log('resync client finished')
-              };
-            }, interval += 100);
+              }
+              interval += 100;
+            }, interval);
           }
         })
       } else {

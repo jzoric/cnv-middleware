@@ -1,4 +1,4 @@
-import { Controller, Get, Logger, Param, Query, Req, Res, UseGuards } from '@nestjs/common';
+import { Controller, Get, Logger, Query, Req, Res, UseGuards } from '@nestjs/common';
 import { SessionService } from './session.service';
 import { Request, Response } from 'express';
 import { SESSION_COOKIE_NAME } from './session.constants';
@@ -50,7 +50,6 @@ export class SessionController {
                 sameSite: 'none',
                 secure: true
             });
-            sid = userSession.sid;
         }
 
         const clientTrack = await this.trackService.createTrack(userSession, flowId);
@@ -103,9 +102,8 @@ export class SessionController {
         description: 'Sort by field direction. ASC | DESC',
     })
     public async getSessions(
-        @Query("page") page: number = 0, @Query("take") take: number = 20,
-        @Query("sortBy") sortBy: string, @Query("sortByType") sortByType: string): Promise<UserSession[]> {
-        return await this.sessionService.getSessions(page, take, sortBy, sortByType);
+        @Query("sortBy") sortBy: string, @Query("sortByType") sortByType: string, @Query("page") page: number = 0, @Query("take") take: number = 20): Promise<UserSession[]> {
+        return this.sessionService.getSessions(page, take, sortBy, sortByType);
 
     }
 
@@ -121,7 +119,7 @@ export class SessionController {
         type: UserSession
     })
     public async getSession(@Query("sessionId") sessionId: string): Promise<UserSession> {
-        return await this.sessionService.getSession(sessionId);
+        return this.sessionService.getSession(sessionId);
 
     }
 
@@ -133,7 +131,7 @@ export class SessionController {
     })
     @Get("count")
     public async countSessions() {
-        return await this.sessionService.countSessions();
+        return this.sessionService.countSessions();
 
     }
 

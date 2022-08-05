@@ -11,7 +11,7 @@ export class AuthService {
     private adminuser: string;
     private adminpassword: string;
     public bcryptpassword: string;
-    public useAuth: Boolean = false;
+    public useAuth: boolean = false;
     private readonly logger = new Logger(AuthService.name);
 
     constructor(private readonly configService: ConfigService,

@@ -72,7 +72,7 @@ export class SessionService {
         const query = aql`
             UPDATE ${userSession} in ${this.arangoService.collection}
         `;
-        return await this.arangoService.database.query(query)
+        return this.arangoService.database.query(query)
             .then(res => res.all())
             .then(res => res?.[0])
             .catch(e => {
@@ -86,7 +86,7 @@ export class SessionService {
             FILTER S.sid == ${sId}
             RETURN S
         `;
-        return await this.arangoService.database.query(query)
+        return this.arangoService.database.query(query)
             .then(res => res.all())
             .then(res => res?.[0]);
     }
@@ -110,7 +110,7 @@ export class SessionService {
             LIMIT ${+(page * take)}, ${+take} 
             RETURN S
         `;
-        return await this.arangoService.database.query(query)
+        return this.arangoService.database.query(query)
             .then(res => res.all())
             .catch(e => {
                 throw new HttpException(e.response.body.errorMessage, e.code)
@@ -125,7 +125,7 @@ export class SessionService {
             LIMIT ${+(page * take)}, ${+take}
             RETURN S
         `;
-        return await this.arangoService.database.query(query)
+        return this.arangoService.database.query(query)
             .then(res => res.all())
             .catch(e => {
                 throw new HttpException(e.response.body.errorMessage, e.code)
@@ -140,7 +140,7 @@ export class SessionService {
             COLLECT WITH COUNT INTO length
             RETURN length
         `;
-        return await this.arangoService.database.query(query)
+        return this.arangoService.database.query(query)
             .then(res => res.all())
             .then(res => res?.[0]);
     }
@@ -170,7 +170,7 @@ export class SessionService {
                 count: LENGTH(count)
             }
         `;
-        return await this.arangoService.database.query(query)
+        return this.arangoService.database.query(query)
             .then(res => res.all())
             .catch(e => {
                 throw new HttpException(e.response.body.errorMessage, e.code)
@@ -199,7 +199,7 @@ export class SessionService {
                 count: LENGTH(count)
             }
         `;
-        return await this.arangoService.database.query(query)
+        return this.arangoService.database.query(query)
             .then(res => res.all())
             .catch(e => {
                 throw new HttpException(e.response.body.errorMessage, e.code)
@@ -228,7 +228,7 @@ export class SessionService {
                 count: LENGTH(count)
             }
         `;
-        return await this.arangoService.database.query(query)
+        return this.arangoService.database.query(query)
             .then(res => res.all())
             .catch(e => {
                 throw new HttpException(e.response.body.errorMessage, e.code)
@@ -244,7 +244,7 @@ export class SessionService {
             LIMIT ${+(page * take)}, ${+take} 
             RETURN S
         `;
-        return await this.arangoService.database.query(query)
+        return this.arangoService.database.query(query)
             .then(res => res.all())
             .catch(e => {
                 throw new HttpException(e.response.body.errorMessage, e.code)
@@ -259,7 +259,7 @@ export class SessionService {
             COLLECT WITH COUNT INTO length
             RETURN length
         `;
-        return await this.arangoService.database.query(query)
+        return this.arangoService.database.query(query)
             .then(res => res.all())
             .then(res => res?.[0])
             .catch(e => {
@@ -275,7 +275,7 @@ export class SessionService {
             LIMIT ${+(page * take)}, ${+take} 
             RETURN S
         `;
-        return await this.arangoService.database.query(query)
+        return this.arangoService.database.query(query)
             .then(res => res.all())
             .catch(e => {
                 throw new HttpException(e.response.body.errorMessage, e.code)
@@ -290,7 +290,7 @@ export class SessionService {
             LIMIT ${+(page * take)}, ${+take} 
             RETURN S
         `;
-        return await this.arangoService.database.query(query)
+        return this.arangoService.database.query(query)
             .then(res => res.all())
             .catch(e => {
                 throw new HttpException(e.response.body.errorMessage, e.code)
@@ -305,7 +305,7 @@ export class SessionService {
             COLLECT WITH COUNT INTO length
             RETURN length
         `;
-        return await this.arangoService.database.query(query)
+        return this.arangoService.database.query(query)
             .then(res => res.all())
             .then(res => res?.[0])
             .catch(e => {
@@ -321,7 +321,7 @@ export class SessionService {
             COLLECT WITH COUNT INTO length
             RETURN length
         `;
-        return await this.arangoService.database.query(query)
+        return this.arangoService.database.query(query)
             .then(res => res.all())
             .then(res => res?.[0])
             .catch(e => {

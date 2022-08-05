@@ -94,19 +94,6 @@ export class TrackService {
             LIMIT ${+(page * take)}, ${+take}
             `);
 
-
-        // filters.push(aql`
-        //     LET storeSize = LENGTH(ct.store)
-        //     LET interactionSize = (
-        //         FOR interaction in ${this.interactionService.getCollection()}
-        //             FILTER interaction.tid == ct.tid
-        //             FILTER interaction.flowId == ct.flowId
-        //             COLLECT WITH COUNT into count
-        //             RETURN count
-        //     )[0]
-        //     RETURN MERGE(UNSET(ct, 'store'), {storeSize, interactionSize})
-        // `);
-
         const query = aql`
             FOR ct in ${this.arangoService.collection}
             ${aql.join(filters)}

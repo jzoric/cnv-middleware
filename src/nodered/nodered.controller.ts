@@ -16,7 +16,7 @@ export class NoderedController {
         type: [String]
     })
     @Get("flows")
-    get(): Promise<String[]> {
+    get(): Promise<string[]> {
         return this.noderedService.getCurrentFlows();
     }
 }

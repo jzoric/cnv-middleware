@@ -86,14 +86,13 @@ export class TrackController {
     })
 
     public async getClientTracks(
-        @Query("page") page: number = 0, @Query("take") take: number = 20,
         @Query("sid") sid: string, @Query("flowId") flowId: string,
         @Query("sortBy") sortBy: string, @Query("sortByType") sortByType: string,
         @Query("interaction") interaction: number, @Query("interactionOperator") interactionOperator: string,
         @Query("store") store: number, @Query("storeOperator") storeOperator: string,
-        @Query("startDate") startDate: Date, @Query("endDate") endDate: Date): Promise<ClientTrack[]> {
+        @Query("startDate") startDate: Date, @Query("endDate") endDate: Date, @Query("page") page: number = 0, @Query("take") take: number = 20): Promise<ClientTrack[]> {
 
-        return await this.trackService.getClientTracks(
+        return this.trackService.getClientTracks(
             page, take, sid, flowId,
             sortBy, sortByType,
             interaction, interactionOperator,
@@ -120,7 +119,7 @@ export class TrackController {
 
     })
     public async getClientTrack(@Query("sid") sid: string, @Query("tid") tid: string): Promise<ClientTrack> {
-        return await this.trackService.getTrack(sid, tid);
+        return this.trackService.getTrack(sid, tid);
 
     }
 
@@ -185,7 +184,7 @@ export class TrackController {
         @Query("store") store: number, @Query("storeOperator") storeOperator: string,
         @Query("startDate") startDate: Date, @Query("endDate") endDate: Date) {
 
-        return await this.trackService.countClientTracks(
+        return this.trackService.countClientTracks(
             sid, flowId,
             interaction, interactionOperator,
             store, storeOperator,

@@ -45,7 +45,7 @@ export class MetricsService {
             RETURN m
             `;
 
-        return await this.arangoService.database.query(query)
+        return this.arangoService.database.query(query)
             .then(res => res.all())
             .catch(e => {
                 this.logger.error(e)
@@ -71,8 +71,7 @@ export class MetricsService {
 
         while (sDate <= eDate) {
             const interval = getDayDateInterval(sDate);
-            for (let i = 0; i < interval.length; i++) {
-                const pair = interval[i];
+            for (let pair of interval) {
                 dates.push(pair[0]);
 
             }
@@ -90,9 +89,10 @@ export class MetricsService {
 
         dates.forEach(date => {
             const ar = aggregatedResults
-                .filter(ar => new Date(ar.timestamp).getTime() == date.getTime())
-                .map(ar => ar.results)
+                .filter(aggregated => new Date(aggregated.timestamp).getTime() == date.getTime())
+                .map(filtered => filtered.results)
                 .map(d => d[0])
+
             flowIds.forEach(flowId => {
                 const res = ar.filter(d => d.flowId == flowId);
                 let count = 0;
@@ -119,7 +119,7 @@ export class MetricsService {
             }
             `;
 
-        return await this.arangoService.database.query(query)
+        return this.arangoService.database.query(query)
             .then(res => res.all())
             .catch(e => {
                 this.logger.error(e)
@@ -135,7 +135,7 @@ export class MetricsService {
             COLLECT WITH count into count
             RETURN count
             `;
-        return await this.arangoService.database.query(query)
+        return this.arangoService.database.query(query)
             .then(res => res.all())
             .catch(e => {
                 this.logger.error(e)

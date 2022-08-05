@@ -71,7 +71,7 @@ export class NoderedService {
     clearInterval(this.healthcheckInterval);
   }
 
-  async getCurrentFlows(): Promise<String[]> {
+  async getCurrentFlows(): Promise<string[]> {
     const NODERED_HTTP_CONNECTION = this.configService.get('NODERED_HTTP_CONNECTION');
     const ADMIN_USER = this.configService.get('ADMIN_USER');
     const ADMIN_PASSWORD = this.configService.get('ADMIN_PASSWORD');
@@ -83,11 +83,14 @@ export class NoderedService {
         headers: {
           Authorization: `Bearer ${ data.access_token}`
         }      
-      }).subscribe(res => {
-        resolve(res.data);
-      }, err => {
-        this.logger.error(err);
-        reject(err)
+      }).subscribe({
+        next: (res) => {
+          resolve(res.data)
+        },
+        error: (err) => {
+          this.logger.error(err);
+          reject(err)
+        }
       })
     })
     
@@ -102,11 +105,14 @@ export class NoderedService {
         scope: '*',
         username,
         password
-      }).subscribe(res => {
-        resolve(res.data)
-      }, err => {
-        this.logger.error(err);
-        reject(err)
+      }).subscribe({
+        next: (res) => {
+          resolve(res.data)
+        },
+        error: (err) => {
+          this.logger.error(err);
+          reject(err)
+        }
       })
     })
   }

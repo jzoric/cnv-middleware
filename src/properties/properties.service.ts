@@ -42,7 +42,7 @@ export class PropertiesService {
             UPDATE p WITH { modifiedDate: ${new Date()}, data: ${<any>property.data}} IN ${this.arangoService.collection} OPTIONS { exclusive: true }
             RETURN p
             `;
-        return await this.arangoService.database.query(query)
+        return this.arangoService.database.query(query)
             .then(res => res.all())
             .then(res => res?.[0]);
     }
@@ -55,7 +55,7 @@ export class PropertiesService {
             RETURN p
             `;
 
-        return await this.arangoService.database.query(query)
+        return this.arangoService.database.query(query)
             .then(res => res.all())
             .then(res => res?.[0]);
     }

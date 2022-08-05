@@ -20,7 +20,7 @@ export class CustomFiltersService {
             RETURN cf
             `;
 
-        return await this.arangoService.database.query(query)
+        return this.arangoService.database.query(query)
             .then(res => res.all())
             .catch(e => {
                 this.logger.error(e)
@@ -44,7 +44,7 @@ export class CustomFiltersService {
             FILTER cf.id == ${id}
             RETURN cf
             `;
-        return await this.arangoService.database.query(query)
+        return this.arangoService.database.query(query)
             .then(res => res.all())
             .then(res => res?.[0]);
     }
@@ -56,7 +56,7 @@ export class CustomFiltersService {
             REMOVE { _key: cf._key } in ${this.arangoService.collection}
             RETURN cf
         `;
-        return await this.arangoService.database.query(query)
+        return this.arangoService.database.query(query)
             .then(res => res.all())
             .then(res => res?.[0])
             .catch(e => {

@@ -24,7 +24,6 @@ export class UserSession {
     @ApiProperty()
     cpu: CPU
 
-    // @ApiProperty()
     userIp: string;
 
     @ApiProperty()
@@ -42,13 +41,12 @@ export class UserSession {
         browser: Browser,
         cpu: CPU,
         operatingSystem: OperatingSystem,
-        // userIp: string,
+
         country: string,
         city: string) {
 
         this.sid = uuidv4();
         this.userAgent = userAgent;
-        // this.userIp = userIp;
         this.createDate = new Date();
 
         this.browser = browser;

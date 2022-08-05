@@ -2,7 +2,7 @@ import { DynamicModule, Global, Logger, Module } from '@nestjs/common';
 import { ARANGO_COLLECTION, ARANGO_DATABASE } from './arango.constants';
 import { ArangoService } from './arango.service';
 import { ArangoModuleAsyncOptions, ArangoOptions } from './interfaces/arango-options.interface';
-import { aql, Database } from 'arangojs';
+import { Database } from 'arangojs';
 
 @Module({
   providers: [ArangoService]

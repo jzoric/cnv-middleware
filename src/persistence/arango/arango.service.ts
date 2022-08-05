@@ -7,6 +7,7 @@ import { ARANGO_COLLECTION, ARANGO_DATABASE } from './arango.constants';
 
 @Injectable()
 export class ArangoService {
+    logger: Logger = new Logger(ArangoService.name);
     collection: DocumentCollection<any> & EdgeCollection<any>;
     database: Database;
     constructor(
@@ -15,12 +16,17 @@ export class ArangoService {
 
         this.database = arangoDatabase;
         this.collection = arangoDatabase.collection(arangoCollection);
-        this.collection.create().catch(e => { });
+        this.collection.create().catch(e => {
+            if(e.message !== 'duplicate name') {
+                this.logger.error(`While creating collection ${arangoCollection}: ${e}`);
+            }
+            
+        });
 
     }
 
     async queryMany<T>(query: AqlQuery, options?: QueryOptions): Promise<T[]> {
-        return await this.database.query(query)
+        return this.database.query(query)
         .then(res => res.all())
         .catch(e => {
             throw new HttpException(e.response.body.errorMessage, e.code)
@@ -28,7 +34,7 @@ export class ArangoService {
     }
 
     async query<T>(query: AqlQuery, options?: QueryOptions): Promise<T> {
-        return await this.database.query(query)
+        return this.database.query(query)
         .then(res => res.all())
         .then(res => res?.[0])
         .catch(e => {

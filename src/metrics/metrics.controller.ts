@@ -1,6 +1,5 @@
-import { Controller, Get, Query, Res, UseGuards } from '@nestjs/common';
+import { Controller, Get, Query, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Response } from 'express';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { ActiveClientsByFlows } from 'src/model/ActiveClientsByFlows.interface';
 import { ActiveTrack } from 'src/model/ActiveTrack';
@@ -8,7 +7,6 @@ import { AggregatedSessionByBrowser } from 'src/model/aggregatedSessionByBrowser
 import { AggregatedSessionByLocation } from 'src/model/aggregatedSessionByLocation';
 import { AggregatedSessionByOS } from 'src/model/aggregatedSessionByOS';
 import { AggregatedTrackByFlowId } from 'src/model/aggregatedTrackByFlowId';
-import { NormalizedMetricsFlowByHour } from 'src/model/normalizedMetricsFlowByHour';
 import { MetricsService } from './metrics.service';
 
 
