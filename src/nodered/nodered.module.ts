@@ -60,7 +60,7 @@ export class NoderedModule {
         settings.settings.adminAuth = {
           type: "credentials",
           users: [{
-              username: "admin",
+              username: this.configService.get('ADMIN_USER'),
               password: this.authService.bcryptpassword,
               permissions: "*"
           }]
