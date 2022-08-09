@@ -59,12 +59,43 @@ export class InteractionController {
         description: 'Query End Date <br><strong>Format:</strong> YYYY-MM-DD <br><strong>Defaults to empty</strong>',
         example: new Date()
     })
-    getInteractions(
+    @ApiQuery({
+        name: 'origin',
+        required: false,
+        description: 'Origin <br><strong>Defaults to empty</strong>',
+        example: '/m4_v2'
+    })
+    @ApiQuery({
+        name: 'nodeId',
+        required: false,
+        description: 'Node Id <br><strong>Defaults to empty</strong>',
+        example: '/m4_v2'
+    })
+    @ApiQuery({
+        name: 'type',
+        required: false,
+        description: 'Node Id <br><strong>Defaults to empty</strong>',
+        example: '/m4_v2'
+    })
+    @ApiQuery({
+        name: 'name',
+        required: false,
+        description: 'Name <br><strong>Defaults to empty</strong>',
+        example: '/m4_v2'
+    })
+    @ApiQuery({
+        name: 'value',
+        required: false,
+        description: 'Value <br><strong>Defaults to empty</strong>',
+        example: '/m4_v2'
+    })
+    getInteractions(@Query("page") page: number = 0, @Query("take") take: number = 20,
         @Query("tid") tid: string, @Query("flowId") flowId: string,
         @Query("sortBy") sortBy: string, @Query("sortByType") sortByType: string,
-        @Query("startDate") startDate: Date, @Query("endDate") endDate: Date,
-        @Query("page") page: number = 0, @Query("take") take: number = 20): Promise<Interaction[]> {
-        return this.interactionService.getInteractions(page, take, flowId, tid, sortBy, sortByType, startDate, endDate);
+        @Query("startDate") startDate: Date, @Query("endDate") endDate: Date, @Query("origin") origin: string, 
+        @Query("nodeId") nodeId: string, @Query("type") type: string, 
+        @Query("name") name: string, @Query("value") value: string): Promise<Interaction[]> {
+        return this.interactionService.getInteractions(page, take, flowId, tid, sortBy, sortByType, startDate, endDate, origin, nodeId, type, name, value);
     }
 
     @ApiBearerAuth()
@@ -104,11 +135,42 @@ export class InteractionController {
         description: 'Query End Date <br><strong>Format:</strong> YYYY-MM-DD <br><strong>Defaults to empty</strong>',
         example: new Date()
     })
+    @ApiQuery({
+        name: 'origin',
+        required: false,
+        description: 'Origin <br><strong>Defaults to empty</strong>',
+        example: '/m4_v2'
+    })
+    @ApiQuery({
+        name: 'nodeId',
+        required: false,
+        description: 'Node Id <br><strong>Defaults to empty</strong>',
+        example: '/m4_v2'
+    })
+    @ApiQuery({
+        name: 'type',
+        required: false,
+        description: 'Node Id <br><strong>Defaults to empty</strong>',
+        example: '/m4_v2'
+    })
+    @ApiQuery({
+        name: 'name',
+        required: false,
+        description: 'Name <br><strong>Defaults to empty</strong>',
+        example: '/m4_v2'
+    })
+    @ApiQuery({
+        name: 'value',
+        required: false,
+        description: 'Value <br><strong>Defaults to empty</strong>',
+        example: '/m4_v2'
+    })
     countInteractions(
         @Query("tid") tid: string, @Query("flowId") flowId: string,
         @Query("sortBy") sortBy: string, @Query("sortByType") sortByType: string,
-        @Query("startDate") startDate: Date, @Query("endDate") endDate: Date): Promise<number> {
-        return this.interactionService.countInteractions(flowId, tid, sortBy, sortByType, startDate, endDate);
+        @Query("startDate") startDate: Date, @Query("endDate") endDate: Date, @Query("origin") origin: string,
+        @Query("nodeId") nodeId: string, @Query("type") type: string, @Query("name") name: string, @Query("value") value: string): Promise<number> {
+        return this.interactionService.countInteractions(flowId, tid, sortBy, sortByType, startDate, endDate, origin, nodeId, type, name, value);
     }
 
     @ApiBearerAuth()

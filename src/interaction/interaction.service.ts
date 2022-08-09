@@ -47,7 +47,8 @@ export class InteractionService {
 
     async getInteractions(
         page: number = 0, take: number = 5, flowId?: string, tid?: string,
-        sortBy?: string, sortByType?: string, startDate?: Date, endDate?: Date): Promise<Interaction[]> {
+        sortBy?: string, sortByType?: string, startDate?: Date, endDate?: Date, origin?: string,
+        nodeId?: string, type?: string, name?: string, value?: string): Promise<Interaction[]> {
 
         const filters = [];
 
@@ -66,7 +67,7 @@ export class InteractionService {
 
         if(startDate && endDate) {
             filters.push(aql`
-                FILTER i.timestamp >= ${new Date(startDate)} && i.timestamp <= ${new Date()}
+                FILTER i.timestamp >= ${new Date(startDate)} && i.timestamp <= ${new Date(endDate)}
             ` )
         }
         
@@ -78,6 +79,32 @@ export class InteractionService {
             filters.push(aql`
                 SORT i.timestamp ASC
             `)
+        }
+
+        if (origin) {
+            filters.push(aql`
+                FILTER i.origin == ${origin}
+            `);
+        }
+
+        if (nodeId) {
+            filters.push(aql`
+                FILTER i.data.nodeId == ${nodeId}
+            `);
+        }
+
+        if (type) {
+            if(type === 'flow'){
+                filters.push(aql`
+                    FILTER i.data.type != 'event' && i.data.type != 'question' && i.data.type != 'answer'
+                `); 
+            }
+            else{
+                filters.push(aql`
+                    FILTER i.data.type == ${type}
+                `);
+            }
+            
         }
 
         filters.push(aql`
@@ -89,11 +116,14 @@ export class InteractionService {
             ${aql.join(filters)}
             RETURN i
         `;
+
         return this.arangoService.queryMany<Interaction>(query);
+
     }
 
     async countInteractions(flowId?: string, tid?: string,
-        sortBy?: string, sortByType?: string, startDate?: Date, endDate?: Date): Promise<number> {
+        sortBy?: string, sortByType?: string, startDate?: Date, endDate?: Date, origin?: string,
+        nodeId?: string, type?: string, name?: string, value?: string): Promise<number> {
 
         const filters = [];
 
@@ -111,7 +141,7 @@ export class InteractionService {
 
         if(startDate && endDate) {
             filters.push(aql`
-                FILTER i.timestamp >= ${new Date(startDate)} && i.timestamp <= ${new Date()}
+                FILTER i.timestamp >= ${new Date(startDate)} && i.timestamp <= ${new Date(endDate)}
             ` )
         }
         
@@ -125,13 +155,38 @@ export class InteractionService {
             `)
         }
 
+        if (origin) {
+            filters.push(aql`
+                FILTER i.origin == ${origin}
+            `);
+        }
+
+        if (nodeId) {
+            filters.push(aql`
+                FILTER i.data.nodeId == ${nodeId}
+            `);
+        }
+
+        if (type) {
+            if(type === 'flow'){
+                filters.push(aql`
+                    FILTER i.data.type != 'event' && i.data.type != 'question' && i.data.type != 'answer'
+                `); 
+            }
+            else{
+                filters.push(aql`
+                    FILTER i.data.type == ${type}
+                `);
+            }
+            
+        }
+
         const query = aql`
             FOR i in ${this.arangoService.collection}
             ${aql.join(filters)}
             COLLECT WITH COUNT into count
             RETURN count
         `;
-
 
         return this.arangoService.query<number>(query);
     }

@@ -15,7 +15,6 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { MetricsModule } from './metrics/metrics.module';
-import { CustomFiltersModule } from './custom-filters/custom-filters.module';
 
 import { PropertiesModule } from './properties/properties.module';
 import { InteractionModule } from './interaction/interaction.module';
@@ -48,7 +47,6 @@ import { HousekeeperModule } from './housekeeper/housekeeper.module';
     TrackModule,
     NoderedModule,
     MetricsModule,
-    CustomFiltersModule,
     PropertiesModule,
     ScheduleModule.forRoot(),
 
