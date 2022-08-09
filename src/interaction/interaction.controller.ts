@@ -89,12 +89,13 @@ export class InteractionController {
         description: 'Value <br><strong>Defaults to empty</strong>',
         example: '/m4_v2'
     })
-    getInteractions(@Query("page") page: number = 0, @Query("take") take: number = 20,
+    getInteractions(
         @Query("tid") tid: string, @Query("flowId") flowId: string,
         @Query("sortBy") sortBy: string, @Query("sortByType") sortByType: string,
         @Query("startDate") startDate: Date, @Query("endDate") endDate: Date, @Query("origin") origin: string, 
         @Query("nodeId") nodeId: string, @Query("type") type: string, 
-        @Query("name") name: string, @Query("value") value: string): Promise<Interaction[]> {
+        @Query("name") name: string, @Query("value") value: string,
+        @Query("page") page: number = 0, @Query("take") take: number = 20): Promise<Interaction[]> {
         return this.interactionService.getInteractions(page, take, flowId, tid, sortBy, sortByType, startDate, endDate, origin, nodeId, type, name, value);
     }
 
