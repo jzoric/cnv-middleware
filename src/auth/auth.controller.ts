@@ -3,8 +3,8 @@ import { ApiBody, ApiTags, ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { AuthService } from './auth.service';
 import { BasicAuthUserPasswordDTO } from './basicAuthUserPasswordDTO';
-import { ActivateFlowResponse } from 'src/model/activateflowresponse';
-import { LoginResponse } from 'src/model/loginresponse';
+import { ActivateFlowResponse } from '../model/activateflowresponse';
+import { LoginResponse } from '../model/loginresponse';
 
 @ApiTags('api/auth')
 @Controller('api/auth')

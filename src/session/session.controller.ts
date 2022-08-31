@@ -3,11 +3,11 @@ import { SessionService } from './session.service';
 import { Request, Response } from 'express';
 import { SESSION_COOKIE_NAME } from './session.constants';
 import { UserSession } from '../model/usersession';
-import { TrackService } from 'src/track/track.service';
+import { TrackService } from '../track/track.service';
 import { ApiBearerAuth, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-import { ConfigService } from 'src/config/config/config.service';
-import { ActivateFlowResponse } from 'src/model/activateflowresponse';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { ConfigService } from '../config/config/config.service';
+import { ActivateFlowResponse } from '../model/activateflowresponse';
 
 @ApiTags('api/v1/session')
 @Controller('api/v1/session')

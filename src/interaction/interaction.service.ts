@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { aql } from 'arangojs';
 import { DocumentCollection, EdgeCollection } from 'arangojs/collection';
-import { Interaction } from 'src/model/client.interaction';
-import { ArangoService } from 'src/persistence/arango/arango.service';
+import { Interaction } from '../model/client.interaction';
+import { ArangoService } from '../persistence/arango/arango.service';
 const parser = require('json2csv');
 
 @Injectable()

@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from 'src/config/config/config.module';
-import { InteractionModule } from 'src/interaction/interaction.module';
-import { TrackModule } from 'src/track/track.module';
-import { SessionModule } from 'src/session/session.module';
+import { ConfigModule } from '../config/config/config.module';
+import { InteractionModule } from '../interaction/interaction.module';
+import { TrackModule } from '../track/track.module';
+import { SessionModule } from '../session/session.module';
 import { ClientController } from './client.controller';
 import { ClientGateway } from './client.gateway';
 import { ClientService } from './client.service';

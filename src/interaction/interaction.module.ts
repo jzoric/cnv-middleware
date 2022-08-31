@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
-import { ArangoModule } from 'src/persistence/arango/arango.module';
+import { ArangoModule } from '../persistence/arango/arango.module';
 import { InteractionService } from './interaction.service';
 import { InteractionController } from './interaction.controller';
-import { AuthModule } from 'src/auth/auth.module';
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
   imports: [

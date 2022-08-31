@@ -1,19 +1,19 @@
 import { HttpException, Injectable, Logger } from '@nestjs/common';
 import { aql } from 'arangojs';
-import { ClientService } from 'src/client/client.service';
-import { ActiveClientsByFlows } from 'src/model/ActiveClientsByFlows.interface';
-import { ActiveTrack } from 'src/model/ActiveTrack';
-import { AggregatedMetricsFlowByHour } from 'src/model/aggregatedMetricsFlowByHour';
-import { AggregatedSessionByBrowser } from 'src/model/aggregatedSessionByBrowser';
-import { AggregatedSessionByLocation } from 'src/model/aggregatedSessionByLocation';
-import { AggregatedSessionByOS } from 'src/model/aggregatedSessionByOS';
-import { AggregatedTrackByFlowId } from 'src/model/aggregatedTrackByFlowId';
-import { MetricFlowByHour } from 'src/model/metricFlowByHour';
-import { NormalizedMetricsFlowByHour } from 'src/model/normalizedMetricsFlowByHour';
-import { ArangoService } from 'src/persistence/arango/arango.service';
-import { SessionService } from 'src/session/session.service';
-import { TrackService } from 'src/track/track.service';
-import { getDayDateInterval } from 'src/utils/date';
+import { ClientService } from '../client/client.service';
+import { ActiveClientsByFlows } from '../model/ActiveClientsByFlows.interface';
+import { ActiveTrack } from '../model/ActiveTrack';
+import { AggregatedMetricsFlowByHour } from '../model/aggregatedMetricsFlowByHour';
+import { AggregatedSessionByBrowser } from '../model/aggregatedSessionByBrowser';
+import { AggregatedSessionByLocation } from '../model/aggregatedSessionByLocation';
+import { AggregatedSessionByOS } from '../model/aggregatedSessionByOS';
+import { AggregatedTrackByFlowId } from '../model/aggregatedTrackByFlowId';
+import { MetricFlowByHour } from '../model/metricFlowByHour';
+import { NormalizedMetricsFlowByHour } from '../model/normalizedMetricsFlowByHour';
+import { ArangoService } from '../persistence/arango/arango.service';
+import { SessionService } from '../session/session.service';
+import { TrackService } from '../track/track.service';
+import { getDayDateInterval } from '../utils/date';
 
 @Injectable()
 export class MetricsService {

@@ -1,15 +1,15 @@
 import { Injectable, Logger, HttpException } from '@nestjs/common';
 import { aql } from 'arangojs';
-import { ArangoService } from 'src/persistence/arango/arango.service';
+import { ArangoService } from '../persistence/arango/arango.service';
 import { UserSession } from '../model/usersession';
 import { UAParser } from 'ua-parser-js';
 import { lookup } from 'geoip-lite';
-import { Browser } from 'src/model/Browser';
-import { CPU } from 'src/model/CPU';
-import { OperatingSystem } from 'src/model/operatingsystem';
-import { AggregatedSessionByLocation } from 'src/model/aggregatedSessionByLocation';
-import { AggregatedSessionByBrowser } from 'src/model/aggregatedSessionByBrowser';
-import { AggregatedSessionByOS } from 'src/model/aggregatedSessionByOS';
+import { Browser } from '../model/Browser';
+import { CPU } from '../model/CPU';
+import { OperatingSystem } from '../model/operatingsystem';
+import { AggregatedSessionByLocation } from '../model/aggregatedSessionByLocation';
+import { AggregatedSessionByBrowser } from '../model/aggregatedSessionByBrowser';
+import { AggregatedSessionByOS } from '../model/aggregatedSessionByOS';
 
 @Injectable()
 export class SessionService {

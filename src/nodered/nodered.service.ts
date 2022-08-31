@@ -3,7 +3,7 @@ import { NodeRedWorkerSettings } from './nodered.settings.interface';
 
 import { Worker } from 'worker_threads';
 import { setInterval } from 'timers';
-import { ConfigService } from 'src/config/config/config.service';
+import { ConfigService } from '../config/config/config.service';
 import { HttpService } from '@nestjs/axios';
 
 const path = require('path');

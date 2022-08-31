@@ -1,8 +1,8 @@
 import { INestApplication, Module } from '@nestjs/common';
-import { AuthModule } from 'src/auth/auth.module';
-import { AuthService } from 'src/auth/auth.service';
-import { ConfigModule } from 'src/config/config/config.module';
-import { ConfigService } from 'src/config/config/config.service';
+import { AuthModule } from '../auth/auth.module';
+import { AuthService } from '../auth/auth.service';
+import { ConfigModule } from '../config/config/config.module';
+import { ConfigService } from '../config/config/config.service';
 import { NoderedService } from './nodered.service';
 import { NodeRedWorkerSettings } from './nodered.settings.interface';
 import { NoderedController } from './nodered.controller';

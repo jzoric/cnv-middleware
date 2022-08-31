@@ -1,8 +1,8 @@
 import { DynamicModule, Module } from '@nestjs/common';
-import { SessionModule } from 'src/session/session.module';
-import { SessionService } from 'src/session/session.service';
-import { TrackModule } from 'src/track/track.module';
-import { TrackService } from 'src/track/track.service';
+import { SessionModule } from '../session/session.module';
+import { SessionService } from '../session/session.service';
+import { TrackModule } from '../track/track.module';
+import { TrackService } from '../track/track.service';
 import { MIGRATION } from './migration.constants';
 import { MigrationService } from './migration.service';
 

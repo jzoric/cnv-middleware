@@ -1,7 +1,7 @@
 import { Controller, Get, Query, Response, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-import { Interaction } from 'src/model/client.interaction';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { Interaction } from '../model/client.interaction';
 import { InteractionService } from './interaction.service';
 
 @ApiTags('api/v1/interaction')

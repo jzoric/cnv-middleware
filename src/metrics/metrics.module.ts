@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
 import { MetricsService } from './metrics.service';
 import { MetricsController } from './metrics.controller';
-import { ClientModule } from 'src/client/client.module';
-import { AuthModule } from 'src/auth/auth.module';
-import { TrackModule } from 'src/track/track.module';
-import { SessionModule } from 'src/session/session.module';
-import { ArangoModule } from 'src/persistence/arango/arango.module';
-import { ConfigModule } from 'src/config/config/config.module';
-import { PropertiesModule } from 'src/properties/properties.module';
+import { ClientModule } from '../client/client.module';
+import { AuthModule } from '../auth/auth.module';
+import { TrackModule } from '../track/track.module';
+import { SessionModule } from '../session/session.module';
+import { ArangoModule } from '../persistence/arango/arango.module';
+import { ConfigModule } from '../config/config/config.module';
+import { PropertiesModule } from '../properties/properties.module';
 
 @Module({
   providers: [MetricsService],

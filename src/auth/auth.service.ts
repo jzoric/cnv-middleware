@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { ConfigService } from 'src/config/config/config.service';
-import { LoginResponse } from 'src/model/loginresponse';
+import { ConfigService } from '../config/config/config.service';
+import { LoginResponse } from '../model/loginresponse';
 import { v4 as uuidv4 } from 'uuid';
 const bcrypt = require('bcrypt');
 

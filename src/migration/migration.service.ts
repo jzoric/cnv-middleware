@@ -1,8 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { SessionService } from 'src/session/session.service';
+import { SessionService } from '../session/session.service';
 import { UAParser } from 'ua-parser-js';
 import { lookup } from 'geoip-lite';
-import { TrackService } from 'src/track/track.service';
+import { TrackService } from '../track/track.service';
 
 @Injectable()
 export class MigrationService {

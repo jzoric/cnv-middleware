@@ -1,12 +1,12 @@
 import { Logger } from "@nestjs/common";
-import { TrackService } from 'src/track/track.service';
+import { TrackService } from '../track/track.service';
 import * as WebSocket from 'ws';
 
-import { JSONSanitizer } from "src/utils/sanitizer";
+import { JSONSanitizer } from "../utils/sanitizer";
 import { Interaction, OriginInteraction } from "./client.interaction";
 import { ClientTrack } from "./client.track";
-import { ClientService } from "src/client/client.service";
-import { InteractionService } from "src/interaction/interaction.service";
+import { ClientService } from "../client/client.service";
+import { InteractionService } from "../interaction/interaction.service";
 
 export class ClientBroker {
   private readonly logger = new Logger(ClientBroker.name);

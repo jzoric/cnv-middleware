@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { aql } from 'arangojs';
-import { InteractionService } from 'src/interaction/interaction.service';
-import { AggregatedTrackByFlowId } from 'src/model/aggregatedTrackByFlowId';
-import { ClientTrack } from 'src/model/client.track';
-import { UserSession } from 'src/model/usersession';
-import { ArangoService } from 'src/persistence/arango/arango.service';
+import { InteractionService } from '../interaction/interaction.service';
+import { AggregatedTrackByFlowId } from '../model/aggregatedTrackByFlowId';
+import { ClientTrack } from '../model/client.track';
+import { UserSession } from '../model/usersession';
+import { ArangoService } from '../persistence/arango/arango.service';
 
 
 @Injectable()

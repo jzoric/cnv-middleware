@@ -1,7 +1,7 @@
 import { Controller, Get, Query, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiResponse, ApiQuery, ApiBearerAuth } from '@nestjs/swagger';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-import { ClientTrack } from 'src/model/client.track';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { ClientTrack } from '../model/client.track';
 import { TrackService } from './track.service';
 @ApiTags('api/v1/client')
 @Controller('api/v1/client')

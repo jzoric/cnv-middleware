@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { aql } from 'arangojs';
-import { Property } from 'src/model/property';
-import { ArangoService } from 'src/persistence/arango/arango.service';
+import { Property } from '../model/property';
+import { ArangoService } from '../persistence/arango/arango.service';
 
 @Injectable()
 export class PropertiesService {

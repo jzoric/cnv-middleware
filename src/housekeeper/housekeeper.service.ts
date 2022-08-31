@@ -1,14 +1,14 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { ConfigService } from 'src/config/config/config.service';
-import { MetricsService } from 'src/metrics/metrics.service';
-import { ClientTrack } from 'src/model/client.track';
-import { MetricFlowByHour } from 'src/model/metricFlowByHour';
-import { MetricStateFlowProcessor } from 'src/model/metricStateFlowProcessor';
-import { UserSession } from 'src/model/usersession';
-import { PropertiesService } from 'src/properties/properties.service';
-import { SessionService } from 'src/session/session.service';
-import { TrackService } from 'src/track/track.service';
-import { getDayDateInterval } from 'src/utils/date';
+import { ConfigService } from '../config/config/config.service';
+import { MetricsService } from '../metrics/metrics.service';
+import { ClientTrack } from '../model/client.track';
+import { MetricFlowByHour } from '../model/metricFlowByHour';
+import { MetricStateFlowProcessor } from '../model/metricStateFlowProcessor';
+import { UserSession } from '../model/usersession';
+import { PropertiesService } from '../properties/properties.service';
+import { SessionService } from '../session/session.service';
+import { TrackService } from '../track/track.service';
+import { getDayDateInterval } from '../utils/date';
 
 @Injectable()
 export class HousekeeperService {
